@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "required": [
+        "title"
+    ],
+    "properties": {
+        "title": {
+            "type": "string",
+            "title": "Cart Title"
+        },
+        "description": {
+            "type": "string",
+            "title": "Cart Description"
+        },
+        "field": {
+            "type": "object",
+            "$ref": "#/definitions/Field"
+        },
+        "fields": {
+            "type": "array",
+            "maxItems": 1,
+            "title": "Items",
+            "items": {
+                "$ref": "#/definitions/Field"
+            }
+        }
+    },
+    "definitions": {
+        "Field": {
+            "type": "object",            
+            "required": [
+                "name",
+                "price"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "Name"
+                },                
+                "price": {
+                    "type": "integer",
+                    "title": "Price",
+                    "minimum": 10,
+                    "maximum": 30
+                }
+            }
+        }
+    }
+}

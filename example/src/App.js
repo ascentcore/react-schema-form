@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { Fragment } from 'react'
+import BasicSchema from './basic-schema'
+import NestedSchema from './nested-schema'
 
-import { ExampleComponent } from '@ascentcore/react-schema-form'
 import '@ascentcore/react-schema-form/dist/index.css'
 
 const App = () => {
-  return <ExampleComponent text="Create React Library Example 😄" />
+  return (
+    <Fragment>
+      <BasicSchema />
+      <hr />
+      <NestedSchema />
+    </Fragment>)
 }
 
 export default App
