@@ -4,10 +4,13 @@
     "type": "object",
     "title": "Person",
     "description": "Person Information",
+    "required": [
+        "type"
+    ],
     "properties": {
         "type": {
             "title": "Type",
-            "type": "string"            
+            "type": "string"
         }
     }
 }

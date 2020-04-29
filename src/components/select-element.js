@@ -7,21 +7,26 @@ export default function SelectElement({ property, value, onChange }) {
         property.valueKey || 'valueKey'
     ]
     useEffect(() => {
+        let opts = property.options
         if (property.enum) {
-            setOptions(
-                property.enum.map((item) => ({
-                    labelKey: item,
-                    valueKey: item
-                }))
-            )
+            opts = property.enum.map((item) => ({
+                labelKey: item,
+                valueKey: item
+            }))
         } else {
             labelKey = property.labelKey || labelKey
             valueKey = property.valueKey || valueKey
-            setOptions(property.options)
         }
+        setOptions(opts)
     }, [property])
+
     return (
-        <select onChange={onChange}>
+        <select onChange={onChange} value={value} defaultValue=''>
+            {!value && (
+                <option value='' disabled>
+                    Select your option
+                </option>
+            )}
             {options.map((opt) => (
                 <option key={opt[labelKey]} value={opt[valueKey]}>
                     {opt[labelKey]}

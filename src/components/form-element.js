@@ -13,7 +13,7 @@ export default function FormElement({
     errors,
     handleParentChange
 }) {
-    const [error, setError] = useState(errors ? errors[path] : false)
+    const [error] = useState(errors ? errors[path] : false)
     const [nest, setNest] = useState(null)
 
     useEffect(() => {
@@ -38,8 +38,7 @@ export default function FormElement({
         if (evt.target) {
             value = evt.target.value
         }
-        setError(false)
-        handleParentChange(value)
+        handleParentChange(value, path)
     }
 
     function getComponent(itemValue) {
@@ -65,19 +64,20 @@ export default function FormElement({
 
     function renderItem(itemValue, index = null) {
         if (nest) {
+            const pathKey = index === null ? path : `${path}[${index}]`
             return (
                 <SchemaForm
-                    path={index === null ? path : `${path}[${index}]`}
+                    path={pathKey}
                     schema={nest}
                     data={itemValue}
                     errors={errors}
-                    parentChange={(subVal) => {
+                    parentChange={(subVal, key) => {
                         if (index !== null) {
                             const copy = [...value]
                             copy[index] = subVal
-                            handleParentChange(copy)
+                            handleParentChange(copy, key)
                         } else {
-                            handleParentChange(subVal)
+                            handleParentChange(subVal, key)
                         }
                     }}
                 />

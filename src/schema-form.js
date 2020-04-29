@@ -24,17 +24,18 @@ export const SchemaForm = ({
 
     const FormElementWrapper = wrapper || ElementWrapper
 
-    const handleParentChange = (key) => (value) => {
-        console.log(key, value)
+    const handleParentChange = (key) => (value, childPath) => {
         const newValue = Object.assign({}, obj, { [key]: value })
         setObj(newValue)
+
         if (parentChange) {
-            parentChange(newValue)
+            parentChange(newValue, childPath)
+        } else {
+            setErrors(errors.filter((item) => item.dataPath !== childPath))
         }
     }
 
     const handleSubmit = () => {
-        console.log(obj)
         const result = instance.validate(obj)
         const errors = result ? [] : instance.validator.errors
         errors.forEach((err) => {
