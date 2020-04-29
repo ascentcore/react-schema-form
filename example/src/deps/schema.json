@@ -1,0 +1,13 @@
+{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Person",
+    "description": "Person Information",
+    "properties": {
+        "type": {
+            "title": "Type",
+            "type": "string"            
+        }
+    }
+}

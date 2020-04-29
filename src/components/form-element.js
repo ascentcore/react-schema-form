@@ -13,7 +13,6 @@ export default function FormElement({
     errors,
     handleParentChange
 }) {
-
     const [error, setError] = useState(errors ? errors[path] : false)
     const [nest, setNest] = useState(null)
 
@@ -50,7 +49,7 @@ export default function FormElement({
             onChange: handleChange
         }
 
-        if (property.enum) {
+        if (property.enum || property.options) {
             return <SelectElement {...props} />
         }
         switch (property.type) {
