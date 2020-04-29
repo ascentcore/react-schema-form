@@ -38,11 +38,16 @@
                 "name": {
                     "type": "string",
                     "title": "Name"
+                }, 
+                "count": {
+                    "type": "integer",
+                    "title": "Count",
+                    "minimum": 1
                 },                
                 "price": {
-                    "type": "integer",
+                    "type": "number",
                     "title": "Price",
-                    "minimum": 10,
+                    "minimum": 0,
                     "maximum": 30
                 }
             }

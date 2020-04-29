@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react'
 import ElementWrapper from './element-wrapper'
-import FormElement from './form-element'
+import FormElement from './components/form-element'
 import UISchema from './ui-schema'
 
 export const SchemaForm = ({

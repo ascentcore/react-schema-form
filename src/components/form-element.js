@@ -1,5 +1,9 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { SchemaForm } from './schema-form'
+import { SchemaForm } from '../schema-form'
+import TextElement from './text-element'
+import NumericElement from './numeric-element'
+import SelectElement from './select-element'
+import CheckboxElement from './checkbox-element'
 
 export default function FormElement({
     root,
@@ -9,6 +13,7 @@ export default function FormElement({
     errors,
     handleParentChange
 }) {
+
     const [error, setError] = useState(errors ? errors[path] : false)
     const [nest, setNest] = useState(null)
 
@@ -30,15 +35,33 @@ export default function FormElement({
     }, [property])
 
     const handleChange = (evt) => {
-        const { type } = property
-        let { value } = evt.target
-
-        if (type === 'integer') {
-            value = parseInt(value)
+        let value = evt
+        if (evt.target) {
+            value = evt.target.value
         }
-
         setError(false)
         handleParentChange(value)
+    }
+
+    function getComponent(itemValue) {
+        const props = {
+            property,
+            value: itemValue,
+            onChange: handleChange
+        }
+
+        if (property.enum) {
+            return <SelectElement {...props} />
+        }
+        switch (property.type) {
+            case 'boolean':
+                return <CheckboxElement {...props} />
+            case 'number':
+            case 'integer':
+                return <NumericElement {...props} />
+            default:
+                return <TextElement {...props} />
+        }
     }
 
     function renderItem(itemValue, index = null) {
@@ -64,11 +87,7 @@ export default function FormElement({
             return (
                 <Fragment>
                     <label>{property.title}</label>
-                    <input
-                        type='text'
-                        value={itemValue}
-                        onChange={handleChange}
-                    />
+                    {getComponent(itemValue)}
                     {error}
                 </Fragment>
             )
