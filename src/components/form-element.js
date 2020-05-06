@@ -13,7 +13,6 @@ export default function FormElement({
     errors,
     handleParentChange
 }) {
-    const [error] = useState(errors ? errors[path] : false)
     const [nest, setNest] = useState(null)
 
     useEffect(() => {
@@ -83,13 +82,7 @@ export default function FormElement({
                 />
             )
         } else {
-            return (
-                <Fragment>
-                    <label>{property.title}</label>
-                    {getComponent(itemValue)}
-                    {error}
-                </Fragment>
-            )
+            return getComponent(itemValue)
         }
     }
     if (Array.isArray(value)) {

@@ -45,21 +45,33 @@ export const SchemaForm = ({
         })
         setErrors(errors)
 
-        console.log(errors)
         // if (result) {
         //   onSubmit(obj);
         // }
     }
 
+    const getErrors = (path) => {
+        const errArr = [...errors, ...(parentErrors || [])]
+        let result = errArr.filter((err) => err.dataPath === path)
+
+        if (result && result.length === 0) {
+            result = false
+        }
+
+        return result
+    }
+
     return (
         <Fragment>
             {keys.map((key) => {
+                const childPath = `${path}.${key}`
                 const prop = schema.properties[key]
                 return (
                     <FormElementWrapper
                         key={key}
                         property={prop}
-                        path={`${path}.${key}`}
+                        path={childPath}
+                        error={getErrors(childPath)}
                         errors={parentErrors || errors}
                     >
                         <FormElement
