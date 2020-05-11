@@ -2,6 +2,7 @@ import React, { Fragment, useState } from 'react'
 import ElementWrapper from './element-wrapper'
 import FormElement from './components/form-element'
 import UISchema from './ui-schema'
+import ComponentRegistry from './component-registry'
 
 export const SchemaForm = ({
     schema,
@@ -20,6 +21,7 @@ export const SchemaForm = ({
     const [obj, setObj] = useState(Object.assign({}, data))
     const [keys] = useState(Object.keys(schema.properties))
     const [instance] = useState(new UISchema(schema))
+    const [registry] = useState(new ComponentRegistry())
     const [errors, setErrors] = useState([])
 
     const FormElementWrapper = wrapper || ElementWrapper
@@ -81,6 +83,7 @@ export const SchemaForm = ({
                             path={`${path}.${key}`}
                             root={schema}
                             handleParentChange={handleParentChange(key)}
+                            registry={registry}
                         />
                     </FormElementWrapper>
                 )

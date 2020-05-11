@@ -11,7 +11,8 @@ export default function FormElement({
     path,
     value,
     errors,
-    handleParentChange
+    handleParentChange,
+    registry
 }) {
     const [nest, setNest] = useState(null)
 
@@ -46,27 +47,6 @@ export default function FormElement({
         handleParentChange(newVal, path)
     }
 
-    function getComponent(itemValue) {
-        const props = {
-            property,
-            value: itemValue,
-            onChange: handleChange
-        }
-
-        if (property.enum || property.options) {
-            return <SelectElement {...props} />
-        }
-        switch (property.type) {
-            case 'boolean':
-                return <CheckboxElement {...props} />
-            case 'number':
-            case 'integer':
-                return <NumericElement {...props} />
-            default:
-                return <TextElement {...props} />
-        }
-    }
-
     function renderItem(itemValue, index = null) {
         if (nest) {
             const pathKey = index === null ? path : `${path}[${index}]`
@@ -88,7 +68,9 @@ export default function FormElement({
                 />
             )
         } else {
-            return getComponent(itemValue)
+            const dataType =
+                property.enum || property.options ? 'enum' : property.type
+            return registry.getComponent({...property, dataType}, itemValue, handleChange)
         }
     }
     if (Array.isArray(value)) {
