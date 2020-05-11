@@ -3,7 +3,7 @@ import schema from './basic-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
 function CustomWrapper({ property, error, children }) {
-    return (<div>
+    return (<div className="column col-4">
         <div><b>{property.title}</b></div>
         {children}
         <div style={{ 'color': '#FF0000' }}>{error && error[0].keyword}</div>
@@ -20,11 +20,16 @@ export function CustomWrapperExample() {
         firstName: 'test'
     }
 
-    return (<SchemaForm
-        schema={schema}
-        onValid={onValid}
-        wrapper={CustomWrapper}
-        data={data} />)
+    return (
+        <div className="container">
+            <div className="columns">
+                <SchemaForm
+                    schema={schema}
+                    onValid={onValid}
+                    wrapper={CustomWrapper}
+                    data={data} />
+            </div>
+        </div>)
 
 }
 
@@ -36,7 +41,7 @@ import schema from './basic-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
 function CustomWrapper({ property, error, children }) {
-    return (<div>
+    return (<div className="column col-4">
         <div><b>{property.title}</b></div>
         {children}
         <div style={{ 'color': '#FF0000' }}>{error && error[0].keyword}</div>
@@ -53,11 +58,16 @@ export function CustomWrapperExample() {
         firstName: 'test'
     }
 
-    return (<SchemaForm
-        schema={schema}
-        onValid={onValid}
-        wrapper={CustomWrapper}
-        data={data} />)
+    return (
+        <div className="container">
+            <div className="columns">
+                <SchemaForm
+                    schema={schema}
+                    onValid={onValid}
+                    wrapper={CustomWrapper}
+                    data={data} />
+            </div>
+        </div>)
 
 }
 `
