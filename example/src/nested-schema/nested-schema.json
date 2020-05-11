@@ -9,19 +9,16 @@
         "title": {
             "type": "string",
             "title": "Cart Title"
-        },
-        "description": {
-            "type": "string",
-            "title": "Cart Description"
-        },
+        },        
         "field": {
+            "title": "Object Type",
             "type": "object",
             "$ref": "#/definitions/Field"
         },
         "fields": {
             "type": "array",
             "maxItems": 1,
-            "title": "Items",
+            "title": "Array Type",
             "items": {
                 "$ref": "#/definitions/Field"
             }
@@ -32,7 +29,7 @@
             "type": "object",            
             "required": [
                 "name",
-                "price"
+                "count"
             ],
             "properties": {
                 "name": {
@@ -41,14 +38,9 @@
                 }, 
                 "count": {
                     "type": "integer",
-                    "title": "Count",
-                    "minimum": 1
-                },                
-                "price": {
-                    "type": "number",
-                    "title": "Price",
-                    "minimum": 0,
-                    "maximum": 30
+                    "title": "Items",
+                    "minimum": 1,
+                    "maximum": 10
                 }
             }
         }

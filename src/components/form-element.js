@@ -40,6 +40,12 @@ export default function FormElement({
         handleParentChange(value, path)
     }
 
+    const handleRemove = (index) => () => {
+        const newVal = [...value]
+        newVal.splice(index, 1)
+        handleParentChange(newVal, path)
+    }
+
     function getComponent(itemValue) {
         const props = {
             property,
@@ -87,10 +93,13 @@ export default function FormElement({
     }
     if (Array.isArray(value)) {
         return (
-            <Fragment>
+            <Fragment key={value.length}>
                 {value.map((item, index) => (
                     <Fragment key={`${path}-${index}`}>
                         {renderItem(item, index)}
+                        <button onClick={handleRemove(index)}>
+                            remove item
+                        </button>
                     </Fragment>
                 ))}
                 <button

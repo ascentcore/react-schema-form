@@ -6,7 +6,8 @@
     "description": "Person Information",
     "required": [
         "firstName",
-        "lastName"
+        "lastName",
+        "type"
     ],
     "properties": {
         "firstName": {
