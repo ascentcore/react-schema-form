@@ -45,9 +45,9 @@ export const SchemaForm = ({
         })
         setErrors(errors)
 
-        // if (result) {
-        //   onSubmit(obj);
-        // }
+        if (result) {
+            onValid(obj)
+        }
     }
 
     const getErrors = (path) => {
