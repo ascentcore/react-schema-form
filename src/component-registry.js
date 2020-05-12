@@ -17,6 +17,12 @@ export default class ComponentRegistry {
             string: { component: TextElement, wrapper: wrapper }
         }
 
+        Object.values(customRegistry).forEach((registryRecord) => {
+            if (!registryRecord.wrapper) {
+                registryRecord.wrapper = wrapper
+            }
+        })
+
         Object.assign(this._registry, customRegistry)
     }
 
