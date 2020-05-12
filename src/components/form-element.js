@@ -1,9 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import { SchemaForm } from '../schema-form'
-import TextElement from './text-element'
-import NumericElement from './numeric-element'
-import SelectElement from './select-element'
-import CheckboxElement from './checkbox-element'
 
 export default function FormElement({
     root,
@@ -11,6 +7,7 @@ export default function FormElement({
     path,
     value,
     errors,
+    error,
     handleParentChange,
     registry
 }) {
@@ -68,9 +65,13 @@ export default function FormElement({
                 />
             )
         } else {
-            const dataType =
+            const registryKey =
                 property.enum || property.options ? 'enum' : property.type
-            return registry.getComponent({...property, dataType}, itemValue, handleChange)
+            return registry.getComponent(
+                { ...property, registryKey, error },
+                itemValue,
+                handleChange
+            )
         }
     }
     if (Array.isArray(value)) {

@@ -22,10 +22,11 @@ export default class ComponentRegistry {
         const props = {
             property,
             value: itemValue,
-            onChange: handleChange
+            onChange: handleChange,
         }
 
-        const Component = this._registry[property.dataType] || this._registry['string']
+        const Component =
+            this._registry[property.registryKey] || this._registry['string']
 
         return <Component {...props} />
     }

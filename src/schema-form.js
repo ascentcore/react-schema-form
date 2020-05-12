@@ -21,7 +21,9 @@ export const SchemaForm = ({
     const [obj, setObj] = useState(Object.assign({}, data))
     const [keys] = useState(Object.keys(schema.properties))
     const [instance] = useState(new UISchema(schema))
-    const [registry] = useState(new ComponentRegistry(config && config.registry))
+    const [registry] = useState(
+        new ComponentRegistry(config && config.registry)
+    )
     const [errors, setErrors] = useState([])
 
     const FormElementWrapper = wrapper || ElementWrapper
@@ -77,6 +79,7 @@ export const SchemaForm = ({
                         errors={parentErrors || errors}
                     >
                         <FormElement
+                            error={getErrors(childPath)}
                             errors={parentErrors || errors}
                             value={obj ? obj[key] : undefined}
                             property={prop}
