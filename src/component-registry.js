@@ -12,7 +12,7 @@ export default class ComponentRegistry {
             boolean: CheckboxElement,
             number: NumericElement,
             integer: NumericElement,
-            text: TextElement
+            string: TextElement
         }
 
         Object.assign(this._registry, customRegistry)
@@ -25,7 +25,7 @@ export default class ComponentRegistry {
             onChange: handleChange
         }
 
-        const Component = this._registry[property.dataType] || TextElement
+        const Component = this._registry[property.dataType] || this._registry['string']
 
         return <Component {...props} />
     }

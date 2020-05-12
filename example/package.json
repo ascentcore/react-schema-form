@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@ascentcore/react-schema-form": "link:..",
+    "@material-ui/core": "^4.9.14",
     "raw-loader": "^4.0.1",
     "react": "link:../node_modules/react",
     "react-dom": "link:../node_modules/react-dom",
