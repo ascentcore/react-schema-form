@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ElementWrapper({ children, property, error, path }) {
+export default function ElementWrapper({ children, property, error }) {
     const wrapperClass = `ra-elem-wrapper 
         ra-elem-${property.type}     
         ${error ? 'ra-error' : ''}`

@@ -5,14 +5,16 @@ import NumericElement from './components/numeric-element'
 import SelectElement from './components/select-element'
 import CheckboxElement from './components/checkbox-element'
 
+import ElementWrapper from './element-wrapper'
+
 export default class ComponentRegistry {
-    constructor(customRegistry = {}) {
+    constructor(customRegistry = {}, wrapper = ElementWrapper) {
         this._registry = {
-            enum: SelectElement,
-            boolean: CheckboxElement,
-            number: NumericElement,
-            integer: NumericElement,
-            string: TextElement
+            enum: { component: SelectElement, wrapper: wrapper },
+            boolean: { component: CheckboxElement, wrapper: wrapper },
+            number: { component: NumericElement, wrapper: wrapper },
+            integer: { component: NumericElement, wrapper: wrapper },
+            string: { component: TextElement, wrapper: wrapper }
         }
 
         Object.assign(this._registry, customRegistry)
@@ -22,12 +24,23 @@ export default class ComponentRegistry {
         const props = {
             property,
             value: itemValue,
-            onChange: handleChange,
+            onChange: handleChange
         }
 
         const Component =
-            this._registry[property.registryKey] || this._registry['string']
+            (this._registry[property.registryKey] &&
+                this._registry[property.registryKey].component) ||
+            this._registry['string'].component
 
-        return <Component {...props} />
+        const Wrapper =
+            (this._registry[property.registryKey] &&
+                this._registry[property.registryKey].wrapper) ||
+            this._registry['string'].wrapper
+
+        return (
+            <Wrapper {...props}>
+                <Component {...props} />
+            </Wrapper>
+        )
     }
 }

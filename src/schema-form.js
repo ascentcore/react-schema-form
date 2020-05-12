@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react'
-import ElementWrapper from './element-wrapper'
 import FormElement from './components/form-element'
 import UISchema from './ui-schema.ts'
 import ComponentRegistry from './component-registry'
@@ -22,11 +21,9 @@ export const SchemaForm = ({
     const [keys] = useState(Object.keys(schema.properties))
     const [instance] = useState(new UISchema(schema))
     const [registry] = useState(
-        new ComponentRegistry(config && config.registry)
+        new ComponentRegistry(config && config.registry, wrapper)
     )
     const [errors, setErrors] = useState([])
-
-    const FormElementWrapper = wrapper || ElementWrapper
 
     const handleParentChange = (key) => (value, childPath) => {
         const newValue = Object.assign({}, obj, { [key]: value })
@@ -71,24 +68,17 @@ export const SchemaForm = ({
                 const childPath = `${path}.${key}`
                 const prop = schema.properties[key]
                 return (
-                    <FormElementWrapper
+                    <FormElement
                         key={key}
-                        property={prop}
-                        path={childPath}
                         error={getErrors(childPath)}
                         errors={parentErrors || errors}
-                    >
-                        <FormElement
-                            error={getErrors(childPath)}
-                            errors={parentErrors || errors}
-                            value={obj ? obj[key] : undefined}
-                            property={prop}
-                            path={`${path}.${key}`}
-                            root={schema}
-                            handleParentChange={handleParentChange(key)}
-                            registry={registry}
-                        />
-                    </FormElementWrapper>
+                        value={obj ? obj[key] : undefined}
+                        property={prop}
+                        path={childPath}
+                        root={schema}
+                        handleParentChange={handleParentChange(key)}
+                        registry={registry}
+                    />
                 )
             })}
             {!parentChange && <button onClick={handleSubmit}>Submit</button>}

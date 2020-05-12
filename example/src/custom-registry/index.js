@@ -29,7 +29,7 @@ export default function CustomRegistryExample() {
     }
 
     const customRegistry = {
-        string: CustomTextField
+        string: { component: CustomTextField, wrapper: CustomWrapper }
     }
 
     return (
@@ -38,7 +38,6 @@ export default function CustomRegistryExample() {
             onValid={onValid}
             data={data}
             config={{ registry: customRegistry }}
-            wrapper={CustomWrapper}
         />
     )
 }
