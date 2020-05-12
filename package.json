@@ -7,7 +7,7 @@
   "repository": "https://github.com/ascentcore/react-schema-form",
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
-  "source": "src/index.js",
+  "source": "src/index.ts",
   "engines": {
     "node": ">=10"
   },
