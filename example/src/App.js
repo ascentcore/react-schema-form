@@ -1,12 +1,22 @@
+/* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Fragment, useState } from 'react'
-import { BasicSchemaExample, BasicSchemaExampleJson, BasicSchemaExampleCode } from './basic-schema'
-import { NestedSchemaExample, NestedSchemaExampleJson, NestedSchemaExampleCode } from './nested-schema'
-import { CustomWrapperExample, CustomWrapperExampleJson, CustomWrapperExampleCode } from './custom-wrapper'
 import './css/spectre.min.css'
 import './css/spectre-icons.min.css'
 
+import React, { useState } from 'react'
 import ReactJson from 'react-json-view'
+
+import BasicSchemaExample from './basic-schema'
+import BasicSchemaExampleJSON from './basic-schema/basic-schema.json'
+import BasicSchemaExampleCode from '!!raw-loader!./basic-schema/index.js';
+
+import NestedSchemaExample from './nested-schema'
+import NestedSchemaExampleJSON from './nested-schema/nested-schema.json'
+import NestedSchemaExampleCode from '!!raw-loader!./nested-schema/index.js';
+
+import CustomWrapperExample from './custom-wrapper'
+import CustomWrapperExampleJSON from './custom-wrapper/custom-wrapper-schema.json'
+import CustomWrapperExampleCode from '!!raw-loader!./custom-wrapper/index.js';
 
 const App = () => {
 
@@ -16,19 +26,19 @@ const App = () => {
       title: 'Basic Example',
       component: <BasicSchemaExample />,
       code: BasicSchemaExampleCode,
-      schema: BasicSchemaExampleJson
+      schema: BasicSchemaExampleJSON
     },
     {
       title: 'Nested Schema',
       component: <NestedSchemaExample />,
       code: NestedSchemaExampleCode,
-      schema: NestedSchemaExampleJson
+      schema: NestedSchemaExampleJSON
     },
     {
       title: 'Custom Wrapper',
       component: <CustomWrapperExample />,
-      code: NestedSchemaExampleCode,
-      schema: NestedSchemaExampleJson
+      code: CustomWrapperExampleCode,
+      schema: CustomWrapperExampleJSON
     }
   ]
 

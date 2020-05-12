@@ -959,7 +959,7 @@
     "@babel/plugin-transform-react-jsx-self" "^7.9.0"
     "@babel/plugin-transform-react-jsx-source" "^7.9.0"
 
-"@babel/preset-typescript@7.9.0":
+"@babel/preset-typescript@7.9.0", "@babel/preset-typescript@^7.9.0":
   version "7.9.0"
   resolved "https://registry.yarnpkg.com/@babel/preset-typescript/-/preset-typescript-7.9.0.tgz#87705a72b1f0d59df21c179f7c3d2ef4b16ce192"
   integrity sha512-S4cueFnGrIbvYJgwsVFKdvOmpiL0XGw9MFW9D0vgRys5g36PBhZRL8NX8Gr2akz8XRtzq6HuDXPD/1nniagNUg==
@@ -6913,10 +6913,10 @@ methods@~1.1.2:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
-microbundle-crl@^0.13.8:
-  version "0.13.9"
-  resolved "https://registry.yarnpkg.com/microbundle-crl/-/microbundle-crl-0.13.9.tgz#d4b6a8663dc4093f34997db0d860489507f8aa52"
-  integrity sha512-IJiuNWikNtSlPJ2s6fO0PVXOC3uq4ofvR5wu7UgLpqehV7Zf/wMHSHGmwxB3NbuLopwZy1SUfiGKH0nzNS/d4Q==
+microbundle@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/microbundle/-/microbundle-0.12.0.tgz#d3d531c4d7553ea2f38688e3076f8e4d70adcc65"
+  integrity sha512-wi4azdcbZ/caGHp+NsPmaGph3k3adZmsTYypRtUaiwC0d2ZY9xwVJGam4jwZWX0nhNLRXH9+aIkruso/XvfJ0g==
   dependencies:
     "@babel/core" "^7.8.7"
     "@babel/plugin-proposal-class-properties" "7.7.4"
@@ -6949,7 +6949,6 @@ microbundle-crl@^0.13.8:
     rollup-plugin-bundle-size "^1.0.1"
     rollup-plugin-es3 "^1.1.0"
     rollup-plugin-postcss "^2.4.1"
-    rollup-plugin-smart-asset "^2.0.7"
     rollup-plugin-terser "^5.3.0"
     rollup-plugin-typescript2 "^0.25.3"
     sade "^1.7.3"
@@ -9530,17 +9529,6 @@ rollup-plugin-postcss@^2.4.1:
     rollup-pluginutils "^2.8.2"
     safe-identifier "^0.4.1"
     style-inject "^0.3.0"
-
-rollup-plugin-smart-asset@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-smart-asset/-/rollup-plugin-smart-asset-2.0.7.tgz#568a19c4bb6f6a6b46c1804172023fea9b3d1c9f"
-  integrity sha512-QluNFq+3+rIsagRiFa8RXqWFV3xxP2m2ZTP+leTCIq7/RcMj+k7Aaq5eglbM/mCZGlGk6N0YVaeLmZdY5zgTbg==
-  dependencies:
-    big.js "^5.2.2"
-    magic-string "^0.25.2"
-    mime "^2.4.4"
-    mkdirp "^0.5.1"
-    rollup-pluginutils "^2.8.2"
 
 rollup-plugin-terser@^5.3.0:
   version "5.3.0"

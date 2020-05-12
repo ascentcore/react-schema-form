@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@ascentcore/react-schema-form": "link:..",
+    "raw-loader": "^4.0.1",
     "react": "link:../node_modules/react",
     "react-dom": "link:../node_modules/react-dom",
     "react-json-view": "^1.19.1",
