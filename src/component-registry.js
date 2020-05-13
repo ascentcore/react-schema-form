@@ -17,13 +17,9 @@ export default class ComponentRegistry {
             string: { component: TextElement, wrapper: wrapper }
         }
 
-        Object.values(customRegistry).forEach((registryRecord) => {
-            if (!registryRecord.wrapper) {
-                registryRecord.wrapper = wrapper
-            }
+        Object.entries(customRegistry).forEach((customRegistryRecord) => {
+            Object.assign(this._registry[customRegistryRecord[0]], customRegistryRecord[1])
         })
-
-        Object.assign(this._registry, customRegistry)
     }
 
     getComponent(property, itemValue, handleChange) {
