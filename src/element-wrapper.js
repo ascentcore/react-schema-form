@@ -7,10 +7,14 @@ export default function ElementWrapper({ children, property }) {
 
     return (
         <span className={wrapperClass}>
-            <label className='ra-form-label'>{property.title}</label>
+            <label className='ra-form-label'>
+                {property.title || property.path}
+            </label>
             {children}
             {property.error && (
-                <span className='ra-elem-error-text'>{property.error[0].keyword}</span>
+                <span className='ra-elem-error-text'>
+                    {property.error[0].keyword}
+                </span>
             )}
         </span>
     )
