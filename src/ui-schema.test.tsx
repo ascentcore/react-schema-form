@@ -51,7 +51,6 @@ describe('UISchemaTests', () => {
         expect(schema.validator.errors![1].keyword).toEqual('type')
 
         result = schema.validate({ k1: 'test', k2: 4 })
-        console.log(schema.validator.errors)
         expect(result).toEqual(true)
         expect(schema.validator.errors).toEqual(null)
     })

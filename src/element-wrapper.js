@@ -8,7 +8,8 @@ export default function ElementWrapper({ children, property }) {
     return (
         <span className={wrapperClass}>
             <label className='ra-form-label'>
-                {property.title || property.path}{property.isRequired ? "*" : ""}
+                {property.title || property.path}
+                {property.isRequired && '*'}
             </label>
             {children}
             {property.error && (
