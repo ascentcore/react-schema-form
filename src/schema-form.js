@@ -36,7 +36,7 @@ export const SchemaForm = ({
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (data) => {
         const result = instance.validate(obj)
         const errors = result ? [] : instance.validator.errors
         errors.forEach((err) => {

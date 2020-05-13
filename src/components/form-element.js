@@ -55,7 +55,7 @@ export default function FormElement({
         handleParentChange(newVal, path)
     }
 
-    function renderSubschema(pathKey, itemValue) {
+    function renderSubschema(pathKey, itemValue, index) {
         return (
             <SchemaForm
                 path={pathKey}
@@ -124,7 +124,7 @@ export default function FormElement({
             (nest && property.type === 'array' && index !== null)
         ) {
             const pathKey = index === null ? path : `${path}[${index}]`
-            const subschema = renderSubschema(pathKey, itemValue)
+            const subschema = renderSubschema(pathKey, itemValue, index)
 
             return renderRegistryElement(itemValue, subschema)
         } else if (nest && property.type === 'array') {

@@ -15,6 +15,7 @@ export function getComponentTree(schemaComponent: ReactWrapper,
     const tree: QueryOutput[] = []
 
     schemaComponent.find(wrapperSelector).forEach((child: ReactWrapper) => {
+        console.log(child.html())
         const label: ReactWrapper = child.find(labelSelector)
         const labelText = label.length && label.text()
 
