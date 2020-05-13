@@ -74,20 +74,21 @@ export default function FormElement({
             )
         }
     }
-    if (Array.isArray(value)) {
+    if (property.type === 'array') {
         return (
-            <Fragment key={value.length}>
-                {value.map((item, index) => (
-                    <Fragment key={`${path}-${index}`}>
-                        {renderItem(item, index)}
-                        <button onClick={handleRemove(index)}>
-                            remove item
-                        </button>
-                    </Fragment>
-                ))}
+            <Fragment key={value && value.length}>
+                {value &&
+                    value.map((item, index) => (
+                        <Fragment key={`${path}-${index}`}>
+                            {renderItem(item, index)}
+                            <button onClick={handleRemove(index)}>
+                                remove item
+                            </button>
+                        </Fragment>
+                    ))}
                 <button
                     onClick={() => {
-                        handleParentChange([...value, { name: 'test' }])
+                        handleParentChange([...(value || []), {}])
                     }}
                 >
                     add item
