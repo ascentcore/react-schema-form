@@ -55,44 +55,31 @@ export default function FormElement({
         handleParentChange(newVal, path)
     }
 
-    function renderItem(itemValue, index = null) {
-        if (nest) {
-            const pathKey = index === null ? path : `${path}[${index}]`
-            return (
-                <SchemaForm
-                    path={pathKey}
-                    schema={nest}
-                    data={itemValue}
-                    errors={errors}
-                    parentChange={(subVal, key) => {
-                        if (index !== null) {
-                            const copy = [...value]
-                            copy[index] = subVal
-                            handleParentChange(copy, key)
-                        } else {
-                            handleParentChange(subVal, key)
-                        }
-                    }}
-                />
-            )
-        } else {
-            const registryKey =
-                property.enum || property.options ? 'enum' : property.type
-            const key = path.substr(path.lastIndexOf('.') + 1)
-            const isRequired = root.required && root.required.indexOf(key) > -1
-
-            return registry.getComponent(
-                { ...property, path, registryKey, error, isRequired },
-                itemValue,
-                handleChange
-            )
-        }
-    }
-    if (property.type === 'array') {
+    function renderSubschema(pathKey, itemValue) {
         return (
-            <Fragment key={value && value.length}>
-                {value &&
-                    value.map((item, index) => (
+            <SchemaForm
+                path={pathKey}
+                schema={nest}
+                data={itemValue}
+                errors={errors}
+                parentChange={(subVal, key) => {
+                    if (index !== null) {
+                        const copy = [...value]
+                        copy[index] = subVal
+                        handleParentChange(copy, key)
+                    } else {
+                        handleParentChange(subVal, key)
+                    }
+                }}
+            />
+        )
+    }
+
+    function renderArray(itemValue) {
+        return (
+            <Fragment>
+                {itemValue &&
+                    itemValue.map((item, index) => (
                         <Fragment key={`${path}-${index}`}>
                             {renderItem(item, index)}
                             <button onClick={handleRemove(index)}>
@@ -102,14 +89,51 @@ export default function FormElement({
                     ))}
                 <button
                     onClick={() => {
-                        handleParentChange([...(value || []), {}])
+                        handleParentChange([...(itemValue || []), {}])
                     }}
                 >
                     add item
                 </button>
             </Fragment>
         )
-    } else {
-        return renderItem(value)
     }
+
+    function renderRegistryElement(itemValue, children = null) {
+        const registryKey =
+            property.enum || property.options ? 'enum' : property.type
+        const key = path.substr(path.lastIndexOf('.') + 1)
+        const isRequired = root.required && root.required.indexOf(key) > -1
+
+        return registry.getComponent(
+            {
+                ...property,
+                path,
+                registryKey,
+                error,
+                isRequired,
+                children
+            },
+            itemValue,
+            handleChange
+        )
+    }
+
+    function renderItem(itemValue, index = null) {
+        if (
+            (nest && property.type !== 'array') ||
+            (nest && property.type === 'array' && index !== null)
+        ) {
+            const pathKey = index === null ? path : `${path}[${index}]`
+            const subschema = renderSubschema(pathKey, itemValue)
+
+            return renderRegistryElement(itemValue, subschema)
+        } else if (nest && property.type === 'array') {
+            const arrayItems = renderArray(itemValue)
+
+            return renderRegistryElement(itemValue, arrayItems)
+        } else {
+            return renderRegistryElement(itemValue)
+        }
+    }
+    return renderItem(value)
 }
