@@ -19,7 +19,7 @@ export default function FormElement({
             return root.definitions[def]
         }
 
-        let { $ref, items } = property
+        let { $ref, items, properties } = property
 
         if (items) {
             $ref = items.$ref
@@ -27,6 +27,8 @@ export default function FormElement({
 
         if ($ref) {
             setNest(processRef($ref))
+        } else if (properties) {
+            setNest(property)
         }
     }, [property])
 
@@ -68,7 +70,7 @@ export default function FormElement({
             const registryKey =
                 property.enum || property.options ? 'enum' : property.type
             return registry.getComponent(
-                { ...property, registryKey, error },
+                { ...property, path, registryKey, error },
                 itemValue,
                 handleChange
             )
