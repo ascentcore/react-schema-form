@@ -15,6 +15,7 @@ function CustomTextField({ property, value, onChange }) {
             error={!!property.error}
             label={property.title}
             helperText={property.error ? property.error[0].keyword : ' '}
+            required={property.isRequired}
         />
     )
 }

@@ -78,8 +78,11 @@ export default function FormElement({
         } else {
             const registryKey =
                 property.enum || property.options ? 'enum' : property.type
+            const key = path.substr(path.lastIndexOf('.') + 1)
+            const isRequired = root.required && root.required.indexOf(key) > -1
+
             return registry.getComponent(
-                { ...property, path, registryKey, error },
+                { ...property, path, registryKey, error, isRequired },
                 itemValue,
                 handleChange
             )
