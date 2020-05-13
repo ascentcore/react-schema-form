@@ -82,18 +82,20 @@ export default function FormElement({
                     itemValue.map((item, index) => (
                         <Fragment key={`${path}-${index}`}>
                             {renderItem(item, index)}
-                            <button onClick={handleRemove(index)}>
-                                remove item
-                            </button>
+                            {registry.getComponent(
+                                { registryKey: 'button' },
+                                'Remove item',
+                                handleRemove(index)
+                            )}
                         </Fragment>
                     ))}
-                <button
-                    onClick={() => {
+                {registry.getComponent(
+                    { registryKey: 'button' },
+                    'Add item',
+                    () => {
                         handleParentChange([...(itemValue || []), {}])
-                    }}
-                >
-                    add item
-                </button>
+                    }
+                )}
             </Fragment>
         )
     }
@@ -110,11 +112,11 @@ export default function FormElement({
                 path,
                 registryKey,
                 error,
-                isRequired,
-                children
+                isRequired
             },
             itemValue,
-            handleChange
+            handleChange,
+            children
         )
     }
 

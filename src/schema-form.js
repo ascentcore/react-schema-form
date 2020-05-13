@@ -81,7 +81,12 @@ export const SchemaForm = ({
                     />
                 )
             })}
-            {!parentChange && <button onClick={handleSubmit}>Submit</button>}
+            {!parentChange &&
+                registry.getComponent(
+                    { registryKey: 'button' },
+                    'Submit',
+                    handleSubmit
+                )}
         </Fragment>
     )
 }
