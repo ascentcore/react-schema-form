@@ -4,6 +4,7 @@ import TextElement from './components/text-element'
 import NumericElement from './components/numeric-element'
 import SelectElement from './components/select-element'
 import CheckboxElement from './components/checkbox-element'
+import FormContainer from './components/form-container'
 
 import ElementWrapper from './element-wrapper'
 
@@ -18,8 +19,13 @@ export default class ComponentRegistry {
         }
 
         Object.entries(customRegistry).forEach((customRegistryRecord) => {
-            Object.assign(this._registry[customRegistryRecord[0]], customRegistryRecord[1])
+            Object.assign(
+                this._registry[customRegistryRecord[0]],
+                customRegistryRecord[1]
+            )
         })
+
+        this.wrapper = wrapper
     }
 
     getComponent(property, itemValue, handleChange) {
@@ -32,12 +38,12 @@ export default class ComponentRegistry {
         const Component =
             (this._registry[property.registryKey] &&
                 this._registry[property.registryKey].component) ||
-            this._registry['string'].component
+            FormContainer
 
         const Wrapper =
             (this._registry[property.registryKey] &&
                 this._registry[property.registryKey].wrapper) ||
-            this._registry['string'].wrapper
+            this.wrapper
 
         return (
             <Wrapper {...props}>
