@@ -19,16 +19,25 @@ export default function FormElement({
             return root.definitions[def]
         }
 
-        let { $ref, items, properties } = property
-
-        if (items) {
-            $ref = items.$ref
-        }
+        const { $ref, items, properties } = property
+        let subSchema
 
         if ($ref) {
-            setNest(processRef($ref))
-        } else if (properties) {
-            setNest(property)
+            subSchema = processRef($ref)
+        } else if (items) {
+            if (items.$ref) {
+                subSchema = processRef(items.$ref)
+            } else if (items.properties) {
+                subSchema = items
+            }
+        }
+
+        if (!subSchema && properties) {
+            subSchema = property
+        }
+
+        if (subSchema) {
+            setNest(subSchema)
         }
     }, [property])
 
