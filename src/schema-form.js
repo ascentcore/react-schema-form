@@ -2,14 +2,15 @@ import React, { Fragment, useState } from 'react'
 import FormElement from './components/form-element'
 import UISchema from './ui-schema.ts'
 import ComponentRegistry from './component-registry'
+import ElementWrapper from './element-wrapper'
 
 export const SchemaForm = ({
     schema,
-    wrapper,
+    wrapper = ElementWrapper,
     parentChange,
     data,
-    config,
-    onValid,
+    config = {},
+    onValid = () => {},
     path = '',
     errors: parentErrors
 }) => {

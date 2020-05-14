@@ -3,9 +3,9 @@ import React from 'react'
 import TextElement from './components/text-element'
 import NumericElement from './components/numeric-element'
 import SelectElement from './components/select-element'
-import CheckboxElement from './components/checkbox-element'
-import ButtonElement from './components/button-element'
-import ElementContainer from './components/element-container'
+import CheckboxElement from './components/checkbox-element.tsx'
+import ButtonElement from './components/button-element.tsx'
+import ElementContainer from './components/element-container.tsx'
 
 import ElementWrapper from './element-wrapper'
 

@@ -1,5 +1,42 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, {
+    Fragment,
+    useState,
+    useEffect,
+    FormEvent,
+    ReactNode
+} from 'react'
 import { SchemaForm } from '../schema-form'
+import ComponentRegistry from '../component-registry'
+
+export interface SchemaProperty {
+    $ref: string
+    items: SchemaProperty
+    type: string
+    title: string
+    description?: string
+    properties?: { [key: string]: SchemaProperty }
+    required?: string[]
+    enum?: string[]
+    options?: { [key: string]: string }[]
+    labelKey?: string
+    valueKey?: string
+
+    path?: string
+    registryKey?: string
+    error?: string
+    isRequired?: boolean
+}
+
+interface FormElementProperties {
+    root: any
+    property: SchemaProperty
+    path: string
+    value: any
+    errors: string[]
+    error: string
+    handleParentChange: (value: any, childPath: string) => void
+    registry: ComponentRegistry
+}
 
 export default function FormElement({
     root,
@@ -10,17 +47,17 @@ export default function FormElement({
     error,
     handleParentChange,
     registry
-}) {
-    const [nest, setNest] = useState(null)
+}: FormElementProperties) {
+    const [nest, setNest] = useState<SchemaProperty | null>(null)
 
     useEffect(() => {
-        function processRef($ref) {
+        function processRef($ref: string) {
             const def = $ref.substr($ref.lastIndexOf('/') + 1)
             return root.definitions[def]
         }
 
         const { $ref, items, properties } = property
-        let subSchema
+        let subSchema: SchemaProperty | null = null
 
         if ($ref) {
             subSchema = processRef($ref)
@@ -41,28 +78,32 @@ export default function FormElement({
         }
     }, [property])
 
-    const handleChange = (evt) => {
-        let value = evt
-        if (evt.target) {
-            value = evt.target.value
+    const handleChange = (event: FormEvent<HTMLInputElement>) => {
+        let value: FormEvent<HTMLInputElement> | string = event
+        if (event.target) {
+            value = (event.target as HTMLInputElement).value
         }
         handleParentChange(value, path)
     }
 
-    const handleRemove = (index) => () => {
+    const handleRemove = (index: number) => () => {
         const newVal = [...value]
         newVal.splice(index, 1)
         handleParentChange(newVal, path)
     }
 
-    function renderSubschema(pathKey, itemValue, index) {
+    function renderSubschema(
+        pathKey: string,
+        itemValue: any,
+        index: null | number
+    ) {
         return (
             <SchemaForm
                 path={pathKey}
                 schema={nest}
                 data={itemValue}
                 errors={errors}
-                parentChange={(subVal, key) => {
+                parentChange={(subVal: any, key: string) => {
                     if (index !== null) {
                         const copy = [...value]
                         copy[index] = subVal
@@ -75,11 +116,11 @@ export default function FormElement({
         )
     }
 
-    function renderArray(itemValue) {
+    function renderArray(itemValue: any) {
         return (
             <Fragment>
                 {itemValue &&
-                    itemValue.map((item, index) => (
+                    itemValue.map((item: any, index: number) => (
                         <Fragment key={`${path}-${index}`}>
                             {renderItem(item, index)}
                             {registry.getComponent(
@@ -93,14 +134,17 @@ export default function FormElement({
                     { registryKey: 'button' },
                     'Add item',
                     () => {
-                        handleParentChange([...(itemValue || []), {}])
+                        handleParentChange([...(itemValue || []), {}], '')
                     }
                 )}
             </Fragment>
         )
     }
 
-    function renderRegistryElement(itemValue, children = null) {
+    function renderRegistryElement(
+        itemValue: any,
+        children: ReactNode | null = null
+    ) {
         const registryKey =
             property.enum || property.options ? 'enum' : property.type
         const key = path.substr(path.lastIndexOf('.') + 1)
@@ -120,17 +164,21 @@ export default function FormElement({
         )
     }
 
-    function renderItem(itemValue, index = null) {
+    function renderItem(itemValue: any, index: number | null = null) {
         if (
             (nest && property.type !== 'array') ||
             (nest && property.type === 'array' && index !== null)
         ) {
             const pathKey = index === null ? path : `${path}[${index}]`
-            const subschema = renderSubschema(pathKey, itemValue, index)
+            const subschema: ReactNode = renderSubschema(
+                pathKey,
+                itemValue,
+                index
+            )
 
             return renderRegistryElement(itemValue, subschema)
         } else if (nest && property.type === 'array') {
-            const arrayItems = renderArray(itemValue)
+            const arrayItems: ReactNode = renderArray(itemValue)
 
             return renderRegistryElement(itemValue, arrayItems)
         } else {
