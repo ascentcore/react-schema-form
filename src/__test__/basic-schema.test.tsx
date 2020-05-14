@@ -1,7 +1,7 @@
 import React from 'react';
 import Schema from './schemas/basic-schema.json'
 import { SchemaForm } from '..'
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { getComponentTree } from './test-utils';
 
 describe('BasicSchemaTests', () => {
@@ -26,7 +26,7 @@ describe('BasicSchemaTests', () => {
 
     it('expect to validate data', () => {
 
-        const validate = data => {
+        const validate = () => {
             console.log(validate)
         }
 

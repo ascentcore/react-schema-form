@@ -1,7 +1,6 @@
 import React from 'react';
 import { SchemaForm } from '..'
-import { shallow, mount } from 'enzyme';
-import getComponentTree from './test-utils';
+import { mount } from 'enzyme';
 
 describe('BasicSchemaTests', () => {
 

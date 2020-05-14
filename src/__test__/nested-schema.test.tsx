@@ -1,7 +1,7 @@
 import React from 'react';
 import Schema from './schemas/nested-schema.json'
 import { SchemaForm } from '..'
-import { shallow, mount, ReactWrapper } from 'enzyme';
+import { mount, ReactWrapper } from 'enzyme';
 import { getComponentTree, populateTree, getSubmitButton } from './test-utils';
 
 describe('NestedSchemaTests', () => {

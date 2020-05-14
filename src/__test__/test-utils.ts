@@ -23,6 +23,8 @@ export function getComponentTree(schemaComponent: ReactWrapper,
         const errorText = error.length && error.text()
 
         const input: ReactWrapper = child.find(componentSelector)
+
+        //@ts-ignore
         const inputValue = input.length && input.instance().value
 
         tree.push({ labelText, inputValue, errorText, input })

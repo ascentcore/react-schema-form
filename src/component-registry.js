@@ -17,7 +17,7 @@ export default class ComponentRegistry {
             number: { component: NumericElement, wrapper: wrapper },
             integer: { component: NumericElement, wrapper: wrapper },
             string: { component: TextElement, wrapper: wrapper },
-            button: {component: ButtonElement, wrapper: ElementContainer }
+            button: { component: ButtonElement, wrapper: ElementContainer }
         }
 
         Object.entries(customRegistry).forEach((customRegistryRecord) => {

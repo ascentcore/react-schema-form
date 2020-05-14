@@ -5,14 +5,14 @@ import ComponentRegistry from './component-registry'
 import ElementWrapper from './element-wrapper'
 
 export const SchemaForm = ({
-    schema,
+    schema = null,
     wrapper = ElementWrapper,
-    parentChange,
-    data,
+    parentChange = null,
+    data = {},
     config = {},
-    onValid = () => {},
+    onValid = (data) => {},
     path = '',
-    errors: parentErrors
+    errors: parentErrors = null
 }) => {
     if (!schema) {
         throw new Error('schema must be provided to the SchemaForm component')
