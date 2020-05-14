@@ -7,12 +7,13 @@ import React, {
 } from 'react'
 import { SchemaForm } from '../schema-form'
 import ComponentRegistry from '../component-registry'
+import { ValidatorError } from '../ui-schema'
 
 export interface SchemaProperty {
-    $ref: string
-    items: SchemaProperty
-    type: string
-    title: string
+    $ref?: string
+    items?: SchemaProperty
+    type?: string
+    title?: string
     description?: string
     properties?: { [key: string]: SchemaProperty }
     required?: string[]
@@ -23,7 +24,7 @@ export interface SchemaProperty {
 
     path?: string
     registryKey?: string
-    error?: string
+    error?: ValidatorError[] | boolean
     isRequired?: boolean
 }
 
@@ -32,8 +33,8 @@ interface FormElementProperties {
     property: SchemaProperty
     path: string
     value: any
-    errors: string[]
-    error: string
+    errors: ValidatorError[]
+    error: ValidatorError[] | boolean
     handleParentChange: (value: any, childPath: string) => void
     registry: ComponentRegistry
 }

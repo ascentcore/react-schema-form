@@ -1,6 +1,15 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
+import { SchemaProperty } from './components/form-element'
 
-export default function ElementWrapper({ children, property }) {
+interface ElementWrapperProperties {
+    children: ReactNode
+    property: SchemaProperty
+}
+
+export default function ElementWrapper({
+    children,
+    property
+}: ElementWrapperProperties) {
     const { type } = property
     const wrapperClass = `${
         property.type !== 'object' && property.type !== 'array'
@@ -29,7 +38,8 @@ export default function ElementWrapper({ children, property }) {
             {children}
             {property.error && (
                 <span className='ra-elem-error-text'>
-                    {property.error[0].keyword}
+                    {typeof property.error !== 'boolean' &&
+                        property.error[0].keyword}
                 </span>
             )}
         </span>

@@ -1,5 +1,13 @@
 import Ajv, { ValidateFunction } from 'ajv'
 
+export interface ValidatorError {
+    keyword: string
+    dataPath: string
+    schemaPath: string
+    message: string
+    params: { missingProperty: string }
+}
+
 export default class UISchema {
     schema: any
     keys: string[]
