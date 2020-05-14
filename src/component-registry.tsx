@@ -14,7 +14,7 @@ export default class ComponentRegistry {
     _registry: { [key: string]: { component: ReactNode; wrapper: ReactNode } }
     _wrapper: ReactNode
 
-    constructor(customRegistry = {}, wrapper = ElementWrapper) {
+    constructor(customRegistry = {}, wrapper: ReactNode = ElementWrapper) {
         this._registry = {
             enum: { component: SelectElement, wrapper: wrapper },
             boolean: { component: CheckboxElement, wrapper: wrapper },
