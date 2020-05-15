@@ -2,7 +2,7 @@ import React from 'react';
 import Schema from './schemas/nested-schema.json'
 import { SchemaForm } from '..'
 import { mount, ReactWrapper } from 'enzyme';
-import { getComponentTree, populateTree, getSubmitButton } from './test-utils';
+import { getComponentTree, populateTree, getByCSSSelector } from './test-utils';
 
 describe('NestedSchemaTests', () => {
 
@@ -29,7 +29,7 @@ describe('NestedSchemaTests', () => {
         const validate = (data: any) => valData = data
         const component: ReactWrapper = mount(<SchemaForm schema={Schema} onValid={validate} data={data} />)
         let tree = getComponentTree(component)
-        const submitButton = getSubmitButton(component).last()
+        const submitButton = getByCSSSelector(component, 'button').last()
 
         submitButton.simulate('click')
         tree = getComponentTree(component)
@@ -45,8 +45,29 @@ describe('NestedSchemaTests', () => {
                 { title: 'Task Title', details: 'Task Details' }
             ]
         })
-
-
     })
 
+    it('perform element removal from array', () => {
+        const data = {
+            title: 'List Title',
+            tasks: [
+                { title: 'Task Title 1', details: 'Task Details 1' },
+                { title: 'Task Title 2', details: 'Task Details 2' }
+            ]
+        }
+        const component: ReactWrapper = mount(<SchemaForm schema={Schema} data={data} />)
+        let tree = getComponentTree(component)
+
+        let taskTitleList = tree.filter(task => task.labelText === "Title*")
+        expect(taskTitleList.length).toEqual(2)
+        const removeButton = getByCSSSelector(component, ".ra-remove-button").first()
+
+        removeButton.simulate('click')
+
+        tree = getComponentTree(component)
+        
+        taskTitleList = tree.filter(task => task.labelText === "Title*")
+        expect(taskTitleList.length).toEqual(1)
+        expect(taskTitleList[0].inputValue).toEqual('Task Title 2')
+    })
 })

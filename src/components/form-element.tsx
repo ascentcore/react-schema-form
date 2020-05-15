@@ -26,6 +26,7 @@ export interface SchemaProperty {
     registryKey?: string
     error?: ValidatorError[] | boolean
     isRequired?: boolean
+    className?: string
 }
 
 interface FormElementProperties {
@@ -125,14 +126,14 @@ export default function FormElement({
                         <Fragment key={`${path}-${itemValue.length}-${index}`}>
                             {renderItem(item, index)}
                             {registry.getComponent(
-                                { registryKey: 'button' },
+                                { registryKey: 'button', className: 'ra-remove-button' },
                                 'Remove item',
                                 handleRemove(index)
                             )}
                         </Fragment>
                     ))}
                 {registry.getComponent(
-                    { registryKey: 'button' },
+                    { registryKey: 'button', className: 'ra-add-button' },
                     'Add item',
                     () => {
                         handleParentChange([...(itemValue || []), {}], '')

@@ -45,6 +45,6 @@ export function populateTree(tree: any[], list: any[]) {
     })
 }
 
-export function getSubmitButton(component: ReactWrapper): ReactWrapper {
-    return  component.find('button')
+export function getByCSSSelector(component: ReactWrapper, selector: string): ReactWrapper {
+    return component.find(selector)
 }
