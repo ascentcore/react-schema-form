@@ -122,7 +122,7 @@ export default function FormElement({
             <Fragment>
                 {itemValue &&
                     itemValue.map((item: any, index: number) => (
-                        <Fragment key={`${path}-${index}`}>
+                        <Fragment key={`${path}-${itemValue.length}-${index}`}>
                             {renderItem(item, index)}
                             {registry.getComponent(
                                 { registryKey: 'button' },
