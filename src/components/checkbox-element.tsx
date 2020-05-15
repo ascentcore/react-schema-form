@@ -13,12 +13,6 @@ export default function CheckboxElement({
         onChange((event.target as HTMLInputElement).checked)
     }
 
-    useEffect(() => {
-        if (value === undefined) {
-            onChange(false)
-        }
-    }, [])
-
     return (
         <input
             type='checkbox'
