@@ -1,7 +1,7 @@
-import React, { FormEvent } from 'react'
+import React, { FormEvent, useEffect } from 'react'
 
 interface CheckboxElementProperties {
-    value: string
+    value: boolean
     onChange: (checked: boolean) => void
 }
 
@@ -13,5 +13,18 @@ export default function CheckboxElement({
         onChange((event.target as HTMLInputElement).checked)
     }
 
-    return <input type='checkbox' value={value} onChange={handleChange} />
+    useEffect(() => {
+        if (value === undefined) {
+            onChange(false)
+        }
+    }, [])
+
+    return (
+        <input
+            type='checkbox'
+            value={`${value || false}`}
+            onChange={handleChange}
+            checked={value || false}
+        />
+    )
 }

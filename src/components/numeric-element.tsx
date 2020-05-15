@@ -4,7 +4,11 @@ import { SchemaProperty } from './form-element'
 interface NumericElementProperties {
     property: SchemaProperty
     value: string
-    onChange: (value: number) => void
+    onChange: (value: number | string) => void
+}
+
+function isNumeric(value: string) {
+    return !isNaN(parseInt(value)) || !isNaN(parseFloat(value))
 }
 
 export default function NumericElement({
@@ -14,13 +18,23 @@ export default function NumericElement({
 }: NumericElementProperties) {
     const handleChange = (event: FormEvent<HTMLInputElement>) => {
         const { type } = property
-        const { value } = (event.target as HTMLInputElement)
-        if (type === 'integer') {
-            onChange(parseInt(value))
+        const { value } = event.target as HTMLInputElement
+        if (isNumeric(value)) {
+            if (type === 'integer') {
+                onChange(parseInt(value))
+            } else {
+                onChange(parseFloat(value))
+            }
         } else {
-            onChange(parseFloat(value))
+            onChange('')
         }
     }
 
-    return <input type='number' value={value} onChange={handleChange} />
+    return (
+        <input
+            type='number'
+            value={value !== undefined ? value : ''}
+            onChange={handleChange}
+        />
+    )
 }

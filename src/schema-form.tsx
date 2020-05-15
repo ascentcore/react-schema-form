@@ -38,6 +38,9 @@ export const SchemaForm = ({
 
     const handleParentChange = (key: string) => (value: any, childPath: string) => {
         const newValue = Object.assign({}, obj, { [key]: value })
+        if(value === ""){
+            delete newValue[key]
+        }
         setObj(newValue)
 
         if (parentChange) {

@@ -9,5 +9,5 @@ export default function TextElement({
     value,
     onChange
 }: TextElementProperties) {
-    return <input type='text' value={value} onChange={onChange} />
+    return <input type='text' value={value || ""} onChange={onChange} />
 }
