@@ -2,7 +2,7 @@ import React, { FormEvent, useEffect } from 'react'
 
 interface CheckboxElementProperties {
     value: boolean
-    onChange: (checked: boolean) => void
+    onChange: (value: boolean) => void
 }
 
 export default function CheckboxElement({

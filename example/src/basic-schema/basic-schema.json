@@ -39,6 +39,13 @@
         "agree": {
             "title": "Agree with TOC",
             "type": "boolean"
+        },
+        "phoneNumbers": {
+            "title": "Phone numbers",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
         }
     }
 }

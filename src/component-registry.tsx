@@ -34,7 +34,7 @@ export default class ComponentRegistry {
         this._wrapper = wrapper
     }
 
-    getComponent(property: SchemaProperty, itemValue: any, handleChange: (event: FormEvent<HTMLInputElement>) => void, children: ReactNode | null = null) {
+    getComponent(property: SchemaProperty, itemValue: any, handleChange: (value: string | number | boolean) => void, children: ReactNode | null = null) {
         const props = {
             property,
             value: itemValue,

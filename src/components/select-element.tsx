@@ -4,7 +4,7 @@ import { SchemaProperty } from './form-element'
 interface SelectElementProperties {
     property: SchemaProperty
     value: string
-    onChange: (event: FormEvent) => void
+    onChange: (event: string) => void
 }
 
 export default function SelectElement({
@@ -31,8 +31,12 @@ export default function SelectElement({
         opts && setOptions(opts)
     }, [property])
 
+    const handleChange = (event: FormEvent<HTMLSelectElement>) => {
+        onChange((event.target as HTMLInputElement).value)
+    }
+
     return (
-        <select onChange={onChange} value={value} defaultValue=''>
+        <select onChange={handleChange} value={value} defaultValue=''>
             {!value && (
                 <option value='' disabled>
                     Select your option

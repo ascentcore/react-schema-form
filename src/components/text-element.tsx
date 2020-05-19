@@ -2,12 +2,17 @@ import React, { FormEvent } from 'react'
 
 interface TextElementProperties {
     value: string
-    onChange: (event: FormEvent<HTMLInputElement>) => void
+    onChange: (value: string) => void
 }
 
 export default function TextElement({
     value,
     onChange
 }: TextElementProperties) {
-    return <input type='text' value={value || ""} onChange={onChange} />
+
+    const handleChange = (event: FormEvent<HTMLInputElement>) => {
+        onChange((event.target as HTMLInputElement).value)
+    }
+
+    return <input type='text' value={value || ""} onChange={handleChange} />
 }

@@ -4,7 +4,7 @@ import { SchemaProperty } from './form-element'
 interface ButtonElementProperties {
     property: SchemaProperty
     value: string
-    onChange: (event: FormEvent) => void
+    onChange: () => void
     children: ReactNode
 }
 

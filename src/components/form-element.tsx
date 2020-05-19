@@ -1,10 +1,4 @@
-import React, {
-    Fragment,
-    useState,
-    useEffect,
-    FormEvent,
-    ReactNode
-} from 'react'
+import React, { Fragment, useState, useEffect, ReactNode } from 'react'
 import { SchemaForm } from '../schema-form'
 import ComponentRegistry from '../component-registry'
 import { ValidatorError } from '../ui-schema'
@@ -21,6 +15,8 @@ export interface SchemaProperty {
     options?: { [key: string]: string }[]
     labelKey?: string
     valueKey?: string
+    minimum?: number
+    maximum?: number
 
     path?: string
     registryKey?: string
@@ -50,7 +46,9 @@ export default function FormElement({
     handleParentChange,
     registry
 }: FormElementProperties) {
-    const [nest, setNest] = useState<SchemaProperty | null>(null)
+    const [nestedSchema, setNestedSchema] = useState<SchemaProperty | null>(
+        null
+    )
 
     useEffect(() => {
         function processRef($ref: string) {
@@ -59,50 +57,25 @@ export default function FormElement({
         }
 
         const { $ref, items } = property
-        let subSchema: SchemaProperty | null = null
 
         if ($ref) {
-            subSchema = processRef($ref)
+            setNestedSchema(processRef($ref))
         } else if (items) {
             if (items.$ref) {
-                subSchema = processRef(items.$ref)
+                setNestedSchema(processRef(items.$ref))
             } else if (items.properties) {
-                subSchema = items
+                setNestedSchema(items)
             }
-        }
-
-        if (subSchema) {
-            setNest(subSchema)
         }
     }, [property])
 
-    const handleChange = (event: FormEvent<HTMLInputElement>) => {
-        let value: FormEvent<HTMLInputElement> | string = event
-        if (event.target) {
-            value = (event.target as HTMLInputElement).value
-        }
-        handleParentChange(value, path)
-    }
-
-    const handleArrayItemChange = (index: number) => (
-        event: FormEvent<HTMLInputElement>
-    ) => {
-        let itemValue: FormEvent<HTMLInputElement> | string = event
-        if (event.target) {
-            itemValue = (event.target as HTMLInputElement).value
-        }
-        const copy = [...value]
-        copy[index] = itemValue
-        handleParentChange(copy, path)
-    }
-
-    const handleRemove = (index: number) => () => {
+    const handleArrayElementRemoval = (index: number) => () => {
         const newVal = [...value]
         newVal.splice(index, 1)
         handleParentChange(newVal, path)
     }
 
-    function renderSubschema(
+    function renderNestedSchema(
         pathKey: string,
         itemValue: any,
         index: null | number
@@ -110,7 +83,7 @@ export default function FormElement({
         return (
             <SchemaForm
                 path={pathKey}
-                schema={nest}
+                schema={nestedSchema}
                 data={itemValue}
                 errors={errors}
                 parentChange={(subVal: any, key: string) => {
@@ -123,34 +96,6 @@ export default function FormElement({
                     }
                 }}
             />
-        )
-    }
-
-    function renderArray(itemValue: any) {
-        return (
-            <Fragment>
-                {itemValue &&
-                    itemValue.map((item: any, index: number) => (
-                        <Fragment key={`${path}-${itemValue.length}-${index}`}>
-                            {renderItem(item, index)}
-                            {registry.getComponent(
-                                {
-                                    registryKey: 'button',
-                                    className: 'ra-remove-button'
-                                },
-                                'Remove item',
-                                handleRemove(index)
-                            )}
-                        </Fragment>
-                    ))}
-                {registry.getComponent(
-                    { registryKey: 'button', className: 'ra-add-button' },
-                    'Add item',
-                    () => {
-                        handleParentChange([...(itemValue || []), {}], '')
-                    }
-                )}
-            </Fragment>
         )
     }
 
@@ -177,12 +122,67 @@ export default function FormElement({
                 error: arrayElementErrors
             },
             itemValue,
-            handleArrayItemChange(index),
+            (changedItemValue: string | number | boolean) => {
+                const copy = [...value]
+                copy[index] = changedItemValue
+                handleParentChange(copy, path)
+            },
             null
         )
     }
 
-    function renderRegistryElement(
+    function renderArray(itemValue: any) {
+        return (
+            <Fragment>
+                {itemValue &&
+                    itemValue.map((item: any, index: number) => (
+                        <Fragment key={`${path}-${itemValue.length}-${index}`}>
+                            {renderFormElement(item, index)}
+                            {registry.getComponent(
+                                {
+                                    registryKey: 'button',
+                                    className: 'ra-remove-button'
+                                },
+                                'Remove item',
+                                handleArrayElementRemoval(index)
+                            )}
+                        </Fragment>
+                    ))}
+                {registry.getComponent(
+                    { registryKey: 'button', className: 'ra-add-button' },
+                    'Add item',
+                    () => {
+                        let emptyChild = {}
+                        if (
+                            !nestedSchema &&
+                            property.items &&
+                            property.items.type
+                        ) {
+                            switch (property.items.type) {
+                                case 'integer':
+                                case 'number':
+                                    emptyChild = typeof property.items.minimum === 'number'
+                                        ? property.items.minimum
+                                        : 0
+                                    break
+                                case 'boolean':
+                                    emptyChild = false
+                                    break
+                                default:
+                                    emptyChild = ''
+                            }
+                        }
+                        handleParentChange(
+                            [...(itemValue || []), emptyChild],
+                            ''
+                        )
+                    }
+                )}
+            </Fragment>
+        )
+    }
+
+    function getElementFromRegistry(
         itemValue: any,
         children: ReactNode | null = null
     ) {
@@ -200,26 +200,27 @@ export default function FormElement({
                 isRequired
             },
             itemValue,
-            handleChange,
+            (changedItemValue: string | number | boolean) =>
+                handleParentChange(changedItemValue, path),
             children
         )
     }
 
-    function renderItem(itemValue: any, index: number | null = null) {
+    function renderFormElement(itemValue: any, index: number | null = null) {
         if (
-            (nest && property.type !== 'array') ||
-            (nest && property.type === 'array' && index !== null)
+            (nestedSchema && property.type !== 'array') ||
+            (nestedSchema && property.type === 'array' && index !== null)
         ) {
             const pathKey = index === null ? path : `${path}[${index}]`
-            const subschema: ReactNode = renderSubschema(
+            const subschema: ReactNode = renderNestedSchema(
                 pathKey,
                 itemValue,
                 index
             )
 
-            return renderRegistryElement(itemValue, subschema)
+            return getElementFromRegistry(itemValue, subschema)
         } else if (
-            !nest &&
+            !nestedSchema &&
             property.type === 'array' &&
             index !== null &&
             property.items &&
@@ -229,10 +230,11 @@ export default function FormElement({
         } else if (property.type === 'array' && index === null) {
             const arrayItems: ReactNode = renderArray(itemValue)
 
-            return renderRegistryElement(itemValue, arrayItems)
+            return getElementFromRegistry(itemValue, arrayItems)
         } else {
-            return renderRegistryElement(itemValue)
+            return getElementFromRegistry(itemValue)
         }
     }
-    return renderItem(value)
+
+    return renderFormElement(value)
 }
