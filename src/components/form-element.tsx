@@ -58,7 +58,7 @@ export default function FormElement({
             return root.definitions[def]
         }
 
-        const { $ref, items, properties } = property
+        const { $ref, items } = property
         let subSchema: SchemaProperty | null = null
 
         if ($ref) {
@@ -69,10 +69,6 @@ export default function FormElement({
             } else if (items.properties) {
                 subSchema = items
             }
-        }
-
-        if (!subSchema && properties) {
-            subSchema = property
         }
 
         if (subSchema) {
@@ -86,6 +82,18 @@ export default function FormElement({
             value = (event.target as HTMLInputElement).value
         }
         handleParentChange(value, path)
+    }
+
+    const handleArrayItemChange = (index: number) => (
+        event: FormEvent<HTMLInputElement>
+    ) => {
+        let itemValue: FormEvent<HTMLInputElement> | string = event
+        if (event.target) {
+            itemValue = (event.target as HTMLInputElement).value
+        }
+        const copy = [...value]
+        copy[index] = itemValue
+        handleParentChange(copy, path)
     }
 
     const handleRemove = (index: number) => () => {
@@ -126,7 +134,10 @@ export default function FormElement({
                         <Fragment key={`${path}-${itemValue.length}-${index}`}>
                             {renderItem(item, index)}
                             {registry.getComponent(
-                                { registryKey: 'button', className: 'ra-remove-button' },
+                                {
+                                    registryKey: 'button',
+                                    className: 'ra-remove-button'
+                                },
                                 'Remove item',
                                 handleRemove(index)
                             )}
@@ -140,6 +151,34 @@ export default function FormElement({
                     }
                 )}
             </Fragment>
+        )
+    }
+
+    function renderArrayElement(
+        itemValue: any,
+        propertyType: string,
+        index: number
+    ) {
+        const registryKey = propertyType
+        const pathKey = `${path}[${index}]`
+
+        let arrayElementErrors: ValidatorError[] | boolean = errors.filter(
+            (err) => err.dataPath === pathKey
+        )
+        if (arrayElementErrors && arrayElementErrors.length === 0) {
+            arrayElementErrors = false
+        }
+
+        return registry.getComponent(
+            {
+                ...property,
+                path: pathKey,
+                registryKey,
+                error: arrayElementErrors
+            },
+            itemValue,
+            handleArrayItemChange(index),
+            null
         )
     }
 
@@ -179,7 +218,15 @@ export default function FormElement({
             )
 
             return renderRegistryElement(itemValue, subschema)
-        } else if (nest && property.type === 'array') {
+        } else if (
+            !nest &&
+            property.type === 'array' &&
+            index !== null &&
+            property.items &&
+            property.items.type
+        ) {
+            return renderArrayElement(itemValue, property.items.type, index)
+        } else if (property.type === 'array' && index === null) {
             const arrayItems: ReactNode = renderArray(itemValue)
 
             return renderRegistryElement(itemValue, arrayItems)

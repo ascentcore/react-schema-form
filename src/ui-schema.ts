@@ -15,7 +15,7 @@ export default class UISchema {
     validator: ValidateFunction
     constructor(jsonSchema: any) {
         this.schema = { ...jsonSchema }
-        this.keys = Object.keys(this.schema.properties)
+        this.keys = Object.keys(this.schema.properties || {})
         this.ajv = new Ajv({ allErrors: true })
         this.validator = this.ajv.compile(this.schema)
     }

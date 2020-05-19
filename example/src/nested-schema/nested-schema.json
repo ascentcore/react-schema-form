@@ -21,6 +21,7 @@
             "title": "Array Type",
             "items": {
                 "$ref": "#/definitions/Field"
+
             }
         }
     },
