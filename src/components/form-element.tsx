@@ -46,9 +46,7 @@ export default function FormElement({
     handleParentChange,
     registry
 }: FormElementProperties) {
-    const [nestedSchema, setNestedSchema] = useState<SchemaProperty | null>(
-        null
-    )
+    const [nestedSchema, setNestedSchema] = useState<SchemaProperty | null>(null)
 
     useEffect(() => {
         function processRef($ref: string) {
@@ -75,11 +73,7 @@ export default function FormElement({
         handleParentChange(newVal, path)
     }
 
-    function renderNestedSchema(
-        pathKey: string,
-        itemValue: any,
-        index: null | number
-    ) {
+    function renderNestedSchema(pathKey: string, itemValue: any, index: null | number) {
         return (
             <SchemaForm
                 path={pathKey}
@@ -99,17 +93,11 @@ export default function FormElement({
         )
     }
 
-    function renderArrayElement(
-        itemValue: any,
-        propertyType: string,
-        index: number
-    ) {
+    function renderPrimitiveArrayItem(itemValue: any, propertyType: string, index: number) {
         const registryKey = propertyType
         const pathKey = `${path}[${index}]`
 
-        let arrayElementErrors: ValidatorError[] | boolean = errors.filter(
-            (err) => err.dataPath === pathKey
-        )
+        let arrayElementErrors: ValidatorError[] | boolean = errors.filter((err) => err.dataPath === pathKey)
         if (arrayElementErrors && arrayElementErrors.length === 0) {
             arrayElementErrors = false
         }
@@ -149,49 +137,29 @@ export default function FormElement({
                             )}
                         </Fragment>
                     ))}
-                {registry.getComponent(
-                    { registryKey: 'button', className: 'ra-add-button' },
-                    'Add item',
-                    () => {
-                        let emptyChild = {}
-                        if (
-                            !nestedSchema &&
-                            property.items &&
-                            property.items.type
-                        ) {
-                            switch (property.items.type) {
-                                case 'integer':
-                                case 'number':
-                                    emptyChild =
-                                        typeof property.items.minimum ===
-                                        'number'
-                                            ? property.items.minimum
-                                            : 0
-                                    break
-                                case 'boolean':
-                                    emptyChild = false
-                                    break
-                                default:
-                                    emptyChild = ''
-                            }
+                {registry.getComponent({ registryKey: 'button', className: 'ra-add-button' }, 'Add item', () => {
+                    let emptyChild = {}
+                    if (!nestedSchema && property.items && property.items.type) {
+                        switch (property.items.type) {
+                            case 'integer':
+                            case 'number':
+                                emptyChild = typeof property.items.minimum === 'number' ? property.items.minimum : 0
+                                break
+                            case 'boolean':
+                                emptyChild = false
+                                break
+                            default:
+                                emptyChild = ''
                         }
-                        handleParentChange(
-                            [...(itemValue || []), emptyChild],
-                            ''
-                        )
                     }
-                )}
+                    handleParentChange([...(itemValue || []), emptyChild], '')
+                })}
             </Fragment>
         )
     }
 
-    function getElementFromRegistry(
-        itemValue: any,
-        children: ReactNode | null = null,
-        title?: string
-    ) {
-        const registryKey =
-            property.enum || property.options ? 'enum' : property.type
+    function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string) {
+        const registryKey = property.enum || property.options ? 'enum' : property.type
         const key = path.substr(path.lastIndexOf('.') + 1)
         const isRequired = root.required && root.required.indexOf(key) > -1
 
@@ -205,38 +173,28 @@ export default function FormElement({
                 title: title || property.title
             },
             itemValue,
-            (changedItemValue: string | number | boolean) =>
-                handleParentChange(changedItemValue, path),
+            (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
             children
         )
     }
 
     function renderFormElement(itemValue: any, index: number | null = null) {
-        if (
-            (nestedSchema && property.type !== 'array') ||
-            (nestedSchema && property.type === 'array' && index !== null)
-        ) {
-            const pathKey = index === null ? path : `${path}[${index}]`
-            const subschema: ReactNode = renderNestedSchema(
-                pathKey,
-                itemValue,
-                index
-            )
+        const typeObjectOrObjectArrayItem =
+            (nestedSchema && property.type !== 'array') || (nestedSchema && property.type === 'array' && index !== null)
 
-            return getElementFromRegistry(
-                itemValue,
-                subschema,
-                nestedSchema.title
-            )
-        } else if (
-            !nestedSchema &&
-            property.type === 'array' &&
-            index !== null &&
-            property.items &&
-            property.items.type
-        ) {
-            return renderArrayElement(itemValue, property.items.type, index)
-        } else if (property.type === 'array' && index === null) {
+        const typePrimitiveArrayItem =
+            !nestedSchema && property.type === 'array' && index !== null && property.items && property.items.type
+
+        const typeArray = property.type === 'array' && index === null
+
+        if (typeObjectOrObjectArrayItem) {
+            const pathKey = index === null ? path : `${path}[${index}]`
+            const subschema: ReactNode = renderNestedSchema(pathKey, itemValue, index)
+
+            return getElementFromRegistry(itemValue, subschema, nestedSchema!.title)
+        } else if (typePrimitiveArrayItem) {
+            return renderPrimitiveArrayItem(itemValue, property.items!.type!, index!)
+        } else if (typeArray) {
             const arrayItems: ReactNode = renderArray(itemValue)
 
             return getElementFromRegistry(itemValue, arrayItems)
