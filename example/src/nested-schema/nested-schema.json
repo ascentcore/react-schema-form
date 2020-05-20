@@ -27,6 +27,7 @@
     },
     "definitions": {
         "Field": {
+            "title": "Field",
             "type": "object",
             "required": [
                 "name",

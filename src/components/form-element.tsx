@@ -119,7 +119,8 @@ export default function FormElement({
                 ...property,
                 path: pathKey,
                 registryKey,
-                error: arrayElementErrors
+                error: arrayElementErrors,
+                title: property.items!.title || property.title
             },
             itemValue,
             (changedItemValue: string | number | boolean) => {
@@ -161,9 +162,11 @@ export default function FormElement({
                             switch (property.items.type) {
                                 case 'integer':
                                 case 'number':
-                                    emptyChild = typeof property.items.minimum === 'number'
-                                        ? property.items.minimum
-                                        : 0
+                                    emptyChild =
+                                        typeof property.items.minimum ===
+                                        'number'
+                                            ? property.items.minimum
+                                            : 0
                                     break
                                 case 'boolean':
                                     emptyChild = false
@@ -184,7 +187,8 @@ export default function FormElement({
 
     function getElementFromRegistry(
         itemValue: any,
-        children: ReactNode | null = null
+        children: ReactNode | null = null,
+        title?: string
     ) {
         const registryKey =
             property.enum || property.options ? 'enum' : property.type
@@ -197,7 +201,8 @@ export default function FormElement({
                 path,
                 registryKey,
                 error,
-                isRequired
+                isRequired,
+                title: title || property.title
             },
             itemValue,
             (changedItemValue: string | number | boolean) =>
@@ -218,7 +223,11 @@ export default function FormElement({
                 index
             )
 
-            return getElementFromRegistry(itemValue, subschema)
+            return getElementFromRegistry(
+                itemValue,
+                subschema,
+                nestedSchema.title
+            )
         } else if (
             !nestedSchema &&
             property.type === 'array' &&
