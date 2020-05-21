@@ -54,7 +54,7 @@ export default function FormElement({
             return root.definitions[def]
         }
 
-        const { $ref, items } = property
+        const { $ref, items, properties } = property
 
         if ($ref) {
             setNestedSchema(processRef($ref))
@@ -64,6 +64,8 @@ export default function FormElement({
             } else if (items.properties) {
                 setNestedSchema(items)
             }
+        } else if (properties) {
+            setNestedSchema(property)
         }
     }, [property])
 
