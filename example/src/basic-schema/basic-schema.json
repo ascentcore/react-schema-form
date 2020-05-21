@@ -7,7 +7,8 @@
     "required": [
         "firstName",
         "lastName",
-        "type"
+        "type",
+        "phoneNumbers"
     ],
     "properties": {
         "firstName": {
