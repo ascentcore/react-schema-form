@@ -46,7 +46,8 @@
             "type": "array",
             "items": {
                 "title": "Phone number",
-                "type": "string"
+                "type": "string",
+                "pattern": "^[0-9]+$"
             }
         }
     }
