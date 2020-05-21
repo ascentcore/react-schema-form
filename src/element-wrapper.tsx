@@ -24,10 +24,10 @@ export default function ElementWrapper({ children, property }: ElementWrapperPro
             )
         } else {
             return (
-                <h5>
+                <div className='ra-form-title'>
                     {property.title}
                     {property.isRequired && '*'}
-                </h5>
+                </div>
             )
         }
     }
