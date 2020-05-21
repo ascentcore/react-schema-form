@@ -1,8 +1,9 @@
 import React, { Fragment, useState, ReactNode } from 'react'
 import FormElement, { SchemaProperty } from './components/form-element'
-import UISchema, { ValidatorError } from './ui-schema'
+import UISchema from './ui-schema'
 import ComponentRegistry from './component-registry'
 import ElementWrapper from './element-wrapper'
+import ajv, { RequiredParams } from 'ajv'
 
 export const SchemaForm = ({
     schema,
@@ -21,7 +22,7 @@ export const SchemaForm = ({
     config?: {registry: ComponentRegistry} | null
     onValid?: (data: any) => void
     path?: string
-    errors?: ValidatorError[] | null
+    errors?: ajv.ErrorObject[] | null
 
 }) => {
     if (!schema) {
@@ -34,7 +35,7 @@ export const SchemaForm = ({
     const [registry] = useState(
         new ComponentRegistry(config ? config.registry: {}, wrapper)
     )
-    const [errors, setErrors] = useState<ValidatorError[]>([])
+    const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
 
     const handleParentChange = (key: string) => (value: any, childPath: string) => {
         const newValue = Object.assign({}, obj, { [key]: value })
@@ -46,19 +47,19 @@ export const SchemaForm = ({
         if (parentChange) {
             parentChange(newValue, childPath)
         } else {
-            setErrors(errors.filter((item: ValidatorError) => item.dataPath !== childPath))
+            setErrors(errors.filter((item: ajv.ErrorObject) => item.dataPath !== childPath))
         }
     }
 
     const handleSubmit = () => {
         const result = instance.validate(obj)
-        const errors = result || ! instance.validator.errors ? [] : (instance.validator.errors as ValidatorError[])
+        const errors: ajv.ErrorObject[] = result || ! instance.validator.errors ? [] : (instance.validator.errors)
         errors.forEach((err) => {
-            if (err.params && err.params.missingProperty) {
-                err.dataPath += `.${err.params.missingProperty}`
+            if (err.params && (err.params as RequiredParams).missingProperty) {
+                err.dataPath += `.${(err.params as RequiredParams).missingProperty}`
             }
         })
-        setErrors(errors as ValidatorError[])
+        setErrors(errors as ajv.ErrorObject[])
 
         if (result) {
             onValid(obj)
@@ -67,7 +68,7 @@ export const SchemaForm = ({
 
     const getErrors = (path: string) => {
         const errArr = [...errors, ...(parentErrors || [])]
-        let result: ValidatorError[] | boolean = errArr.filter((err) => err.dataPath === path)
+        let result: ajv.ErrorObject[] | boolean = errArr.filter((err) => err.dataPath === path)
 
         if (result && result.length === 0) {
             result = false

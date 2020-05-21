@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, ReactNode } from 'react'
 import { SchemaForm } from '../schema-form'
 import ComponentRegistry from '../component-registry'
-import { ValidatorError } from '../ui-schema'
+import ajv from 'ajv'
 
 export interface SchemaProperty {
     $ref?: string
@@ -20,7 +20,7 @@ export interface SchemaProperty {
 
     path?: string
     registryKey?: string
-    error?: ValidatorError[] | boolean
+    error?: ajv.ErrorObject[] | boolean
     isRequired?: boolean
     className?: string
 }
@@ -30,8 +30,8 @@ interface FormElementProperties {
     property: SchemaProperty
     path: string
     value: any
-    errors: ValidatorError[]
-    error: ValidatorError[] | boolean
+    errors: ajv.ErrorObject[]
+    error: ajv.ErrorObject[] | boolean
     handleParentChange: (value: any, childPath: string) => void
     registry: ComponentRegistry
 }
@@ -97,7 +97,7 @@ export default function FormElement({
         const registryKey = propertyType
         const pathKey = `${path}[${index}]`
 
-        let arrayElementErrors: ValidatorError[] | boolean = errors.filter((err) => err.dataPath === pathKey)
+        let arrayElementErrors: ajv.ErrorObject[] | boolean = errors.filter((err) => err.dataPath === pathKey)
         if (arrayElementErrors && arrayElementErrors.length === 0) {
             arrayElementErrors = false
         }
