@@ -21,6 +21,11 @@ code {
   color: red;
 }
 
+.ra-elem-instance.ra-error {
+  margin-bottom: 0;
+  color: red;
+}
+
 pre code {
   background: #FFF;
 }

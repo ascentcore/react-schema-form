@@ -1,7 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
+import { SchemaProperty } from './form-element'
 
-export default function SelectElement({ property, value, onChange }) {
-    const [options, setOptions] = useState([])
+interface SelectElementProperties {
+    property: SchemaProperty
+    value: string
+    onChange: (event: string) => void
+}
+
+export default function SelectElement({
+    property,
+    value,
+    onChange
+}: SelectElementProperties) {
+    const [options, setOptions] = useState<{ [key: string]: string }[]>([])
     let [labelKey, valueKey] = [
         property.labelKey || 'labelKey',
         property.valueKey || 'valueKey'
@@ -9,7 +20,7 @@ export default function SelectElement({ property, value, onChange }) {
     useEffect(() => {
         let opts = property.options
         if (property.enum) {
-            opts = property.enum.map((item) => ({
+            opts = property.enum.map((item: string) => ({
                 labelKey: item,
                 valueKey: item
             }))
@@ -17,11 +28,15 @@ export default function SelectElement({ property, value, onChange }) {
             labelKey = property.labelKey || labelKey
             valueKey = property.valueKey || valueKey
         }
-        setOptions(opts)
+        opts && setOptions(opts)
     }, [property])
 
+    const handleChange = (event: FormEvent<HTMLSelectElement>) => {
+        onChange((event.target as HTMLInputElement).value)
+    }
+
     return (
-        <select onChange={onChange} value={value} defaultValue=''>
+        <select onChange={handleChange} value={value} defaultValue=''>
             {!value && (
                 <option value='' disabled>
                     Select your option

@@ -18,6 +18,10 @@ import CustomWrapperExample from './custom-wrapper'
 import CustomWrapperExampleJSON from './custom-wrapper/custom-wrapper-schema.json'
 import CustomWrapperExampleCode from '!!raw-loader!./custom-wrapper/index.js';
 
+import CustomRegistryExample from './custom-registry'
+import CustomRegistryExampleJSON from './custom-registry/custom-registry-schema.json'
+import CustomRegistryExampleCode from '!!raw-loader!./custom-registry/index.js';
+
 const App = () => {
 
   const [selected, setSelected] = useState(parseInt(window.location.hash.substr(1)) || 0)
@@ -39,6 +43,12 @@ const App = () => {
       component: <CustomWrapperExample />,
       code: CustomWrapperExampleCode,
       schema: CustomWrapperExampleJSON
+    },
+    {
+      title: 'Custom Registry',
+      component: <CustomRegistryExample />,
+      code: CustomRegistryExampleCode,
+      schema: CustomRegistryExampleJSON
     }
   ]
 

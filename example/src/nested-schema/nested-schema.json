@@ -21,11 +21,13 @@
             "title": "Array Type",
             "items": {
                 "$ref": "#/definitions/Field"
+
             }
         }
     },
     "definitions": {
         "Field": {
+            "title": "Field",
             "type": "object",
             "required": [
                 "name",
