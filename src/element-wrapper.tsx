@@ -28,7 +28,7 @@ export default function ElementWrapper({
                 </label>
             )
         } else {
-            return <h5>{property.title}</h5>
+            return <div className="ra-form-title">{property.title}</div>
         }
     }
 

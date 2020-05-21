@@ -1,4 +1,4 @@
-import React, { ReactNode, FormEvent } from 'react'
+import React, { ReactNode } from 'react'
 
 import TextElement from './components/text-element'
 import NumericElement from './components/numeric-element'
