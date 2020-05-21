@@ -129,7 +129,7 @@ export default function FormElement({
                             {renderFormElement(item, index)}
                             {registry.getComponent(
                                 {
-                                    registryKey: 'button',
+                                    registryKey: 'removeButton',
                                     className: 'ra-remove-button'
                                 },
                                 'Remove item',
@@ -137,7 +137,7 @@ export default function FormElement({
                             )}
                         </Fragment>
                     ))}
-                {registry.getComponent({ registryKey: 'button', className: 'ra-add-button' }, 'Add item', () => {
+                {registry.getComponent({ registryKey: 'addButton', className: 'ra-add-button' }, 'Add item', () => {
                     let emptyChild = {}
                     if (!nestedSchema && property.items && property.items.type) {
                         switch (property.items.type) {
