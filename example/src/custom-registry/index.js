@@ -58,7 +58,8 @@ export default function CustomRegistryExample() {
     }
 
     const data = {
-        firstName: 'test'
+        firstName: 'test',
+        age: 18
     }
 
     const customRegistry = {
