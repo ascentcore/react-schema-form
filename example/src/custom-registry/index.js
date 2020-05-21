@@ -8,10 +8,13 @@ function CustomWrapper({ children }) {
 }
 
 function CustomTextField({ property, value, onChange }) {
+    const handleChange = (event) => {
+        onChange(event.target.value)
+    }
     return (
         <TextField
-            value={value}
-            onChange={onChange}
+            value={value || ""}
+            onChange={handleChange}
             error={!!property.error}
             label={property.title}
             helperText={property.error ? property.error[0].keyword : ' '}
