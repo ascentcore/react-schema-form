@@ -38,7 +38,8 @@
         },
         "agree": {
             "title": "Agree with TOC",
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
         }
     }
 }

@@ -4,12 +4,7 @@
     "type": "object",
     "title": "Person",
     "description": "Person Information",
-    "required": [
-        "firstName",
-        "lastName",
-        "type",
-        "phoneNumbers"
-    ],
+    "required": ["firstName", "lastName", "type", "phoneNumbers"],
     "properties": {
         "firstName": {
             "type": "string",
@@ -30,16 +25,12 @@
         "type": {
             "title": "Type",
             "type": "string",
-            "enum": [
-                "NW",
-                "NE",
-                "SW",
-                "SE"
-            ]
+            "enum": ["NW", "NE", "SW", "SE"]
         },
         "agree": {
             "title": "Agree with TOC",
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
         },
         "phoneNumbers": {
             "title": "Phone numbers",

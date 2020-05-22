@@ -17,6 +17,7 @@ export interface SchemaProperty {
     valueKey?: string
     minimum?: number
     maximum?: number
+    default?: any
 
     path?: string
     registryKey?: string
@@ -54,6 +55,12 @@ export default function FormElement({
             return root.definitions[def]
         }
 
+        function initializeData() {
+            if(value === undefined && property.default !== undefined){
+                handleParentChange(property.default, path)
+            }
+        }
+
         const { $ref, items, properties } = property
 
         if ($ref) {
@@ -67,6 +74,7 @@ export default function FormElement({
         } else if (properties) {
             setNestedSchema(property)
         }
+        initializeData()
     }, [property])
 
     const handleArrayElementRemoval = (index: number) => () => {

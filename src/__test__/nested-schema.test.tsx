@@ -67,7 +67,7 @@ describe('NestedSchemaTests', () => {
 
             expect(valData).toEqual({
                 title: 'List Title',
-                tasks: [{ title: 'Task Title', details: 'Task Details' }]
+                tasks: [{ title: 'Task Title', details: 'Task Details', done: false }]
             })
         })
 
