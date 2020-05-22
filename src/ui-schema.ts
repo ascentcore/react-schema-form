@@ -10,7 +10,10 @@ export default class UISchema {
         this.schema = { ...jsonSchema }
         this.keys = Object.keys(this.schema.properties || {})
         this.ajv = new Ajv({ allErrors: true, meta: CustomMetaSchema })
-        this.validator = this.ajv.compile(this.schema)
+        this.validator = this.ajv.compile({
+            ...this.schema,
+            $schema: 'https://github.com/ascentcore/react-schema-form/tree/master/src/custom-meta-schema.json#'
+        })
     }
 
     validate(data: any): boolean | PromiseLike<any> {
