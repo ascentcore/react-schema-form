@@ -1,4 +1,5 @@
 import Ajv, { ValidateFunction } from 'ajv'
+import CustomMetaSchema from './custom-meta-schema.json'
 
 export default class UISchema {
     schema: any
@@ -8,7 +9,7 @@ export default class UISchema {
     constructor(jsonSchema: any) {
         this.schema = { ...jsonSchema }
         this.keys = Object.keys(this.schema.properties || {})
-        this.ajv = new Ajv({ allErrors: true })
+        this.ajv = new Ajv({ allErrors: true, meta: CustomMetaSchema })
         this.validator = this.ajv.compile(this.schema)
     }
 
