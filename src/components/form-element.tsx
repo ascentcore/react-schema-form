@@ -110,7 +110,8 @@ export default function FormElement({
                 path: pathKey,
                 registryKey,
                 error: arrayElementErrors,
-                title: property.items!.title || property.title
+                title: property.items!.title || property.title,
+                type: propertyType
             },
             itemValue,
             (changedItemValue: string | number | boolean) => {
@@ -160,7 +161,7 @@ export default function FormElement({
         )
     }
 
-    function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string) {
+    function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string, type?: string) {
         const registryKey = property.enum || property.options ? 'enum' : property.type
         const key = path.substr(path.lastIndexOf('.') + 1)
         const isRequired = root.required && root.required.indexOf(key) > -1
@@ -172,7 +173,8 @@ export default function FormElement({
                 registryKey,
                 error,
                 isRequired,
-                title: title || property.title
+                title: title || property.title,
+                type: type || property.type
             },
             itemValue,
             (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
@@ -181,8 +183,9 @@ export default function FormElement({
     }
 
     function renderFormElement(itemValue: any, index: number | null = null) {
+        const typeObjectArrayItem = nestedSchema && property.type === 'array' && index !== null
         const typeObjectOrObjectArrayItem =
-            (nestedSchema && property.type !== 'array') || (nestedSchema && property.type === 'array' && index !== null)
+            (nestedSchema && property.type !== 'array') || typeObjectArrayItem
 
         const typePrimitiveArrayItem =
             !nestedSchema && property.type === 'array' && index !== null && property.items && property.items.type
@@ -193,7 +196,7 @@ export default function FormElement({
             const pathKey = index === null ? path : `${path}[${index}]`
             const subschema: ReactNode = renderNestedSchema(pathKey, itemValue, index)
 
-            return getElementFromRegistry(itemValue, subschema, nestedSchema!.title)
+            return getElementFromRegistry(itemValue, subschema, nestedSchema!.title, typeObjectArrayItem ? nestedSchema!.type: property.type)
         } else if (typePrimitiveArrayItem) {
             return renderPrimitiveArrayItem(itemValue, property.items!.type!, index!)
         } else if (typeArray) {
