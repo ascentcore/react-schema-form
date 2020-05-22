@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "properties": {
+        "user": {
+            "type": "object",
+            "$ref": "#/definitions/User"
+        }
+    },
+    "definitions": {
+        "User": {
+            "title": "User Type",
+            "type": "object",
+            "required": ["lastName"],
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "title": "First Name",
+                    "description": "The person's first name."
+                },
+                "lastName": {
+                    "type": "string",
+                    "title": "Last Name",
+                    "description": "The person's last name."
+                },
+                "age": {
+                    "title": "Age",
+                    "description": "Age in years which must be equal to or greater than zero.",
+                    "type": "integer",
+                    "minimum": 18
+                }
+            }
+        }
+    }
+}
