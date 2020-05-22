@@ -40,6 +40,15 @@
             "title": "Agree with TOC",
             "type": "boolean",
             "default": false
+        },
+        "phoneNumbers": {
+            "title": "Phone numbers",
+            "type": "array",
+            "items": {
+                "title": "Phone number",
+                "type": "string",
+                "pattern": "^[0-9]+$"
+            }
         }
     }
 }
