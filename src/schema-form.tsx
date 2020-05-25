@@ -75,7 +75,7 @@ export const SchemaForm = ({
     }
 
     return (
-        <Fragment>
+        <span className="ra-schema-form">
             {keys.map((key) => {
                 const childPath = `${path}.${key}`
                 const prop = schema.properties![key]
@@ -95,6 +95,6 @@ export const SchemaForm = ({
             })}
             {!parentChange &&
                 registry.getComponent({ registryKey: 'button', className: 'ra-submit-button' }, 'Submit', handleSubmit)}
-        </Fragment>
+        </span>
     )
 }

@@ -60,35 +60,62 @@ const App = () => {
   return (
     <div className="container">
       <div className="columns">
-        <div className="column col-3">
+
+        <div className="column col-12 show-md">
+          <div className="dropdown">
+            <a href="#" className="btn btn-link dropdown-toggle" tabindex="0">
+              Menu <i className="icon icon-caret"></i>
+            </a>
+            <ul className="menu">
+              {tabs.map((tab, index) => <li key={index} className={`nav-item ${index === selected ? 'active' : ''}`} onClick={handleTabChange(index)}>
+                <a href={`#${index}`}>{tab.title}</a>
+              </li>)}
+            </ul>
+          </div>
+        </div>
+
+        <div className="column col-2 hide-md">
           <ul className="nav">
             {tabs.map((tab, index) => <li key={index} className={`nav-item ${index === selected ? 'active' : ''}`} onClick={handleTabChange(index)}>
               <a href={`#${index}`}>{tab.title}</a>
             </li>)}
           </ul >
         </div>
-        <div className="column col-9">
-          <div className="card">
-            <div className="card-header">
-              <div className="card-title h5">{tabs[selected].title}</div>
-              <div className="card-subtitle text-gray">Generated Form</div>
-            </div>
-            <div className="card-body">
-              {tabs[selected].component}
-            </div>
-          </div>
-          <div className="card">
-            <div className="card-body">
-              <h4>Code</h4>
-              <pre className="code" data-lang="JS">
-                <code>
-                  {tabs[selected].code}
-                </code>
-              </pre>
-              <h4>Schema</h4>
-              <ReactJson src={tabs[selected].schema} />
+
+        <div className="columns col-md-12 col-10">
+
+          <div className="column col-sm-12 col-6">
+            <div className="card">
+              <div className="card-body">
+                <h4>Schema</h4>
+                <ReactJson src={tabs[selected].schema} />
+              </div>
             </div>
           </div>
+
+          <div className="column col-sm-12 col-6">
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title h5">{tabs[selected].title}</div>
+                <div className="card-subtitle text-gray">Generated Form</div>
+              </div>
+              <div className="card-body">
+                {tabs[selected].component}
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-body">
+                <h4>Code</h4>
+                <pre className="code" data-lang="JS">
+                  <code>
+                    {tabs[selected].code}
+                  </code>
+                </pre>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
