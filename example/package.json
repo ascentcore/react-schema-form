@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@ascentcore/react-schema-form": "link:..",
+    "@ascentcore/react-schema-form": "file:..",
     "@material-ui/core": "^4.9.14",
     "raw-loader": "^4.0.1",
-    "react": "link:../node_modules/react",
-    "react-dom": "link:../node_modules/react-dom",
+    "react": "file:../node_modules/react",
+    "react-dom": "file:../node_modules/react-dom",
     "react-json-view": "^1.19.1",
-    "react-scripts": "link:../node_modules/react-scripts"
+    "react-scripts": "file:../node_modules/react-scripts"
   },
   "scripts": {
     "start": "node ../node_modules/react-scripts/bin/react-scripts.js start",

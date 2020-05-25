@@ -6,7 +6,7 @@ import { TextField, Slider } from '@material-ui/core'
 import addIcon from './add-icon.png'
 
 function CustomWrapper({ children }) {
-    return <div className='column col-4'>{children}</div>
+    return <div className='column col-12'>{children}</div>
 }
 
 function CustomTextField({ property, value, onChange }) {

@@ -12,19 +12,95 @@ npm install --save @ascentcore/react-schema-form
 
 ## Usage
 
-```jsx
-import React, { Component } from 'react'
+Having a schema defined (`basic-schema.json`):
 
-import MyComponent from '@ascentcore/react-schema-form'
-import '@ascentcore/react-schema-form/dist/index.css'
-
-class Example extends Component {
-  render() {
-    return <MyComponent />
-  }
+```json
+{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Person",
+    "description": "Person Information",
+    "required": ["firstName", "lastName", "type", "phoneNumbers"],
+    "properties": {
+        "firstName": {
+            "type": "string",
+            "title": "First Name",
+            "description": "The person's first name."
+        },
+        "lastName": {
+            "type": "string",
+            "title": "Last Name",
+            "description": "The person's last name."
+        },
+        "age": {
+            "title": "Age",
+            "description": "Age in years which must be equal to or greater than zero.",
+            "type": "integer",
+            "minimum": 10
+        },
+        "type": {
+            "title": "Type",
+            "type": "string",
+            "enum": ["NW", "NE", "SW", "SE"]
+        },
+        "agree": {
+            "title": "Agree with TOC",
+            "type": "boolean",
+            "default": false
+        },
+        "phoneNumbers": {
+            "title": "Phone numbers",
+            "type": "array",
+            "items": {
+                "title": "Phone number",
+                "type": "string",
+                "pattern": "^[0-9]+$"
+            }
+        }
+    }
 }
+
+```
+
+Example of form generation usage based on schema:
+
+```jsx
+import React from 'react'
+import schema from './basic-schema.json'
+import { SchemaForm } from '@ascentcore/react-schema-form'
+
+export default function BasicSchemaExample() {
+
+    function onValid(data) {
+        console.log(data)
+    }
+
+    const data = {
+        firstName: 'Defined Value'
+    }
+
+    return (<SchemaForm schema={schema} onValid={onValid} data={data} />)
+
+}
+```
+
+## Development
+
+Library dev building:
+```
+npm install
+npm run start
+```
+
+Examples dev building:
+
+```
+cd example
+npm install
+npm run start
 ```
 
 ## License
 
-MIT © [cstefanache](https://github.com/cstefanache)
+MIT 
