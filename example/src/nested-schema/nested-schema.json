@@ -2,9 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "http://example.com/root.json",
     "type": "object",
-    "required": [
-        "title"
-    ],
+    "required": ["title"],
     "properties": {
         "title": {
             "type": "string",
@@ -13,7 +11,16 @@
         "field": {
             "title": "Object Type",
             "type": "object",
-            "$ref": "#/definitions/Field"
+            "properties": {
+                "field1": {
+                    "type": "string",
+                    "title": "Field 1"
+                },
+                "field2": {
+                    "type": "string",
+                    "title": "Field 2"
+                }
+            }
         },
         "fields": {
             "type": "array",
@@ -21,7 +28,6 @@
             "title": "Array Type",
             "items": {
                 "$ref": "#/definitions/Field"
-
             }
         }
     },
@@ -29,10 +35,7 @@
         "Field": {
             "title": "Field",
             "type": "object",
-            "required": [
-                "name",
-                "count"
-            ],
+            "required": ["name", "count"],
             "properties": {
                 "name": {
                     "type": "string",

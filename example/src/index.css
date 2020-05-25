@@ -43,3 +43,12 @@ pre code {
   display: block;
   font-size: 9px;
 }
+
+.ra-add-button {
+  margin: 10px 0;
+  display: block;
+}
+
+.ra-submit-button {
+  margin-top: 10px;
+}

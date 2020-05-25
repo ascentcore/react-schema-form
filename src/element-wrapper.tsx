@@ -6,15 +6,10 @@ interface ElementWrapperProperties {
     property: SchemaProperty
 }
 
-export default function ElementWrapper({
-    children,
-    property
-}: ElementWrapperProperties) {
+export default function ElementWrapper({ children, property }: ElementWrapperProperties) {
     const { type } = property
     const wrapperClass = `${
-        property.type !== 'object' && property.type !== 'array'
-            ? 'ra-elem-wrapper '
-            : 'ra-elem-instance'
+        property.type !== 'object' && property.type !== 'array' ? 'ra-elem-wrapper ' : 'ra-elem-instance'
     }
         ra-elem-${property.type}     
         ${property.error ? 'ra-error' : ''}`
@@ -23,12 +18,17 @@ export default function ElementWrapper({
         if (type !== 'array' && type !== 'object') {
             return (
                 <label className='ra-form-label'>
-                    {property.title || property.path}
+                    {property.title}
                     {property.isRequired && '*'}
                 </label>
             )
         } else {
-            return <div className="ra-form-title">{property.title}</div>
+            return (
+                <div className='ra-form-title'>
+                    {property.title}
+                    {property.isRequired && '*'}
+                </div>
+            )
         }
     }
 
@@ -38,8 +38,7 @@ export default function ElementWrapper({
             {children}
             {property.error && (
                 <span className='ra-elem-error-text'>
-                    {typeof property.error !== 'boolean' &&
-                        property.error[0].keyword}
+                    {typeof property.error !== 'boolean' && property.error[0].keyword}
                 </span>
             )}
         </span>

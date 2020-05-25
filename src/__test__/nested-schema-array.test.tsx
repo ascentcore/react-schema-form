@@ -1,11 +1,11 @@
 import React from 'react'
-import SchemaWithProperties from './schemas/nested-schema-properties.json'
-import SchemaWithRef from './schemas/nested-schema-ref.json'
+import SchemaWithProperties from './schemas/nested-schema-array-properties.json'
+import SchemaWithRef from './schemas/nested-schema-array-ref.json'
 import { SchemaForm } from '..'
 import { mount, ReactWrapper } from 'enzyme'
 import { getComponentTree, populateTree, getByCSSSelector } from './test-utils'
 
-describe('NestedSchemaTests', () => {
+describe('NestedSchemaArrayTests', () => {
     function performTestsOnNestedSchema(schema: object) {
         it('initializes correctly', () => {
             const tree = getComponentTree(
@@ -67,7 +67,7 @@ describe('NestedSchemaTests', () => {
 
             expect(valData).toEqual({
                 title: 'List Title',
-                tasks: [{ title: 'Task Title', details: 'Task Details' }]
+                tasks: [{ title: 'Task Title', details: 'Task Details', done: false }]
             })
         })
 

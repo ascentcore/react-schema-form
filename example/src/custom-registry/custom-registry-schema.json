@@ -4,11 +4,7 @@
     "type": "object",
     "title": "Person",
     "description": "Person Information",
-    "required": [
-        "firstName",
-        "lastName",
-        "type"
-    ],
+    "required": ["firstName", "lastName", "type", "age"],
     "properties": {
         "firstName": {
             "type": "string",
@@ -29,16 +25,20 @@
         "type": {
             "title": "Type",
             "type": "string",
-            "enum": [
-                "NW",
-                "NE",
-                "SW",
-                "SE"
-            ]
+            "enum": ["NW", "NE", "SW", "SE"]
         },
         "agree": {
             "title": "Agree with TOC",
             "type": "boolean"
+        },
+        "phoneNumbers": {
+            "title": "Phone numbers",
+            "type": "array",
+            "items": {
+                "title": "Phone number",
+                "type": "string",
+                "pattern": "^[0-9]+$"
+            }
         }
     }
 }

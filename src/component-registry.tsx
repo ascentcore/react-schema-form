@@ -21,20 +21,24 @@ export default class ComponentRegistry {
             number: { component: NumericElement, wrapper: wrapper },
             integer: { component: NumericElement, wrapper: wrapper },
             string: { component: TextElement, wrapper: wrapper },
-            button: { component: ButtonElement, wrapper: ElementContainer }
+            button: { component: ButtonElement, wrapper: ElementContainer },
+            addButton: { component: ButtonElement, wrapper: ElementContainer },
+            removeButton: {component: ButtonElement, wrapper: ElementContainer}
         }
 
         Object.entries(customRegistry).forEach((customRegistryRecord) => {
-            Object.assign(
-                this._registry[customRegistryRecord[0]],
-                customRegistryRecord[1]
-            )
+            Object.assign(this._registry[customRegistryRecord[0]], customRegistryRecord[1])
         })
 
         this._wrapper = wrapper
     }
 
-    getComponent(property: SchemaProperty, itemValue: any, handleChange: (value: string | number | boolean) => void, children: ReactNode | null = null) {
+    getComponent(
+        property: SchemaProperty,
+        itemValue: any,
+        handleChange: (value: string | number | boolean) => void,
+        children: ReactNode | null = null
+    ) {
         const props = {
             property,
             value: itemValue,
@@ -43,14 +47,11 @@ export default class ComponentRegistry {
         }
 
         const Component: any =
-            (this._registry[property.registryKey!] &&
-                this._registry[property.registryKey!].component) ||
+            (this._registry[property.registryKey!] && this._registry[property.registryKey!].component) ||
             ElementContainer
 
         const Wrapper: any =
-            (this._registry[property.registryKey!] &&
-                this._registry[property.registryKey!].wrapper) ||
-            this._wrapper
+            (this._registry[property.registryKey!] && this._registry[property.registryKey!].wrapper) || this._wrapper
 
         return (
             <Wrapper {...props}>

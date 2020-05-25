@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, ReactNode } from 'react'
 import { SchemaForm } from '../schema-form'
 import ComponentRegistry from '../component-registry'
-import { ValidatorError } from '../ui-schema'
+import ajv from 'ajv'
 
 export interface SchemaProperty {
     $ref?: string
@@ -17,10 +17,11 @@ export interface SchemaProperty {
     valueKey?: string
     minimum?: number
     maximum?: number
+    default?: any
 
     path?: string
     registryKey?: string
-    error?: ValidatorError[] | boolean
+    error?: ajv.ErrorObject[] | boolean
     isRequired?: boolean
     className?: string
 }
@@ -30,8 +31,8 @@ interface FormElementProperties {
     property: SchemaProperty
     path: string
     value: any
-    errors: ValidatorError[]
-    error: ValidatorError[] | boolean
+    errors: ajv.ErrorObject[]
+    error: ajv.ErrorObject[] | boolean
     handleParentChange: (value: any, childPath: string) => void
     registry: ComponentRegistry
 }
@@ -54,7 +55,13 @@ export default function FormElement({
             return root.definitions[def]
         }
 
-        const { $ref, items } = property
+        function initializeData() {
+            if(value === undefined && property.default !== undefined){
+                handleParentChange(property.default, path)
+            }
+        }
+
+        const { $ref, items, properties } = property
 
         if ($ref) {
             setNestedSchema(processRef($ref))
@@ -64,7 +71,10 @@ export default function FormElement({
             } else if (items.properties) {
                 setNestedSchema(items)
             }
+        } else if (properties) {
+            setNestedSchema(property)
         }
+        initializeData()
     }, [property])
 
     const handleArrayElementRemoval = (index: number) => () => {
@@ -97,7 +107,7 @@ export default function FormElement({
         const registryKey = propertyType
         const pathKey = `${path}[${index}]`
 
-        let arrayElementErrors: ValidatorError[] | boolean = errors.filter((err) => err.dataPath === pathKey)
+        let arrayElementErrors: ajv.ErrorObject[] | boolean = errors.filter((err) => err.dataPath === pathKey)
         if (arrayElementErrors && arrayElementErrors.length === 0) {
             arrayElementErrors = false
         }
@@ -108,7 +118,8 @@ export default function FormElement({
                 path: pathKey,
                 registryKey,
                 error: arrayElementErrors,
-                title: property.items!.title || property.title
+                title: property.items!.title || property.title,
+                type: propertyType
             },
             itemValue,
             (changedItemValue: string | number | boolean) => {
@@ -129,7 +140,7 @@ export default function FormElement({
                             {renderFormElement(item, index)}
                             {registry.getComponent(
                                 {
-                                    registryKey: 'button',
+                                    registryKey: 'removeButton',
                                     className: 'ra-remove-button'
                                 },
                                 'Remove item',
@@ -137,7 +148,7 @@ export default function FormElement({
                             )}
                         </Fragment>
                     ))}
-                {registry.getComponent({ registryKey: 'button', className: 'ra-add-button' }, 'Add item', () => {
+                {registry.getComponent({ registryKey: 'addButton', className: 'ra-add-button' }, 'Add item', () => {
                     let emptyChild = {}
                     if (!nestedSchema && property.items && property.items.type) {
                         switch (property.items.type) {
@@ -158,7 +169,7 @@ export default function FormElement({
         )
     }
 
-    function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string) {
+    function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string, type?: string) {
         const registryKey = property.enum || property.options ? 'enum' : property.type
         const key = path.substr(path.lastIndexOf('.') + 1)
         const isRequired = root.required && root.required.indexOf(key) > -1
@@ -170,7 +181,8 @@ export default function FormElement({
                 registryKey,
                 error,
                 isRequired,
-                title: title || property.title
+                title: title || property.title,
+                type: type || property.type
             },
             itemValue,
             (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
@@ -179,8 +191,9 @@ export default function FormElement({
     }
 
     function renderFormElement(itemValue: any, index: number | null = null) {
+        const typeObjectArrayItem = nestedSchema && property.type === 'array' && index !== null
         const typeObjectOrObjectArrayItem =
-            (nestedSchema && property.type !== 'array') || (nestedSchema && property.type === 'array' && index !== null)
+            (nestedSchema && property.type !== 'array') || typeObjectArrayItem
 
         const typePrimitiveArrayItem =
             !nestedSchema && property.type === 'array' && index !== null && property.items && property.items.type
@@ -191,7 +204,7 @@ export default function FormElement({
             const pathKey = index === null ? path : `${path}[${index}]`
             const subschema: ReactNode = renderNestedSchema(pathKey, itemValue, index)
 
-            return getElementFromRegistry(itemValue, subschema, nestedSchema!.title)
+            return getElementFromRegistry(itemValue, subschema, nestedSchema!.title, typeObjectArrayItem ? nestedSchema!.type: property.type)
         } else if (typePrimitiveArrayItem) {
             return renderPrimitiveArrayItem(itemValue, property.items!.type!, index!)
         } else if (typeArray) {

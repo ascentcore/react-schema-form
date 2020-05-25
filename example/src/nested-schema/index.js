@@ -9,7 +9,7 @@ export default function NestedSchemaExample() {
 
     const data = {
         field: {
-            name: 'field'
+            field1: 'field1'
         },
         fields: [{ name: 'item1' }, { name: 'item2' }]
     }
