@@ -63,10 +63,10 @@ const App = () => {
 
         <div className="column col-12 show-md">
           <div className="dropdown">
-            <a href="#" className="btn btn-link dropdown-toggle" tabindex="0">
+            <a href="#" className="btn btn-link dropdown-toggle" tabIndex="0">
               Menu <i className="icon icon-caret"></i>
             </a>
-            <ul className="menu">
+            <ul className="menu nav">
               {tabs.map((tab, index) => <li key={index} className={`nav-item ${index === selected ? 'active' : ''}`} onClick={handleTabChange(index)}>
                 <a href={`#${index}`}>{tab.title}</a>
               </li>)}
