@@ -85,6 +85,22 @@ export default function BasicSchemaExample() {
 }
 ```
 
+## Development
+
+Library dev building:
+```
+npm install
+npm run start
+```
+
+Examples dev building:
+
+```
+cd example
+npm install
+npm run start
+```
+
 ## License
 
 MIT 
