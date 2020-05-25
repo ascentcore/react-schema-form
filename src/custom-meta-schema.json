@@ -60,18 +60,6 @@
             "type": "string"
         },
         "default": true,
-        "readOnly": {
-            "type": "boolean",
-            "default": false
-        },
-        "writeOnly": {
-            "type": "boolean",
-            "default": false
-        },
-        "examples": {
-            "type": "array",
-            "items": true
-        },
         "multipleOf": {
             "type": "number",
             "exclusiveMinimum": 0
@@ -94,9 +82,8 @@
             "type": "string",
             "format": "regex"
         },
-        "additionalItems": { "$ref": "#" },
         "items": {
-            "anyOf": [
+            "oneOf": [
                 { "$ref": "#" },
                 { "$ref": "#/definitions/schemaArray" }
             ],
@@ -108,11 +95,7 @@
             "type": "boolean",
             "default": false
         },
-        "contains": { "$ref": "#" },
-        "maxProperties": { "$ref": "#/definitions/nonNegativeInteger" },
-        "minProperties": { "$ref": "#/definitions/nonNegativeIntegerDefault0" },
         "required": { "$ref": "#/definitions/stringArray" },
-        "additionalProperties": { "$ref": "#" },
         "definitions": {
             "type": "object",
             "additionalProperties": { "$ref": "#" },
@@ -123,23 +106,6 @@
             "additionalProperties": { "$ref": "#" },
             "default": {}
         },
-        "patternProperties": {
-            "type": "object",
-            "additionalProperties": { "$ref": "#" },
-            "propertyNames": { "format": "regex" },
-            "default": {}
-        },
-        "dependencies": {
-            "type": "object",
-            "additionalProperties": {
-                "anyOf": [
-                    { "$ref": "#" },
-                    { "$ref": "#/definitions/stringArray" }
-                ]
-            }
-        },
-        "propertyNames": { "$ref": "#" },
-        "const": true,
         "enum": {
             "type": "array",
             "items": true,
@@ -147,7 +113,7 @@
             "uniqueItems": true
         },
         "type": {
-            "anyOf": [
+            "oneOf": [
                 { "$ref": "#/definitions/simpleTypes" },
                 {
                     "type": "array",
@@ -157,16 +123,7 @@
                 }
             ]
         },
-        "format": { "type": "string" },
-        "contentMediaType": { "type": "string" },
-        "contentEncoding": { "type": "string" },
-        "if": { "$ref": "#" },
-        "then": { "$ref": "#" },
-        "else": { "$ref": "#" },
-        "allOf": { "$ref": "#/definitions/schemaArray" },
-        "anyOf": { "$ref": "#/definitions/schemaArray" },
-        "oneOf": { "$ref": "#/definitions/schemaArray" },
-        "not": { "$ref": "#" }
+        "format": { "type": "string" }
     },
     "default": true
 }

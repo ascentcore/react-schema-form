@@ -25,6 +25,7 @@
         "fields": {
             "type": "array",
             "maxItems": 5,
+            "minItems": 1,
             "title": "Array Type",
             "items": {
                 "$ref": "#/definitions/Field"
