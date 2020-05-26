@@ -23,10 +23,14 @@ export default function FileElement({ property, value, onChange }: FileElementPr
             reader.readAsDataURL(inputElement.files[0])
         }
     }
-
     return (
         <span style={{ position: 'relative' }}>
-            <input type='file' onChange={handleChange} style={{ position: 'absolute', opacity: '0', width: '100%' }} />
+            <input
+                type='file'
+                onChange={handleChange}
+                style={{ position: 'absolute', opacity: '0', width: '100%' }}
+                {...(property.contentMediaType ? { accept: property.contentMediaType } : {})}
+            />
             <button>Choose file</button>
             <span>{value ? ' File uploaded' : ' No file chosen'}</span>
         </span>

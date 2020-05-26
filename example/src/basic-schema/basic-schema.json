@@ -45,7 +45,7 @@
             "title": "Upload photo",
             "type": "string",
             "contentEncoding": "base64",
-            "contentMediaType": "image/png"
+            "contentMediaType": "image/png, image/jpeg"
         }
     }
 }
