@@ -25,8 +25,10 @@ export default function FileElement({ property, value, onChange }: FileElementPr
     }
 
     return (
-        <Fragment>
-            <input type='file' onChange={handleChange} />
-        </Fragment>
+        <span style={{ position: 'relative' }}>
+            <input type='file' onChange={handleChange} style={{ position: 'absolute', opacity: '0', width: '100%' }} />
+            <button>Choose file</button>
+            <span>{value ? ' File uploaded' : ' No file chosen'}</span>
+        </span>
     )
 }
