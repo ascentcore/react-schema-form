@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react'
 
 import TextElement from './components/text-element'
+import FileElement from './components/file-element'
 import NumericElement from './components/numeric-element'
 import SelectElement from './components/select-element'
 import CheckboxElement from './components/checkbox-element'
@@ -21,9 +22,10 @@ export default class ComponentRegistry {
             number: { component: NumericElement, wrapper: wrapper },
             integer: { component: NumericElement, wrapper: wrapper },
             string: { component: TextElement, wrapper: wrapper },
+            file: { component: FileElement, wrapper: wrapper },
             button: { component: ButtonElement, wrapper: ElementContainer },
             addButton: { component: ButtonElement, wrapper: ElementContainer },
-            removeButton: {component: ButtonElement, wrapper: ElementContainer}
+            removeButton: { component: ButtonElement, wrapper: ElementContainer }
         }
 
         Object.entries(customRegistry).forEach((customRegistryRecord) => {

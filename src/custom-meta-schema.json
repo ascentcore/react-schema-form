@@ -29,6 +29,11 @@
                 "string"
             ]
         },
+        "contentEncodings": {
+            "enum": [
+                "base64"
+            ]
+        },
         "stringArray": {
             "type": "array",
             "items": { "type": "string" },
@@ -123,7 +128,13 @@
                 }
             ]
         },
-        "format": { "type": "string" }
+        "format": { "type": "string" },
+        "contentMediaType": { "type": "string" },
+        "contentEncoding": { 
+            "oneOf": [
+                { "$ref": "#/definitions/contentEncodings" }
+            ]
+        }
     },
     "default": true
 }

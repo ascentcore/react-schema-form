@@ -18,6 +18,8 @@ export interface SchemaProperty {
     minimum?: number
     maximum?: number
     default?: any
+    contentEncoding?: string
+    contentMediaType?: string
 
     path?: string
     registryKey?: string
@@ -56,7 +58,7 @@ export default function FormElement({
         }
 
         function initializeData() {
-            if(value === undefined && property.default !== undefined){
+            if (value === undefined && property.default !== undefined) {
                 handleParentChange(property.default, path)
             }
         }
@@ -170,7 +172,12 @@ export default function FormElement({
     }
 
     function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string, type?: string) {
-        const registryKey = property.enum || property.options ? 'enum' : property.type
+        const registryKey =
+            property.enum || property.options
+                ? 'enum'
+                : property.contentEncoding || property.contentMediaType
+                ? 'file'
+                : property.type
         const key = path.substr(path.lastIndexOf('.') + 1)
         const isRequired = root.required && root.required.indexOf(key) > -1
 
@@ -192,8 +199,7 @@ export default function FormElement({
 
     function renderFormElement(itemValue: any, index: number | null = null) {
         const typeObjectArrayItem = nestedSchema && property.type === 'array' && index !== null
-        const typeObjectOrObjectArrayItem =
-            (nestedSchema && property.type !== 'array') || typeObjectArrayItem
+        const typeObjectOrObjectArrayItem = (nestedSchema && property.type !== 'array') || typeObjectArrayItem
 
         const typePrimitiveArrayItem =
             !nestedSchema && property.type === 'array' && index !== null && property.items && property.items.type
@@ -204,7 +210,12 @@ export default function FormElement({
             const pathKey = index === null ? path : `${path}[${index}]`
             const subschema: ReactNode = renderNestedSchema(pathKey, itemValue, index)
 
-            return getElementFromRegistry(itemValue, subschema, nestedSchema!.title, typeObjectArrayItem ? nestedSchema!.type: property.type)
+            return getElementFromRegistry(
+                itemValue,
+                subschema,
+                nestedSchema!.title,
+                typeObjectArrayItem ? nestedSchema!.type : property.type
+            )
         } else if (typePrimitiveArrayItem) {
             return renderPrimitiveArrayItem(itemValue, property.items!.type!, index!)
         } else if (typeArray) {

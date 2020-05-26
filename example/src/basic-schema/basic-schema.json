@@ -40,6 +40,12 @@
                 "type": "string",
                 "pattern": "^[0-9]+$"
             }
+        },
+        "file": {
+            "title": "Upload photo",
+            "type": "string",
+            "contentEncoding": "base64",
+            "contentMediaType": "image/png"
         }
     }
 }
