@@ -165,7 +165,7 @@ export default function FormElement({
                                 emptyChild = ''
                         }
                     }
-                    handleParentChange([...(itemValue || []), emptyChild], '')
+                    handleParentChange([...(itemValue || []), emptyChild], path)
                 })}
             </Fragment>
         )
