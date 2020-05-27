@@ -15,15 +15,19 @@ export default class UISchema {
         this.keys = Object.keys(this.schema.properties || {})
         this.ajv = new Ajv({ allErrors: true, meta: CustomMetaSchema })
         this.ajv.addKeyword('instanceof', {
+            type: "object",
             compile: function (schema: string, parentSchema: any) {
                 //@ts-ignore
                 const objectProperties: string[] = CLASSES[schema]
+                if(parentSchema.type !== "object"){
+                    throw new Error(`schema is invalid: instanceof attribute should be present on schema of type object`)
+                }
                 if (
                     !objectProperties.every(function (property) {
                         return Object.prototype.hasOwnProperty.call(parentSchema.properties || {}, property)
                     })
                 ) {
-                    throw new Error(`Invalid schema! Object instanceof ${schema} is missing one of the fields: ${objectProperties}`)
+                    throw new Error(`schema is invalid: object instanceof ${schema} is missing one of the fields: ${objectProperties}`)
                 }
                 return function () {
                     return true
