@@ -22,6 +22,10 @@ import CustomRegistryExample from './custom-registry'
 import CustomRegistryExampleJSON from './custom-registry/custom-registry-schema.json'
 import CustomRegistryExampleCode from '!!raw-loader!./custom-registry/index.js';
 
+import FileSchemaExample from './file-schema'
+import FileSchemaExampleJSON from './file-schema/file-schema.json'
+import FileSchemaExampleCode from '!!raw-loader!./file-schema/index.js';
+
 const App = () => {
 
   const [selected, setSelected] = useState(parseInt(window.location.hash.substr(1)) || 0)
@@ -49,6 +53,12 @@ const App = () => {
       component: <CustomRegistryExample />,
       code: CustomRegistryExampleCode,
       schema: CustomRegistryExampleJSON
+    },
+    {
+      title: 'File Schema',
+      component: <FileSchemaExample />,
+      code: FileSchemaExampleCode,
+      schema: FileSchemaExampleJSON
     }
   ]
 

@@ -20,6 +20,7 @@ export interface SchemaProperty {
     default?: any
     contentEncoding?: string
     contentMediaType?: string
+    instanceof?: string
 
     path?: string
     registryKey?: string
@@ -175,7 +176,7 @@ export default function FormElement({
         const registryKey =
             property.enum || property.options
                 ? 'enum'
-                : property.contentEncoding || property.contentMediaType
+                : property.contentEncoding || property.contentMediaType || property.instanceof === 'file'
                 ? 'file'
                 : property.type
         const key = path.substr(path.lastIndexOf('.') + 1)

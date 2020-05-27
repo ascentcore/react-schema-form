@@ -4,7 +4,7 @@ import { SchemaProperty } from './form-element'
 interface FileElementProperties {
     property: SchemaProperty
     value: string
-    onChange: (value: string) => void
+    onChange: (value: string | { filename: string; content: string }) => void
 }
 
 export default function FileElement({ property, value, onChange }: FileElementProperties) {
@@ -17,7 +17,11 @@ export default function FileElement({ property, value, onChange }: FileElementPr
                     let fileContent =
                         typeof reader.result === 'string' ? reader.result : Buffer.from(reader.result).toString()
                     fileContent = fileContent.split(';base64,')[1]
-                    onChange(fileContent)
+                    if (property.instanceof === 'file') {
+                        onChange({ filename: inputElement.files![0].name, content: fileContent })
+                    } else {
+                        onChange(fileContent)
+                    }
                 }
             })
             reader.readAsDataURL(inputElement.files[0])
