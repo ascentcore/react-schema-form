@@ -1,4 +1,4 @@
-import React, { FormEvent, Fragment } from 'react'
+import React, { FormEvent } from 'react'
 import { SchemaProperty } from './form-element'
 
 interface FileElementProperties {
