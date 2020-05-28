@@ -19,7 +19,8 @@
                 },
                 "content": {
                     "type": "string",
-                    "contentEncoding": "base64"
+                    "contentEncoding": "base64",
+                    "contentMediaType": "image/png, image/jpeg"
                 }
             }
         }

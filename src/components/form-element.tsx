@@ -106,8 +106,13 @@ export default function FormElement({
         )
     }
 
-    function renderPrimitiveArrayItem(itemValue: any, propertyType: string, index: number) {
-        const registryKey = propertyType
+    function renderPrimitiveArrayItem(itemValue: any, itemProperty: SchemaProperty, index: number) {
+        const registryKey =
+            itemProperty.enum || itemProperty.options
+                ? 'enum'
+                : itemProperty.contentEncoding || itemProperty.contentMediaType
+                ? 'file'
+                : itemProperty.type
         const pathKey = `${path}[${index}]`
 
         let arrayElementErrors: ajv.ErrorObject[] | boolean = errors.filter((err) => err.dataPath === pathKey)
@@ -117,12 +122,11 @@ export default function FormElement({
 
         return registry.getComponent(
             {
-                ...property,
+                ...itemProperty,
                 path: pathKey,
                 registryKey,
                 error: arrayElementErrors,
-                title: property.items!.title || property.title,
-                type: propertyType
+                type: registryKey
             },
             itemValue,
             (changedItemValue: string | number | boolean) => {
@@ -190,7 +194,11 @@ export default function FormElement({
                 error,
                 isRequired,
                 title: title || property.title,
-                type: type || property.type
+                type: type || property.type,
+                contentMediaType:
+                    property.instanceof === 'file'
+                        ? property.properties!.content.contentMediaType
+                        : property.contentMediaType
             },
             itemValue,
             (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
@@ -218,7 +226,7 @@ export default function FormElement({
                 typeObjectArrayItem ? nestedSchema!.type : property.type
             )
         } else if (typePrimitiveArrayItem) {
-            return renderPrimitiveArrayItem(itemValue, property.items!.type!, index!)
+            return renderPrimitiveArrayItem(itemValue, property.items!, index!)
         } else if (typeArray) {
             const arrayItems: ReactNode = renderArray(itemValue)
 
