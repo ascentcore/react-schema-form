@@ -5,8 +5,14 @@
     "title": "File",
     "description": "Upload a file",
     "properties": {
-        "profilePicture": {
-            "title": "Upload photo",
+        "file": {
+            "title": "Upload file",
+            "type": "string",
+            "contentEncoding": "base64",
+            "contentMediaType": "text/plain"
+        },
+        "cv": {
+            "title": "Upload cv",
             "type": "object",
             "instanceof": "file",
             "properties": {

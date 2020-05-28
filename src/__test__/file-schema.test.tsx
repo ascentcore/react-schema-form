@@ -5,12 +5,11 @@ import { mount } from 'enzyme'
 import { getByCSSSelector } from './test-utils'
 
 describe('FileSchemaTests', () => {
-    it('initializes correctly', async (done) => {
+    it('updates object instanceof file correctly', async (done) => {
         const onChange = (valData: any) => {
-            console.log('now can submit', valData)
             expect(valData).toEqual({
-                profilePicture: {
-                    filename: 'testFile.txt',
+                cv: {
+                    filename: 'cv.txt',
                     content: ''
                 }
             })
@@ -18,10 +17,29 @@ describe('FileSchemaTests', () => {
         }
         const form = mount(<SchemaForm schema={Schema} parentChange={onChange} />)
 
-        const fileInput = getByCSSSelector(form, 'input')
+        const fileInput = getByCSSSelector(form, 'input').last()
         fileInput.simulate('change', {
             target: {
-                files: [new File([], 'testFile.txt')]
+                files: [new File([], 'cv.txt')]
+            }
+        })
+    })
+    it('updates string with base64 content encoding correctly', async (done) => {
+        const onChange = (valData: any) => {
+            expect(valData).toEqual({
+                file: 'aGVsbG8='
+            })
+            done()
+        }
+        const form = mount(<SchemaForm schema={Schema} parentChange={onChange} />)
+
+        const fileInput = getByCSSSelector(form, 'input').first()
+
+        fileInput.simulate('change', {
+            target: {
+                files: [
+                    new File(['hello'], 'hello.txt')
+                ]
             }
         })
     })
