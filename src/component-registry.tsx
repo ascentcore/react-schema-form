@@ -1,31 +1,39 @@
 import React, { ReactNode } from 'react'
 
-import TextElement from './components/text-element'
-import FileElement from './components/file-element'
-import NumericElement from './components/numeric-element'
-import SelectElement from './components/select-element'
-import CheckboxElement from './components/checkbox-element'
-import ButtonElement from './components/button-element'
+import { InputElements } from './components'
+
 import ElementContainer from './components/element-container'
 
 import ElementWrapper from './element-wrapper'
 import { SchemaProperty } from './components/form-element'
 
-export default class ComponentRegistry {
-    _registry: { [key: string]: { component: ReactNode; wrapper: ReactNode } }
-    _wrapper: ReactNode
+export interface RegistryKeys {
+    [key: string]: { component?: ReactNode; wrapper?: ReactNode }
+}
 
-    constructor(customRegistry = {}, wrapper: ReactNode = ElementWrapper) {
+export interface ExceptionKeys {
+    [key: string]: { component?: ReactNode | string; wrapper?: ReactNode }
+}
+
+export default class ComponentRegistry {
+    _registry: RegistryKeys
+    _wrapper: ReactNode
+    _exceptions: {
+        paths: RegistryKeys
+        keys: RegistryKeys
+    }
+
+    constructor(customRegistry = {}, wrapper: ReactNode = ElementWrapper, exceptions = { paths: {}, keys: {} }) {
         this._registry = {
-            enum: { component: SelectElement, wrapper: wrapper },
-            boolean: { component: CheckboxElement, wrapper: wrapper },
-            number: { component: NumericElement, wrapper: wrapper },
-            integer: { component: NumericElement, wrapper: wrapper },
-            string: { component: TextElement, wrapper: wrapper },
-            file: { component: FileElement, wrapper: wrapper },
-            button: { component: ButtonElement, wrapper: ElementContainer },
-            addButton: { component: ButtonElement, wrapper: ElementContainer },
-            removeButton: { component: ButtonElement, wrapper: ElementContainer }
+            enum: { component: InputElements['SelectElement'], wrapper: wrapper },
+            boolean: { component: InputElements['CheckboxElement'], wrapper: wrapper },
+            number: { component: InputElements['NumericElement'], wrapper: wrapper },
+            integer: { component: InputElements['NumericElement'], wrapper: wrapper },
+            string: { component: InputElements['TextElement'], wrapper: wrapper },
+            file: { component: InputElements['FileElement'], wrapper: wrapper },
+            button: { component: InputElements['ButtonElement'], wrapper: ElementContainer },
+            addButton: { component: InputElements['ButtonElement'], wrapper: ElementContainer },
+            removeButton: { component: InputElements['ButtonElement'], wrapper: ElementContainer }
         }
 
         Object.entries(customRegistry).forEach((customRegistryRecord) => {
@@ -33,6 +41,7 @@ export default class ComponentRegistry {
         })
 
         this._wrapper = wrapper
+        this._exceptions = Object.assign({ paths: {}, keys: {} }, exceptions)
     }
 
     getComponent(
@@ -48,12 +57,34 @@ export default class ComponentRegistry {
             children: children
         }
 
+        const pathException = property.path && this._exceptions.paths[property.path]
+        const pathExceptionComponent =
+            pathException &&
+            pathException.component &&
+            (typeof pathException.component === 'string'
+                ? InputElements[pathException.component]
+                : pathException.component)
+
+        const keyException =
+            property.path && this._exceptions.keys[property.path.substr(property.path.lastIndexOf('.') + 1)]
+        const keyExceptionComponent =
+            keyException &&
+            keyException.component &&
+            (typeof keyException.component === 'string'
+                ? InputElements[keyException.component]
+                : keyException.component)
+
         const Component: any =
+            pathExceptionComponent ||
+            keyExceptionComponent ||
             (this._registry[property.registryKey!] && this._registry[property.registryKey!].component) ||
             ElementContainer
 
         const Wrapper: any =
-            (this._registry[property.registryKey!] && this._registry[property.registryKey!].wrapper) || this._wrapper
+            (pathException && pathException.wrapper) ||
+            (keyException && keyException.wrapper) ||
+            (this._registry[property.registryKey!] && this._registry[property.registryKey!].wrapper) ||
+            this._wrapper
 
         return (
             <Wrapper {...props}>

@@ -68,5 +68,18 @@ export default function CustomRegistryExample() {
         addButton: { component: CustomAddButton, wrapper: CustomWrapper }
     }
 
-    return <SchemaForm schema={schema} onValid={onValid} data={data} config={{ registry: customRegistry }} />
+    const exceptions = {
+        keys: {
+            gender: { component: 'RadioElement' }
+        }
+    }
+
+    return (
+        <SchemaForm
+            schema={schema}
+            onValid={onValid}
+            data={data}
+            config={{ registry: customRegistry, exceptions: exceptions }}
+        />
+    )
 }

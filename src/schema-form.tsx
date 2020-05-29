@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react'
 import FormElement, { SchemaProperty } from './components/form-element'
 import UISchema from './ui-schema'
-import ComponentRegistry from './component-registry'
+import ComponentRegistry, { RegistryKeys, ExceptionKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
 import ajv, { RequiredParams } from 'ajv'
 
@@ -19,7 +19,13 @@ export const SchemaForm = ({
     wrapper?: ReactNode
     parentChange?: ((subVal: any, key: string) => void) | null
     data?: any
-    config?: { registry: ComponentRegistry } | null
+    config?: {
+        registry?: RegistryKeys
+        exceptions?: {
+            paths: ExceptionKeys
+            keys: ExceptionKeys
+        }
+    } | null
     onValid?: (data: any) => void
     path?: string
     errors?: ajv.ErrorObject[] | null
@@ -31,7 +37,13 @@ export const SchemaForm = ({
     const [obj, setObj] = useState(Object.assign({}, data))
     const [keys] = useState(Object.keys(schema.properties || {}))
     const [instance] = useState(new UISchema(schema))
-    const [registry] = useState(new ComponentRegistry(config ? config.registry : {}, wrapper))
+    const [registry] = useState(
+        new ComponentRegistry(
+            config && config.registry ? config.registry : {},
+            wrapper,
+            config && config.exceptions ? config.exceptions : { paths: {}, keys: {} }
+        )
+    )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
 
     const handleParentChange = (key: string) => (value: any, childPath: string) => {
@@ -75,7 +87,7 @@ export const SchemaForm = ({
     }
 
     return (
-        <span className="ra-schema-form">
+        <span className='ra-schema-form'>
             {keys.map((key) => {
                 const childPath = `${path}.${key}`
                 const prop = schema.properties![key]
