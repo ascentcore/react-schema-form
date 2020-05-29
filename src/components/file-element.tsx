@@ -1,5 +1,8 @@
-import React, { FormEvent } from 'react'
+import React, { FormEvent, CSSProperties } from 'react'
 import { SchemaProperty } from './form-element'
+
+const CONTAINER_STYLE: CSSProperties = { position: 'relative' }
+const FILE_INPUT_STYLE: CSSProperties = { position: 'absolute', opacity: '0', width: '100%' }
 
 interface FileElementProperties {
     property: SchemaProperty
@@ -11,7 +14,7 @@ export default function FileElement({ property, value, onChange }: FileElementPr
     const handleChange = (event: FormEvent<HTMLInputElement>) => {
         const inputElement = event.target as HTMLInputElement
         if (inputElement.files && inputElement.files.length) {
-            var reader = new FileReader()
+            const reader = new FileReader()
             reader.addEventListener('load', function () {
                 if (reader.result) {
                     let fileContent =
@@ -28,11 +31,11 @@ export default function FileElement({ property, value, onChange }: FileElementPr
         }
     }
     return (
-        <span style={{ position: 'relative' }}>
+        <span style={CONTAINER_STYLE}>
             <input
                 type='file'
                 onChange={handleChange}
-                style={{ position: 'absolute', opacity: '0', width: '100%' }}
+                style={FILE_INPUT_STYLE}
                 {...(property.contentMediaType ? { accept: property.contentMediaType } : {})}
             />
             <button>Choose file</button>
