@@ -1,0 +1,29 @@
+{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "File",
+    "description": "Upload a file",
+    "properties": {
+        "file": {
+            "title": "Upload file",
+            "type": "string",
+            "contentEncoding": "base64",
+            "contentMediaType": "text/plain"
+        },
+        "cv": {
+            "title": "Upload cv",
+            "type": "object",
+            "instanceof": "file",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string",
+                    "contentEncoding": "base64"
+                }
+            }
+        }
+    }
+}

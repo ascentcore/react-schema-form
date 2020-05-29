@@ -1,6 +1,6 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://github.com/ascentcore/react-schema-form/tree/master/src/custom-meta-schema.json#",
+    "$schema": "https://github.com/ascentcore/react-schema-form/tree/master/src/custom-meta-schema.json#",
     "title": "Core schema meta-schema",
     "definitions": {
         "schemaArray": {
@@ -13,27 +13,22 @@
             "minimum": 0
         },
         "nonNegativeIntegerDefault0": {
-            "allOf": [
-                { "$ref": "#/definitions/nonNegativeInteger" },
-                { "default": 0 }
-            ]
+            "allOf": [{ "$ref": "#/definitions/nonNegativeInteger" }, { "default": 0 }]
         },
         "simpleTypes": {
-            "enum": [
-                "array",
-                "boolean",
-                "integer",
-                "null",
-                "number",
-                "object",
-                "string"
-            ]
+            "enum": ["array", "boolean", "integer", "null", "number", "object", "string"]
+        },
+        "contentEncodings": {
+            "enum": ["base64"]
         },
         "stringArray": {
             "type": "array",
             "items": { "type": "string" },
             "uniqueItems": true,
             "default": []
+        },
+        "instanceofTypes": {
+            "enum": ["file"]
         }
     },
     "type": ["object", "boolean"],
@@ -83,10 +78,7 @@
             "format": "regex"
         },
         "items": {
-            "oneOf": [
-                { "$ref": "#" },
-                { "$ref": "#/definitions/schemaArray" }
-            ],
+            "oneOf": [{ "$ref": "#" }, { "$ref": "#/definitions/schemaArray" }],
             "default": true
         },
         "maxItems": { "$ref": "#/definitions/nonNegativeInteger" },
@@ -123,7 +115,12 @@
                 }
             ]
         },
-        "format": { "type": "string" }
+        "instanceof": { "oneOf": [{ "$ref": "#/definitions/instanceofTypes" }] },
+        "format": { "type": "string" },
+        "contentMediaType": { "type": "string" },
+        "contentEncoding": {
+            "oneOf": [{ "$ref": "#/definitions/contentEncodings" }]
+        }
     },
     "default": true
 }

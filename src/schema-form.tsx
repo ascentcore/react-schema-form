@@ -1,4 +1,4 @@
-import React, { Fragment, useState, ReactNode } from 'react'
+import React, { useState, ReactNode } from 'react'
 import FormElement, { SchemaProperty } from './components/form-element'
 import UISchema from './ui-schema'
 import ComponentRegistry from './component-registry'
@@ -85,7 +85,7 @@ export const SchemaForm = ({
                         error={getErrors(childPath)}
                         errors={parentErrors || errors}
                         value={obj ? obj[key] : undefined}
-                        property={prop}
+                        schema={prop}
                         path={childPath}
                         root={schema}
                         handleParentChange={handleParentChange(key)}
