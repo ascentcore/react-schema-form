@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react'
 import FormElement, { SchemaProperty } from './components/form-element'
 import UISchema from './ui-schema'
-import ComponentRegistry, { RegistryKeys, ExceptionKeys } from './component-registry'
+import ComponentRegistry, { RegistryKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
 import ajv, { RequiredParams } from 'ajv'
 
@@ -22,8 +22,8 @@ export const SchemaForm = ({
     config?: {
         registry?: RegistryKeys
         exceptions?: {
-            paths: ExceptionKeys
-            keys: ExceptionKeys
+            paths: RegistryKeys
+            keys: RegistryKeys
         }
     } | null
     onValid?: (data: any) => void

@@ -65,12 +65,13 @@ export default function CustomRegistryExample() {
     const customRegistry = {
         string: { component: CustomTextField, wrapper: CustomWrapper },
         integer: { component: CustomNumericField, wrapper: CustomWrapper },
+        enum: {component: 'RadioElement'},
         addButton: { component: CustomAddButton, wrapper: CustomWrapper }
     }
 
     const exceptions = {
         keys: {
-            gender: { component: 'RadioElement' }
+            'gender': { component: 'SelectElement' }
         }
     }
 

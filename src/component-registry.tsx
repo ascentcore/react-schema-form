@@ -8,11 +8,20 @@ import ElementWrapper from './element-wrapper'
 import { SchemaProperty } from './components/form-element'
 
 export interface RegistryKeys {
-    [key: string]: { component?: ReactNode; wrapper?: ReactNode }
+    [key: string]: { component?: ReactNode | string; wrapper?: ReactNode }
 }
 
-export interface ExceptionKeys {
-    [key: string]: { component?: ReactNode | string; wrapper?: ReactNode }
+const transformStringEntries = (registryEntries: RegistryKeys) => {
+
+    Object.entries(registryEntries).forEach((registryEntry) => {
+        if (typeof registryEntry[1].component === 'string') {
+            if (InputElements[registryEntry[1].component]) {
+                registryEntry[1].component = InputElements[registryEntry[1].component]
+            } else {
+                registryEntry[1].component = ElementContainer
+            }
+        }
+    })
 }
 
 export default class ComponentRegistry {
@@ -42,6 +51,10 @@ export default class ComponentRegistry {
 
         this._wrapper = wrapper
         this._exceptions = Object.assign({ paths: {}, keys: {} }, exceptions)
+
+        transformStringEntries(this._registry)
+        transformStringEntries(this._exceptions.paths)
+        transformStringEntries(this._exceptions.keys)
     }
 
     getComponent(
@@ -58,25 +71,13 @@ export default class ComponentRegistry {
         }
 
         const pathException = property.path && this._exceptions.paths[property.path]
-        const pathExceptionComponent =
-            pathException &&
-            pathException.component &&
-            (typeof pathException.component === 'string'
-                ? InputElements[pathException.component]
-                : pathException.component)
 
         const keyException =
             property.path && this._exceptions.keys[property.path.substr(property.path.lastIndexOf('.') + 1)]
-        const keyExceptionComponent =
-            keyException &&
-            keyException.component &&
-            (typeof keyException.component === 'string'
-                ? InputElements[keyException.component]
-                : keyException.component)
 
         const Component: any =
-            pathExceptionComponent ||
-            keyExceptionComponent ||
+            (pathException && pathException.component) ||
+            (keyException && keyException.component) ||
             (this._registry[property.registryKey!] && this._registry[property.registryKey!].component) ||
             ElementContainer
 
