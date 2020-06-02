@@ -1,6 +1,6 @@
 {
   "name": "@ascentcore/react-schema-form",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "React Forms based on JSON Schemas",
   "author": "cstefanache",
   "license": "MIT",
