@@ -65,8 +65,22 @@ export default function CustomRegistryExample() {
     const customRegistry = {
         string: { component: CustomTextField, wrapper: CustomWrapper },
         integer: { component: CustomNumericField, wrapper: CustomWrapper },
+        enum: {component: 'RadioElement'},
         addButton: { component: CustomAddButton, wrapper: CustomWrapper }
     }
 
-    return <SchemaForm schema={schema} onValid={onValid} data={data} config={{ registry: customRegistry }} />
+    const exceptions = {
+        keys: {
+            'gender': { component: 'SelectElement' }
+        }
+    }
+
+    return (
+        <SchemaForm
+            schema={schema}
+            onValid={onValid}
+            data={data}
+            config={{ registry: customRegistry, exceptions: exceptions }}
+        />
+    )
 }
