@@ -49,6 +49,15 @@
                 "type": "string",
                 "pattern": "^[0-9]+$"
             }
+        },
+        "hobbies": {
+            "title": "Hobbies",
+            "type": "array",
+            "items": {
+                "title": "Hobby",
+                "type": "string",
+                "enum": ["singing", "drawing", "hiking", "snowboarding", "reading"]
+            }
         }
     }
 }
