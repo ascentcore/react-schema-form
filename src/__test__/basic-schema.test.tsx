@@ -21,10 +21,10 @@ describe('BasicSchemaTests', () => {
             type: 'NW',
             agree: true,
             phoneNumbers: ['0755443322'],
-            hobbies: ['singing']
+            hobbies: ['singing', 'hiking']
         }
         const tree = getComponentTree(mount(<SchemaForm schema={Schema} data={data} />))
-        expect(['fn', 'ln', '13', 0, 'true', '0755443322', 0]).toEqual(tree.map((item) => item.inputValue))
+        expect(['fn', 'ln', '13', ['NW'], 'true', '0755443322', ['singing', 'hiking']]).toEqual(tree.map((item) => item.inputValue))
     })
 
     it('expect to validate data', () => {

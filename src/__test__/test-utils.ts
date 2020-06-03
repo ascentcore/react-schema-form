@@ -1,17 +1,19 @@
-import { ReactWrapper } from "enzyme"
+import { ReactWrapper } from 'enzyme'
 
 export interface QueryOutput {
-    labelText: string | number;
-    inputValue: string;
-    errorText: string | number;
-    input: ReactWrapper
+    labelText: string | number
+    inputValue: string | string[] | null
+    errorText: string | number
+    input: ReactWrapper | null
 }
 
-export function getComponentTree(schemaComponent: ReactWrapper,
+export function getComponentTree(
+    schemaComponent: ReactWrapper,
     wrapperSelector: string = '.ra-elem-wrapper',
     labelSelector: string = '.ra-form-label',
     errorSelector: string = '.ra-elem-error-text',
-    componentSelector: string = 'input'): QueryOutput[] {
+    componentSelectors: string[] = ['input', 'select']
+): QueryOutput[] {
     const tree: QueryOutput[] = []
 
     schemaComponent.find(wrapperSelector).forEach((child: ReactWrapper) => {
@@ -22,15 +24,33 @@ export function getComponentTree(schemaComponent: ReactWrapper,
         const error: ReactWrapper = child.find(errorSelector)
         const errorText = error.length && error.text()
 
-        const input: ReactWrapper = child.find(componentSelector)
+        let input: ReactWrapper | null = null
+        componentSelectors.some((componentSelector) => {
+            const selectedElement = child.find(componentSelector)
+            if (selectedElement.length) {
+                input = selectedElement
+                return true
+            }
+        })
 
         //@ts-ignore
-        const inputValue = input.length && input.instance().value
-
+        let inputValue: string | number | string[] | null = input && input.instance().value
+        //@ts-ignore
+        if (input && input.instance().tagName === 'SELECT') {
+            //@ts-ignore
+            const options = (input.instance() as HTMLSelectElement).options
+            const values = []
+            for (let i = 0, l = options.length; i < l; i++) {
+                if (options[i].selected) {
+                    values.push(options[i].value)
+                }
+            }
+            inputValue = values
+        }
         tree.push({ labelText, inputValue, errorText, input })
     })
 
-    return tree;
+    return tree
 }
 
 export function populateTree(tree: any[], list: any[]) {

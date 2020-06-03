@@ -9,7 +9,8 @@ export default function BasicSchemaExample() {
     }
 
     const data = {
-        firstName: 'test'
+        firstName: 'test',
+        hobbies: ['singing', 'drawing']
     }
 
     return (<SchemaForm schema={schema} onValid={onValid} data={data} />)
