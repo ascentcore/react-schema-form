@@ -35,6 +35,7 @@ export default class ComponentRegistry {
     constructor(customRegistry = {}, wrapper: ReactNode = ElementWrapper, exceptions = { paths: {}, keys: {} }) {
         this._registry = {
             enum: { component: InputElements['SelectElement'], wrapper: wrapper },
+            multipleEnum: { component: InputElements['MultipleSelectElement'], wrapper: wrapper },
             boolean: { component: InputElements['CheckboxElement'], wrapper: wrapper },
             number: { component: InputElements['NumericElement'], wrapper: wrapper },
             integer: { component: InputElements['NumericElement'], wrapper: wrapper },

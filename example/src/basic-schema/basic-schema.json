@@ -4,7 +4,7 @@
     "type": "object",
     "title": "Person",
     "description": "Person Information",
-    "required": ["firstName", "lastName", "type", "phoneNumbers"],
+    "required": ["firstName", "lastName", "type", "hobbies"],
     "properties": {
         "firstName": {
             "type": "string",
@@ -32,13 +32,13 @@
             "type": "boolean",
             "default": false
         },
-        "phoneNumbers": {
-            "title": "Phone numbers",
+        "hobbies": {
+            "title": "Hobbies",
             "type": "array",
             "items": {
-                "title": "Phone number",
+                "title": "Hobby",
                 "type": "string",
-                "pattern": "^[0-9]+$"
+                "enum": ["singing", "drawing", "hiking", "snowboarding", "reading"]
             }
         },
         "file": {
