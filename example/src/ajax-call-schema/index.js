@@ -2,66 +2,68 @@ import React, { useEffect, useState } from 'react'
 import schema from './ajax-call-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
-const simulateAjaxCall = () => {
+const simulateAjaxCall = (startingChars) => {
     return new Promise((resolve) => {
         setTimeout(() => {
-            resolve(['1', '2', '3', '4', '5'])
+            resolve(generateResults(startingChars))
         }, 1000)
     })
 }
 
+const generateResults = (startingChars) => {
+    const results = []
+    const characters = ' abcdefghijklmnopqrstuvwxyz'
+    const resultsLength = Math.floor(Math.random() * 10)
+    for (let i = 0; i < resultsLength; i++) {
+        let result = startingChars || ''
+        const charactersLength = Math.floor(Math.random() * 10)
+        for (let j = 0; j < charactersLength; j++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength))
+        }
+        results.push(result)
+    }
+
+    return results
+}
+
 function CustomSelectField({ value, onChange }) {
     const [options, setOptions] = useState([])
-    useEffect(() => {
-        simulateAjaxCall().then((response) => {
+    const [loading, setLoading] = useState(false)
+    const [displayResults, setDisplayResults] = useState(false)
+
+    const getOptions = (startingChars) => {
+        setLoading(true)
+        simulateAjaxCall(startingChars).then((response) => {
             setOptions(response)
+            setLoading(false)
         })
+    }
+
+    useEffect(() => {
+        getOptions('')
     }, [])
     const handleChange = (event) => {
         onChange(event.target.value)
+        getOptions(event.target.value)
     }
     return (
-        <select onChange={handleChange} value={value} defaultValue=''>
-            <option value='' disabled>
-                Select your option
-            </option>
-            {options.map((opt) => (
-                <option key={opt} value={opt}>
-                    {opt}
-                </option>
-            ))}
-        </select>
-    )
-}
-
-function CustomMultipleSelectField({ value, onChange }) {
-    const [options, setOptions] = useState([])
-    useEffect(() => {
-        simulateAjaxCall().then((response) => {
-            setOptions(response)
-        })
-    }, [])
-    const handleChange = (event) => {
-        const options = event.target.options
-        const value = []
-        for (let i = 0, l = options.length; i < l; i++) {
-            if (options[i].selected) {
-                value.push(options[i].value)
-            }
-        }
-        onChange(value)
-    }
-    return (
-        <select onChange={handleChange} value={value || []} multiple={true}>
-            <option value='' disabled>
-                Select your option
-            </option>
-            {options.map((opt) => (
-                <option key={opt} value={opt}>
-                    {opt}
-                </option>
-            ))}
-        </select>
+        <span className='custom-select-field'>
+            <input
+                onChange={handleChange}
+                value={value || ''}
+                onFocus={() => {
+                    setDisplayResults(true)
+                }}
+                onBlur={() => {
+                    setDisplayResults(false)
+                }}
+            />
+            {displayResults && (
+                <div className='results'>
+                    {!loading ? options.map((opt) => <div key={opt}>{opt}</div>) : <div class='loader' />}
+                </div>
+            )}
+        </span>
     )
 }
 
@@ -72,8 +74,7 @@ export default function CustomAjaxCallSchemaExample() {
 
     const exceptions = {
         keys: {
-            option: { component: CustomSelectField },
-            multipleOption: { component: CustomMultipleSelectField }
+            search: { component: CustomSelectField }
         }
     }
 
