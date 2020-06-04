@@ -13,7 +13,7 @@ export const SchemaForm = ({
     data = {},
     config = null,
     onValid = () => { },
-    errorFormatter = formatErrors,
+    errorFormatter = null,
     path = '',
     errors: parentErrors = null
 }: {
@@ -29,7 +29,7 @@ export const SchemaForm = ({
         }
     } | null
     onValid?: (data: any) => void
-    errorFormatter?: Function
+    errorFormatter?: Function | null
     path?: string
     errors?: ajv.ErrorObject[] | null
 }) => {

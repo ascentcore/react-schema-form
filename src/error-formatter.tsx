@@ -45,7 +45,7 @@ const formatters: Formatter = {
     }
 }
 
-export default function formatErrors(errors: ajv.ErrorObject[], customFn: Function): ajv.ErrorObject[] {
+export default function formatErrors(errors: ajv.ErrorObject[], customFn: Function | null): ajv.ErrorObject[] {
 
     if (errors) {
         (errors instanceof Array ? errors : [errors]).forEach((error: ajv.ErrorObject) => {

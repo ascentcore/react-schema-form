@@ -12,7 +12,7 @@ import BasicSchemaExampleCode from '!!raw-loader!./basic-schema/index.js';
 
 import OptionsSchemaExample from './options'
 import OptionsSchemaExampleJSON from './options/schema.json'
-import OptionsSchemaExampleCode from '!!raw-loader!./deps/index.js';
+import OptionsSchemaExampleCode from '!!raw-loader!./options/index.js';
 
 import NestedSchemaExample from './nested-schema'
 import NestedSchemaExampleJSON from './nested-schema/nested-schema.json'
