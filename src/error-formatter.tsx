@@ -47,18 +47,19 @@ const formatters: Formatter = {
 
 export default function formatErrors(errors: ajv.ErrorObject[], customFn: Function): ajv.ErrorObject[] {
 
-
-    errors.forEach((error: ajv.ErrorObject) => {
-        if (customFn) {
-            customFn(error)
-        } else {
-            const { keyword } = error;
-            const formatter: Function = formatters[keyword];
-            if (formatter) {
-                error.message = formatter(error);
+    if (errors) {
+        (errors instanceof Array ? errors : [errors]).forEach((error: ajv.ErrorObject) => {
+            if (customFn) {
+                customFn(error)
+            } else {
+                const { keyword } = error;
+                const formatter: Function = formatters[keyword];
+                if (formatter) {
+                    error.message = formatter(error);
+                }
             }
-        }
-    })
+        })
+    }
 
     return errors
 }

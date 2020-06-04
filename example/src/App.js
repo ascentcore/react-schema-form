@@ -10,6 +10,10 @@ import BasicSchemaExample from './basic-schema'
 import BasicSchemaExampleJSON from './basic-schema/basic-schema.json'
 import BasicSchemaExampleCode from '!!raw-loader!./basic-schema/index.js';
 
+import OptionsSchemaExample from './options'
+import OptionsSchemaExampleJSON from './options/schema.json'
+import OptionsSchemaExampleCode from '!!raw-loader!./deps/index.js';
+
 import NestedSchemaExample from './nested-schema'
 import NestedSchemaExampleJSON from './nested-schema/nested-schema.json'
 import NestedSchemaExampleCode from '!!raw-loader!./nested-schema/index.js';
@@ -44,6 +48,12 @@ const App = () => {
       component: <BasicSchemaExample />,
       code: BasicSchemaExampleCode,
       schema: BasicSchemaExampleJSON
+    },
+    {
+      title: 'Options Example',
+      component: <OptionsSchemaExample />,
+      code: OptionsSchemaExampleCode,
+      schema: OptionsSchemaExampleJSON
     },
     {
       title: 'Nested Schema',

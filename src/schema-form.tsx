@@ -73,6 +73,7 @@ export const SchemaForm = ({
                 err.dataPath += `.${(err.params as RequiredParams).missingProperty}`
             }
         })
+
         setErrors(formatErrors(errors as ajv.ErrorObject[], errorFormatter))
 
         if (result) {
