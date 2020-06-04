@@ -22,8 +22,8 @@ export const SchemaForm = ({
     config?: {
         registry?: RegistryKeys
         exceptions?: {
-            paths: RegistryKeys
-            keys: RegistryKeys
+            paths?: RegistryKeys
+            keys?: RegistryKeys
         }
     } | null
     onValid?: (data: any) => void
