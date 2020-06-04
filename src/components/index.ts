@@ -5,6 +5,7 @@ import SelectElement from './select-element'
 import RadioElement from './radio-element'
 import CheckboxElement from './checkbox-element'
 import ButtonElement from './button-element'
+import MultipleSelectElement from './multiple-select-element'
 
 import { ReactNode } from 'react'
 
@@ -15,5 +16,6 @@ export const InputElements: { [key: string]: ReactNode } = {
     SelectElement,
     CheckboxElement,
     ButtonElement,
-    RadioElement
+    RadioElement,
+    MultipleSelectElement
 }

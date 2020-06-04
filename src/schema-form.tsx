@@ -22,8 +22,8 @@ export const SchemaForm = ({
     config?: {
         registry?: RegistryKeys
         exceptions?: {
-            paths: RegistryKeys
-            keys: RegistryKeys
+            paths?: RegistryKeys
+            keys?: RegistryKeys
         }
     } | null
     onValid?: (data: any) => void
@@ -48,7 +48,7 @@ export const SchemaForm = ({
 
     const handleParentChange = (key: string) => (value: any, childPath: string) => {
         const newValue = Object.assign({}, obj, { [key]: value })
-        if (value === '') {
+        if (value === '' || value && value.constructor === Array && value.length === 0) {
             delete newValue[key]
         }
         setObj(newValue)

@@ -138,6 +138,26 @@ export default function FormElement({
         )
     }
 
+    function renderArrayOfEnums(itemValue: any, itemProperty: SchemaProperty) {
+        const key = path.substr(path.lastIndexOf('.') + 1)
+        const isRequired = root.required && root.required.indexOf(key) > -1
+
+        return registry.getComponent(
+            {
+                enum: itemProperty.enum,
+                path,
+                registryKey: 'multipleEnum',
+                error,
+                isRequired,
+                title: schema.title,
+                type: 'enum'
+            },
+            itemValue,
+            (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
+            null
+        )
+    }
+
     function renderArray(itemValue: any) {
         return (
             <Fragment>
@@ -196,9 +216,7 @@ export default function FormElement({
                 title: title || schema.title,
                 type: type || schema.type,
                 contentMediaType:
-                    schema.instanceof === 'file'
-                        ? schema.properties!.content.contentMediaType
-                        : schema.contentMediaType
+                    schema.instanceof === 'file' ? schema.properties!.content.contentMediaType : schema.contentMediaType
             },
             itemValue,
             (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
@@ -214,6 +232,12 @@ export default function FormElement({
             !nestedSchema && schema.type === 'array' && index !== null && schema.items && schema.items.type
 
         const typeArray = schema.type === 'array' && index === null
+        const typeArrayOfEnums =
+            schema.type === 'array' &&
+            index === null &&
+            schema.items &&
+            schema.items.type === 'string' &&
+            schema.items.enum !== undefined
 
         if (typeObjectOrObjectArrayItem) {
             const pathKey = index === null ? path : `${path}[${index}]`
@@ -226,6 +250,8 @@ export default function FormElement({
             )
         } else if (typePrimitiveArrayItem) {
             return renderPrimitiveArrayItem(itemValue, schema.items!, index!)
+        } else if (typeArrayOfEnums) {
+            return renderArrayOfEnums(itemValue, schema.items!)
         } else if (typeArray) {
             const arrayItems: ReactNode = renderArray(itemValue)
 
