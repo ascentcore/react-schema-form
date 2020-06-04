@@ -36,7 +36,7 @@ export default function MultipleSelectElement({ property, value, onChange }: Mul
     }
 
     return (
-        <select multiple={true} onChange={handleChange} value={value} defaultValue={[]}>
+        <select multiple={true} onChange={handleChange} value={value || []}>
             <option value='' disabled>
                 Select your options
             </option>
