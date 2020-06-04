@@ -1,0 +1,21 @@
+{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Ajax call inside select",
+    "description": "Select an option",
+    "properties": {
+        "option": {
+            "type": "string",
+            "title": "Single option"
+        },
+        "multipleOption": {
+            "type": "array",
+            "title": "Multiple option",
+            "maxItems": 2,
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

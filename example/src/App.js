@@ -26,6 +26,10 @@ import FileSchemaExample from './file-schema'
 import FileSchemaExampleJSON from './file-schema/file-schema.json'
 import FileSchemaExampleCode from '!!raw-loader!./file-schema/index.js';
 
+import AjaxCallSchemaExample from './ajax-call-schema'
+import AjaxCallSchemaExampleJSON from './ajax-call-schema/ajax-call-schema.json'
+import AjaxCallSchemaExampleCode from '!!raw-loader!./ajax-call-schema/index.js';
+
 const App = () => {
 
   const [selected, setSelected] = useState(parseInt(window.location.hash.substr(1)) || 0)
@@ -59,6 +63,12 @@ const App = () => {
       component: <FileSchemaExample />,
       code: FileSchemaExampleCode,
       schema: FileSchemaExampleJSON
+    },
+    {
+      title: 'Ajax call Schema',
+      component: <AjaxCallSchemaExample />,
+      code: AjaxCallSchemaExampleCode,
+      schema: AjaxCallSchemaExampleJSON
     }
   ]
 
