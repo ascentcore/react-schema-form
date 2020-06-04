@@ -4,6 +4,7 @@ import UISchema from './ui-schema'
 import ComponentRegistry, { RegistryKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
 import ajv, { RequiredParams } from 'ajv'
+import formatErrors from './error-formatter'
 
 export const SchemaForm = ({
     schema,
@@ -11,7 +12,8 @@ export const SchemaForm = ({
     parentChange = null,
     data = {},
     config = null,
-    onValid = () => {},
+    onValid = () => { },
+    errorFormatter = formatErrors,
     path = '',
     errors: parentErrors = null
 }: {
@@ -27,9 +29,12 @@ export const SchemaForm = ({
         }
     } | null
     onValid?: (data: any) => void
+    errorFormatter?: Function
     path?: string
     errors?: ajv.ErrorObject[] | null
 }) => {
+
+
     if (!schema) {
         throw new Error('schema must be provided to the SchemaForm component')
     }
@@ -68,7 +73,7 @@ export const SchemaForm = ({
                 err.dataPath += `.${(err.params as RequiredParams).missingProperty}`
             }
         })
-        setErrors(errors as ajv.ErrorObject[])
+        setErrors(formatErrors(errors as ajv.ErrorObject[], errorFormatter))
 
         if (result) {
             onValid(obj)
