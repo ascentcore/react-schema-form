@@ -83,7 +83,7 @@ const App = () => {
       schema: FileSchemaExampleJSON
     },
     {
-      title: 'Ajax call Schema',
+      title: 'Ajax Call Schema',
       component: <AjaxCallSchemaExample />,
       code: AjaxCallSchemaExampleCode,
       schema: AjaxCallSchemaExampleJSON

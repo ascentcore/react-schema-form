@@ -68,6 +68,12 @@ pre code {
   height: 45px;
 }
 
+.custom-select-field .results > div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .custom-select-field .results .loader {
   border: 2px solid #f3f3f3; /* Light grey */
   border-top: 2px solid #3498db; /* Blue */

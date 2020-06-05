@@ -2,14 +2,6 @@ import React, { useEffect, useState } from 'react'
 import schema from './ajax-call-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
-const simulateAjaxCall = (startingChars) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(generateResults(startingChars))
-        }, 1000)
-    })
-}
-
 const generateResults = (startingChars) => {
     const results = []
     const characters = ' abcdefghijklmnopqrstuvwxyz'
@@ -30,8 +22,22 @@ function CustomSelectField({ value, onChange }) {
     const [options, setOptions] = useState([])
     const [loading, setLoading] = useState(false)
     const [displayResults, setDisplayResults] = useState(false)
+    let [resultsTimeout, setResultsTimeout] = useState(0)
+
+    const simulateAjaxCall = (startingChars) => {
+        return new Promise((resolve) => {
+            setResultsTimeout(
+                setTimeout(() => {
+                    resolve(generateResults(startingChars))
+                }, 1000)
+            )
+        })
+    }
 
     const getOptions = (startingChars) => {
+        if (loading && resultsTimeout) {
+            clearTimeout(resultsTimeout)
+        }
         setLoading(true)
         simulateAjaxCall(startingChars).then((response) => {
             setOptions(response)
@@ -60,7 +66,11 @@ function CustomSelectField({ value, onChange }) {
             />
             {displayResults && (
                 <div className='results'>
-                    {!loading ? options.map((opt) => <div key={opt}>{opt}</div>) : <div class='loader' />}
+                    {!loading ? (
+                        options.map((opt, index) => <div key={index + opt}>{opt}</div>)
+                    ) : (
+                        <div className='loader' />
+                    )}
                 </div>
             )}
         </span>
