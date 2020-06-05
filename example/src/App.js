@@ -30,6 +30,10 @@ import FileSchemaExample from './file-schema'
 import FileSchemaExampleJSON from './file-schema/file-schema.json'
 import FileSchemaExampleCode from '!!raw-loader!./file-schema/index.js';
 
+import AjaxCallSchemaExample from './ajax-call-schema'
+import AjaxCallSchemaExampleJSON from './ajax-call-schema/ajax-call-schema.json'
+import AjaxCallSchemaExampleCode from '!!raw-loader!./ajax-call-schema/index.js';
+
 import ErrorSchemaExample from './error-messages'
 import ErrorSchemaExampleJSON from './error-messages/error-schema.json'
 import ErrorSchemaExampleCode from '!!raw-loader!./error-messages/index.js';
@@ -37,7 +41,6 @@ import ErrorSchemaExampleCode from '!!raw-loader!./error-messages/index.js';
 import CustomErrorSchemaExample from './custom-error-messages'
 import CustomErrorSchemaExampleJSON from './custom-error-messages/error-schema.json'
 import CustomErrorSchemaExampleCode from '!!raw-loader!./custom-error-messages/index.js';
-
 
 const App = () => {
 
@@ -78,6 +81,12 @@ const App = () => {
       component: <FileSchemaExample />,
       code: FileSchemaExampleCode,
       schema: FileSchemaExampleJSON
+    },
+    {
+      title: 'Ajax Call Schema',
+      component: <AjaxCallSchemaExample />,
+      code: AjaxCallSchemaExampleCode,
+      schema: AjaxCallSchemaExampleJSON
     },
     {
       title: 'Error Messages',
