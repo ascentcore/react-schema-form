@@ -38,7 +38,7 @@ export default function ElementWrapper({ children, property }: ElementWrapperPro
             {children}
             {property.error && (
                 <span className='ra-elem-error-text'>
-                    {typeof property.error !== 'boolean' && property.error[0].keyword}
+                    {typeof property.error !== 'boolean' && property.error[0].message}
                 </span>
             )}
         </span>
