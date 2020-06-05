@@ -12,7 +12,7 @@ export const SchemaForm = ({
     parentChange = null,
     data = {},
     config = null,
-    onValid = () => { },
+    onSubmit = () => {},
     errorFormatter = null,
     path = '',
     errors: parentErrors = null
@@ -28,13 +28,11 @@ export const SchemaForm = ({
             keys?: RegistryKeys
         }
     } | null
-    onValid?: (data: any) => void
+    onSubmit?: (data: any, errors: ajv.ErrorObject[]) => void
     errorFormatter?: Function | null
     path?: string
     errors?: ajv.ErrorObject[] | null
 }) => {
-
-
     if (!schema) {
         throw new Error('schema must be provided to the SchemaForm component')
     }
@@ -53,7 +51,7 @@ export const SchemaForm = ({
 
     const handleParentChange = (key: string) => (value: any, childPath: string) => {
         const newValue = Object.assign({}, obj, { [key]: value })
-        if (value === '' || value && value.constructor === Array && value.length === 0) {
+        if (value === '' || (value && value.constructor === Array && value.length === 0)) {
             delete newValue[key]
         }
         setObj(newValue)
@@ -74,11 +72,10 @@ export const SchemaForm = ({
             }
         })
 
-        setErrors(formatErrors(errors as ajv.ErrorObject[], errorFormatter))
+        const formattedErrors: ajv.ErrorObject[] = formatErrors(errors as ajv.ErrorObject[], errorFormatter)
+        setErrors(formattedErrors)
 
-        if (result) {
-            onValid(obj)
-        }
+        onSubmit(obj, formattedErrors)
     }
 
     const getErrors = (path: string) => {

@@ -26,8 +26,8 @@ describe('NestedSchemaObjectTests', () => {
         })
 
         it('expect to validate data', () => {
-            const validate = () => {
-                console.log(validate)
+            const onSubmit = () => {
+                console.log(onSubmit)
             }
 
             const data = {
@@ -36,7 +36,7 @@ describe('NestedSchemaObjectTests', () => {
                 }
             }
 
-            const form = mount(<SchemaForm schema={schema} data={data} onValid={validate} />)
+            const form = mount(<SchemaForm schema={schema} data={data} onSubmit={onSubmit} />)
             let tree = getComponentTree(form)
 
             form.find('button').simulate('click')

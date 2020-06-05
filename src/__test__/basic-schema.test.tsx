@@ -28,15 +28,15 @@ describe('BasicSchemaTests', () => {
     })
 
     it('expect to validate data', () => {
-        const validate = () => {
-            console.log(validate)
+        const onSubmit = () => {
+            console.log(onSubmit)
         }
 
         const data = {
             firstName: 'test'
         }
 
-        const form = mount(<SchemaForm schema={Schema} data={data} onValid={validate} />)
+        const form = mount(<SchemaForm schema={Schema} data={data} onSubmit={onSubmit} />)
         let tree = getComponentTree(form)
 
         const submitButton = getByCSSSelector(form, 'button').last()
