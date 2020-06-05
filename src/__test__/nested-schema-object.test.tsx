@@ -43,7 +43,7 @@ describe('NestedSchemaObjectTests', () => {
 
             tree = getComponentTree(form)
 
-            expect([0, 'required', 0]).toEqual(tree.map((i) => i.errorText))
+            expect([0, 'Field is required', 0]).toEqual(tree.map((i) => i.errorText))
         })
     }
     describe('Nested schema defined directly inside properties filed', () => {

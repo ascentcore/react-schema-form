@@ -44,6 +44,6 @@ describe('BasicSchemaTests', () => {
 
         tree = getComponentTree(form)
 
-        expect([0, 'required', 0, 'required', 0, 0]).toEqual(tree.map((i) => i.errorText))
+        expect([0, 'Field is required', 0, 'Field is required', 0, 0]).toEqual(tree.map((i) => i.errorText))
     })
 })

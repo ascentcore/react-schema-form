@@ -52,7 +52,7 @@ describe('NestedSchemaArrayTests', () => {
 
             submitButton.simulate('click')
             tree = getComponentTree(component)
-            expect(['required', 'required', 0, 0]).toEqual(
+            expect(['Field is required', 'Field is required', 0, 0]).toEqual(
                 tree.map((i) => i.errorText)
             )
 
