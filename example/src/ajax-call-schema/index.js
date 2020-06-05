@@ -5,12 +5,12 @@ import { SchemaForm } from '@ascentcore/react-schema-form'
 const generateResults = (startingChars) => {
     const results = []
     const characters = ' abcdefghijklmnopqrstuvwxyz'
-    const resultsLength = Math.floor(Math.random() * 10)
+    const resultsLength = Math.ceil(Math.random() * 10)
     for (let i = 0; i < resultsLength; i++) {
         let result = startingChars || ''
-        const charactersLength = Math.floor(Math.random() * 10)
+        const charactersLength = Math.ceil(Math.random() * 10)
         for (let j = 0; j < charactersLength; j++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength))
+            result += characters.charAt(Math.ceil(Math.random() * charactersLength))
         }
         results.push(result)
     }
@@ -65,9 +65,20 @@ function CustomSelectField({ value, onChange }) {
                 }}
             />
             {displayResults && (
-                <div className='results'>
+                <div className='results' id='results'>
                     {!loading ? (
-                        options.map((opt, index) => <div key={index + opt}>{opt}</div>)
+                        options.map((opt, index) => (
+                            <div
+                                className='result'
+                                key={index + opt}
+                                onMouseDown={(e) => {
+                                    onChange(opt)
+                                    e.stopPropagation()
+                                }}
+                            >
+                                {opt}
+                            </div>
+                        ))
                     ) : (
                         <div className='loader' />
                     )}

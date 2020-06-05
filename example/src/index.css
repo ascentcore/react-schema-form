@@ -72,6 +72,11 @@ pre code {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.custom-select-field .results > div:hover {
+  background-color: aliceblue;
 }
 
 .custom-select-field .results .loader {
@@ -81,7 +86,7 @@ pre code {
   width: 20px;
   height: 20px;
   animation: spin 2s linear infinite;
-  margin: auto;
+  margin: 12px auto;
 }
 
 @keyframes spin {
