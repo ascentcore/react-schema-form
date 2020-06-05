@@ -10,6 +10,10 @@ import BasicSchemaExample from './basic-schema'
 import BasicSchemaExampleJSON from './basic-schema/basic-schema.json'
 import BasicSchemaExampleCode from '!!raw-loader!./basic-schema/index.js';
 
+import OptionsSchemaExample from './options'
+import OptionsSchemaExampleJSON from './options/schema.json'
+import OptionsSchemaExampleCode from '!!raw-loader!./options/index.js';
+
 import NestedSchemaExample from './nested-schema'
 import NestedSchemaExampleJSON from './nested-schema/nested-schema.json'
 import NestedSchemaExampleCode from '!!raw-loader!./nested-schema/index.js';
@@ -30,6 +34,14 @@ import AjaxCallSchemaExample from './ajax-call-schema'
 import AjaxCallSchemaExampleJSON from './ajax-call-schema/ajax-call-schema.json'
 import AjaxCallSchemaExampleCode from '!!raw-loader!./ajax-call-schema/index.js';
 
+import ErrorSchemaExample from './error-messages'
+import ErrorSchemaExampleJSON from './error-messages/error-schema.json'
+import ErrorSchemaExampleCode from '!!raw-loader!./error-messages/index.js';
+
+import CustomErrorSchemaExample from './custom-error-messages'
+import CustomErrorSchemaExampleJSON from './custom-error-messages/error-schema.json'
+import CustomErrorSchemaExampleCode from '!!raw-loader!./custom-error-messages/index.js';
+
 const App = () => {
 
   const [selected, setSelected] = useState(parseInt(window.location.hash.substr(1)) || 0)
@@ -39,6 +51,12 @@ const App = () => {
       component: <BasicSchemaExample />,
       code: BasicSchemaExampleCode,
       schema: BasicSchemaExampleJSON
+    },
+    {
+      title: 'Options Example',
+      component: <OptionsSchemaExample />,
+      code: OptionsSchemaExampleCode,
+      schema: OptionsSchemaExampleJSON
     },
     {
       title: 'Nested Schema',
@@ -69,6 +87,18 @@ const App = () => {
       component: <AjaxCallSchemaExample />,
       code: AjaxCallSchemaExampleCode,
       schema: AjaxCallSchemaExampleJSON
+    },
+    {
+      title: 'Error Messages',
+      component: <ErrorSchemaExample />,
+      code: ErrorSchemaExampleCode,
+      schema: ErrorSchemaExampleJSON
+    },
+    {
+      title: 'Custom Error Messages',
+      component: <CustomErrorSchemaExample />,
+      code: CustomErrorSchemaExampleCode,
+      schema: CustomErrorSchemaExampleJSON
     }
   ]
 

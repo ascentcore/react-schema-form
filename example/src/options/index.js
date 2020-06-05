@@ -3,17 +3,14 @@ import schema from './schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
 
-export default function Deps() {
+export default function Options() {
 
     function onValid(data) {
         console.log(data)
     }
 
-    const data = {
-        firstName: 'test'
-    }
+    const data = {}
 
-    
     schema.properties.type.options = [
         { key: 'key1', value: 'value1' },
         { key: 'key2', value: 'value2' },
