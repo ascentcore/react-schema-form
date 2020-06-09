@@ -89,8 +89,10 @@ function CustomSelectField({ value, onChange }) {
 }
 
 export default function CustomAjaxCallSchemaExample() {
-    function onValid(data) {
-        console.log(data)
+    function onSubmit(data, errors) {
+        if (!errors || !errors.length) {
+            console.log(data)
+        }
     }
 
     const exceptions = {
@@ -99,5 +101,5 @@ export default function CustomAjaxCallSchemaExample() {
         }
     }
 
-    return <SchemaForm schema={schema} onValid={onValid} config={{ exceptions: exceptions }} />
+    return <SchemaForm schema={schema} onSubmit={onSubmit} config={{ exceptions: exceptions }} />
 }

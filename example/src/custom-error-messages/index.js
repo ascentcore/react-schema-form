@@ -3,9 +3,10 @@ import schema from './error-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
 export default function BasicSchemaExample() {
-
-    function onValid(data) {
-        console.log(data)
+    function onSubmit(data, errors) {
+        if (!errors || !errors.length) {
+            console.log(data)
+        }
     }
 
     const data = {
@@ -25,6 +26,5 @@ export default function BasicSchemaExample() {
         return err
     }
 
-    return (<SchemaForm schema={schema}  onValid={onValid} data={data} errorFormatter={formatError} />)
-
+    return <SchemaForm schema={schema} onSubmit={onSubmit} data={data} errorFormatter={formatError} />
 }

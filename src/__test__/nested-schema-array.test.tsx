@@ -43,9 +43,9 @@ describe('NestedSchemaArrayTests', () => {
                 tasks: [{}]
             }
             let valData
-            const validate = (data: any) => (valData = data)
+            const onSubmit = (data: any) => (valData = data)
             const component: ReactWrapper = mount(
-                <SchemaForm schema={schema} onValid={validate} data={data} />
+                <SchemaForm schema={schema} onSubmit={onSubmit} data={data} />
             )
             let tree = getComponentTree(component)
             const submitButton = getByCSSSelector(component, 'button').last()

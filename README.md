@@ -72,7 +72,7 @@ import { SchemaForm } from '@ascentcore/react-schema-form'
 
 export default function BasicSchemaExample() {
 
-    function onValid(data) {
+    function onSubmit(data) {
         console.log(data)
     }
 
@@ -80,7 +80,7 @@ export default function BasicSchemaExample() {
         firstName: 'Defined Value'
     }
 
-    return (<SchemaForm schema={schema} onValid={onValid} data={data} />)
+    return (<SchemaForm schema={schema} onSubmit={onSubmit} data={data} />)
 
 }
 ```
