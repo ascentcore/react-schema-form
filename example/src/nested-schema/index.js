@@ -3,8 +3,10 @@ import schema from './nested-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
 export default function NestedSchemaExample() {
-    function onValid(data) {
-        console.log(data)
+    function onSubmit(data, errors) {
+        if (!errors || !errors.length) {
+            console.log(data)
+        }
     }
 
     const data = {
@@ -14,5 +16,5 @@ export default function NestedSchemaExample() {
         fields: [{ name: 'item1' }, { name: 'item2' }]
     }
 
-    return <SchemaForm schema={schema} onValid={onValid} data={data} />
+    return <SchemaForm schema={schema} onSubmit={onSubmit} data={data} />
 }

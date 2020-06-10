@@ -10,8 +10,13 @@ function CustomWrapper({ property, children }) {
 }
 
 export default function CustomWrapperExample() {
-
-    function onValid(data) {
+    function onSubmit(data, errors) {
+        if (errors && errors.length) {
+            const errorsMessage = errors.map((error) => {
+                return error.dataPath.substr(error.dataPath.lastIndexOf('.') + 1) + ' - ' + error.message
+            })
+            alert(errorsMessage)
+        }
         console.log(data)
     }
 
@@ -20,14 +25,10 @@ export default function CustomWrapperExample() {
     }
 
     return (
-        <div className="container">
-            <div className="columns">
-                <SchemaForm
-                    schema={schema}
-                    onValid={onValid}
-                    wrapper={CustomWrapper}
-                    data={data} />
+        <div className='container'>
+            <div className='columns'>
+                <SchemaForm schema={schema} onSubmit={onSubmit} wrapper={CustomWrapper} data={data} />
             </div>
-        </div>)
-
+        </div>
+    )
 }

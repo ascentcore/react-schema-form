@@ -53,8 +53,10 @@ function CustomNumericField({ property, value, onChange }) {
 }
 
 export default function CustomRegistryExample() {
-    function onValid(data) {
-        console.log(data)
+    function onSubmit(data, errors) {
+        if (!errors || !errors.length) {
+            console.log(data)
+        }
     }
 
     const data = {
@@ -65,20 +67,20 @@ export default function CustomRegistryExample() {
     const customRegistry = {
         string: { component: CustomTextField, wrapper: CustomWrapper },
         integer: { component: CustomNumericField, wrapper: CustomWrapper },
-        enum: {component: 'RadioElement'},
+        enum: { component: 'RadioElement' },
         addButton: { component: CustomAddButton, wrapper: CustomWrapper }
     }
 
     const exceptions = {
         keys: {
-            'gender': { component: 'SelectElement' }
+            gender: { component: 'SelectElement' }
         }
     }
 
     return (
         <SchemaForm
             schema={schema}
-            onValid={onValid}
+            onSubmit={onSubmit}
             data={data}
             config={{ registry: customRegistry, exceptions: exceptions }}
         />
