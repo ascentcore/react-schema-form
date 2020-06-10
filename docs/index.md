@@ -1,6 +1,6 @@
 # react-schema-form
 
-react-schema-form was build to simplify the management of HTML forms. It's based on [React](https://reactjs.org/) and [JSON schema](http://json-schema.org/). By having the necessary knowledge of the data being manipulated, such as structure, data types, particular constraints or patterns, you can design JSON schemas which will serve as inputs for the forms which will be automatically generated.
+react-schema-form was build to simplify the management of HTML forms. It's based on [React](https://reactjs.org/) and [JSON schema](http://json-schema.org/). By having the necessary knowledge of the data being manipulated, such as structure, data types, particular constraints or patterns, you can design JSON schemas which will serve as inputs for the forms which will be automatically generated. By using [Ajv](https://ajv.js.org/) as a main dependency, the form data is also being validated on submit.
 
 react-schema-form exports a React component, which supports the following properties: schema, wrapper, data, config, onSubmit, errorFormatter. Each of them will be detailed in the [&lt;SchemaForm /> props](#api) section.
 
@@ -262,6 +262,8 @@ You can read more about the registry in the [Customization](#customization) sect
         />
     )
      ```
+
+    The custom registry also makes it possible for the user to add server calls while designing a component. A useful example is under the example/src/ajax-call-schema where a lookahead inside a searchbar is simulated.
 
 * Wrapper customization - the default wrapper is a container containing the title of the property, the component itself and the error message. The className of the wrapper depends on the type of the property. If the property is of type array or object, the className will be 'ra-elem-instance'. Otherwise it will be 'ra-elem-wrapper'. The className will also contain 'ra-elem-' followed by the type of the property and 'ra-error' in case of error.
 
