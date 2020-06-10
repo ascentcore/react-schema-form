@@ -2,11 +2,10 @@ import React from 'react'
 import schema from './custom-wrapper-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
-function CustomWrapper({ property, error, children }) {
+function CustomWrapper({ property, children }) {
     return (<div className="column col-12">
         <div><b>{property.title}</b></div>
         {children}
-        <div style={{ 'color': '#FF0000' }}>{error && error[0].keyword}</div>
     </div>)
 }
 

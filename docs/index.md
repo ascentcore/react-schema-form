@@ -263,6 +263,38 @@ You can read more about the registry in the [Customization](#customization) sect
     )
      ```
 
+* Wrapper customization - the default wrapper is a container containing the title of the property, the component itself and the error message. The className of the wrapper depends on the type of the property. If the property is of type array or object, the className will be 'ra-elem-instance'. Otherwise it will be 'ra-elem-wrapper'. The className will also contain 'ra-elem-' followed by the type of the property and 'ra-error' in case of error.
+
+    ```jsx
+    function CustomWrapper({ property, children }) {
+    return (<div>
+        <div><b>{property.title}</b></div>
+        {children}
+    </div>)
+    }
+
+    export default function CustomWrapperExample() {
+
+        return (<SchemaForm schema={schema} wrapper={CustomWrapper} />)
+
+    }
+    ```
+
+* Error formatter - the errors handled by the library are the following: minimum, maximum, exclusive minimum and exclusive maximum for numbers/integers, minimum length, maximum length and patterns for strings, and minimum items and unique items for arrays. There is also a required constrained which works for each type of property.
+
+    If the user wants to customize the error messages, he can pass an errorFormatter property to the SchemaForm. The errorFormatter will work as a pipe, receiving the error object and returning an altered error object.
+
+    ```jsx
+    const formatError = (err) => {
+        err.message = `Keyword: ${err.keyword}`
+        return err
+    }
+
+    return (<SchemaForm schema={schema} errorFormatter={formatError} />)
+    ```
+
+    The error object is the ajv ValidationError, having the following structure: keyword, dataPath, schemaPath, params, message, schema, parentSchema, data. The message field is the one that is displayed by the default wrapper.
+
 ## <a name="custom-meta-schema"></a>Custom JSON meta-schema
 
 ## License
