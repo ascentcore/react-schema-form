@@ -195,8 +195,9 @@ The default form elements are:
     }
     ```
 
+* Objects with nested properties can be defined either in place, via the properties field, or by using the definitions field and referring to it via refs field. In case of objects, a wrapper will be rendered, containing all the properties as individual elements inside of it.
 
-* When running across an array of items (if not an array of enums which results in a multiple select), the library will render each item by it's type, adding after each of them a button with the scope of removing the item, and a button at the end of the array, for adding a new item in the list
+* When running across an array of items (if not an array of enums which results in a multiple select), the library will render each item by it's type, adding after each of them a button with the scope of removing the item, and a button at the end of the array, for adding a new item in the list.
 
 * The buttons inside the application can be customized too. The registry has different entries for addButton, removeButton and the simple submit button. The classNames for the addButtons and removeButton are 'ra-add-button' and 'ra-remove-button'.
 
