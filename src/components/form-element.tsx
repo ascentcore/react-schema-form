@@ -20,6 +20,10 @@ export interface SchemaProperty {
     default?: any
     contentEncoding?: string
     contentMediaType?: string
+    if?: SchemaProperty
+    then?: SchemaProperty
+    else?: SchemaProperty
+    const?: any
     instanceof?: string
 
     path?: string

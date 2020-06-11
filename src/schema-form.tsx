@@ -5,6 +5,7 @@ import ComponentRegistry, { RegistryKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
 import ajv, { RequiredParams } from 'ajv'
 import formatErrors from './error-formatter'
+const _ = require('lodash')
 
 export const SchemaForm = ({
     schema,
@@ -37,17 +38,44 @@ export const SchemaForm = ({
         throw new Error('schema must be provided to the SchemaForm component')
     }
 
-    const [obj, setObj] = useState<{data: any, childPath: null | string}>(Object.assign({}, { data, childPath: null }))
-    const [keys] = useState(Object.keys(schema.properties || {}))
-    const [instance] = useState(new UISchema(schema))
+    const [currentSchema, setCurrentSchema] = useState<SchemaProperty>(() => _.cloneDeep(schema))
+    const [obj, setObj] = useState<{ data: any; childPath: null | string }>(
+        Object.assign({}, { data, childPath: null })
+    )
+    const [keys, setKeys] = useState(Object.keys(schema.properties || {}))
+    const [instance] = useState(() => new UISchema(schema))
     const [registry] = useState(
-        new ComponentRegistry(
-            config && config.registry ? config.registry : {},
-            wrapper,
-            config && config.exceptions ? config.exceptions : { paths: {}, keys: {} }
-        )
+        () =>
+            new ComponentRegistry(
+                config && config.registry ? config.registry : {},
+                wrapper,
+                config && config.exceptions ? config.exceptions : { paths: {}, keys: {} }
+            )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
+    const [conditionals, setConditionals] = useState<{ [key: string]: SchemaProperty }>({})
+
+    const isObject = (item: any) => {
+        return item && typeof item === 'object' && !Array.isArray(item)
+    }
+
+    const mergeDeep = (target: any, ...sources: any[]): any => {
+        if (!sources.length) return target
+        const source = sources.shift()
+
+        if (isObject(target) && isObject(source)) {
+            for (const key in source) {
+                if (isObject(source[key])) {
+                    if (!target[key]) Object.assign(target, { [key]: {} })
+                    mergeDeep(target[key], source[key])
+                } else {
+                    Object.assign(target, { [key]: source[key] })
+                }
+            }
+        }
+
+        return mergeDeep(target, ...sources)
+    }
 
     const handleParentChange = (key: string) => (value: any, childPath: string) => {
         setObj((prevObj: any) => {
@@ -57,6 +85,24 @@ export const SchemaForm = ({
             }
             return newValue
         })
+        if (conditionals[key]) {
+            if (value === conditionals[key].const && conditionals[key].then) {
+                const newSchema = mergeDeep({}, schema, conditionals[key].then)
+                setCurrentSchema(newSchema)
+                setKeys(Object.keys(newSchema.properties || {}))
+            }
+            if (value !== conditionals[key].const) {
+                if (conditionals[key].else) {
+                    const newSchema = mergeDeep({}, schema, conditionals[key].else)
+                    setCurrentSchema(newSchema)
+                    setKeys(Object.keys(newSchema.properties || {}))
+                } else {
+                    const newSchema = _.cloneDeep(schema)
+                    setCurrentSchema(newSchema)
+                    setKeys(Object.keys(newSchema.properties || {}))
+                }
+            }
+        }
     }
 
     const handleSubmit = () => {
@@ -86,6 +132,26 @@ export const SchemaForm = ({
     }
 
     useEffect(() => {
+        if (schema && schema.if && schema.if.properties) {
+            setConditionals((prevConditionals: { [key: string]: SchemaProperty }) => {
+                const ifEntry = Object.entries(schema.if!.properties!)[0]
+                if (ifEntry && ifEntry[1].const) {
+                    return {
+                        ...prevConditionals,
+                        [ifEntry[0]]: {
+                            const: ifEntry[1].const,
+                            ...(schema.then ? { then: schema.then } : {}),
+                            ...(schema.else ? { else: schema.else } : {})
+                        }
+                    }
+                } else {
+                    return prevConditionals
+                }
+            })
+        }
+    }, [])
+
+    useEffect(() => {
         if (parentChange && obj.childPath) {
             parentChange(obj.data, obj.childPath)
         } else {
@@ -97,7 +163,7 @@ export const SchemaForm = ({
         <span className='ra-schema-form'>
             {keys.map((key) => {
                 const childPath = `${path}.${key}`
-                const prop = schema.properties![key]
+                const prop = currentSchema.properties![key]
                 return (
                     <FormElement
                         key={key}
@@ -106,7 +172,7 @@ export const SchemaForm = ({
                         value={obj.data ? obj.data[key] : undefined}
                         schema={prop}
                         path={childPath}
-                        root={schema}
+                        root={currentSchema}
                         handleParentChange={handleParentChange(key)}
                         registry={registry}
                     />
