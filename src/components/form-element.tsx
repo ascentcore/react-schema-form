@@ -63,8 +63,14 @@ export default function FormElement({
         }
 
         function initializeData() {
-            if (value === undefined && schema.default !== undefined) {
-                handleParentChange(schema.default, path)
+            if (value === undefined) {
+                if (schema.default !== undefined) {
+                    handleParentChange(schema.default, path)
+                } else {
+                    if (schema.type === 'boolean') {
+                        handleParentChange(false, path)
+                    }
+                }
             }
         }
 

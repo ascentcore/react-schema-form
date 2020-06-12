@@ -53,13 +53,27 @@ export const SchemaForm = ({
             )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
-    const [conditionals, setConditionals] = useState<{ [key: string]: SchemaProperty }>({})
-
-    const isObject = (item: any) => {
-        return item && typeof item === 'object' && !Array.isArray(item)
-    }
+    const [conditionals] = useState<{ [key: string]: SchemaProperty }>(() => {
+        if (schema && schema.if && schema.if.properties) {
+            const ifEntry = Object.entries(schema.if!.properties!)[0]
+            if (ifEntry && ifEntry[1].const) {
+                return {
+                    [ifEntry[0]]: {
+                        const: ifEntry[1].const,
+                        ...(schema.then ? { then: schema.then } : {}),
+                        ...(schema.else ? { else: schema.else } : {})
+                    }
+                }
+            }
+        }
+        return {}
+    })
 
     const mergeDeep = (target: any, ...sources: any[]): any => {
+        const isObject = (item: any) => {
+            return item && typeof item === 'object' && !Array.isArray(item)
+        }
+
         if (!sources.length) return target
         const source = sources.shift()
 
@@ -77,6 +91,25 @@ export const SchemaForm = ({
         return mergeDeep(target, ...sources)
     }
 
+    const checkConditionals = (key: string, value: any) => {
+        if (value === conditionals[key].const && conditionals[key].then) {
+            const newSchema = mergeDeep({}, schema, conditionals[key].then)
+            setCurrentSchema(newSchema)
+            setKeys(Object.keys(newSchema.properties || {}))
+        }
+        if (value !== conditionals[key].const) {
+            if (conditionals[key].else) {
+                const newSchema = mergeDeep({}, schema, conditionals[key].else)
+                setCurrentSchema(newSchema)
+                setKeys(Object.keys(newSchema.properties || {}))
+            } else {
+                const newSchema = _.cloneDeep(schema)
+                setCurrentSchema(newSchema)
+                setKeys(Object.keys(newSchema.properties || {}))
+            }
+        }
+    }
+
     const handleParentChange = (key: string) => (value: any, childPath: string) => {
         setObj((prevObj: any) => {
             const newValue = Object.assign({ childPath }, { data: { ...prevObj.data, [key]: value } })
@@ -86,22 +119,7 @@ export const SchemaForm = ({
             return newValue
         })
         if (conditionals[key]) {
-            if (value === conditionals[key].const && conditionals[key].then) {
-                const newSchema = mergeDeep({}, schema, conditionals[key].then)
-                setCurrentSchema(newSchema)
-                setKeys(Object.keys(newSchema.properties || {}))
-            }
-            if (value !== conditionals[key].const) {
-                if (conditionals[key].else) {
-                    const newSchema = mergeDeep({}, schema, conditionals[key].else)
-                    setCurrentSchema(newSchema)
-                    setKeys(Object.keys(newSchema.properties || {}))
-                } else {
-                    const newSchema = _.cloneDeep(schema)
-                    setCurrentSchema(newSchema)
-                    setKeys(Object.keys(newSchema.properties || {}))
-                }
-            }
+            checkConditionals(key, value)
         }
     }
 
@@ -132,23 +150,11 @@ export const SchemaForm = ({
     }
 
     useEffect(() => {
-        if (schema && schema.if && schema.if.properties) {
-            setConditionals((prevConditionals: { [key: string]: SchemaProperty }) => {
-                const ifEntry = Object.entries(schema.if!.properties!)[0]
-                if (ifEntry && ifEntry[1].const) {
-                    return {
-                        ...prevConditionals,
-                        [ifEntry[0]]: {
-                            const: ifEntry[1].const,
-                            ...(schema.then ? { then: schema.then } : {}),
-                            ...(schema.else ? { else: schema.else } : {})
-                        }
-                    }
-                } else {
-                    return prevConditionals
-                }
-            })
-        }
+        keys.forEach((key) => {
+            if (conditionals[key] && obj.data[key]) {
+                checkConditionals(key, obj.data[key])
+            }
+        })
     }, [])
 
     useEffect(() => {
