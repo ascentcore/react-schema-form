@@ -38,7 +38,7 @@ export const SchemaForm = ({
         throw new Error('schema must be provided to the SchemaForm component')
     }
 
-    const [currentSchema, setCurrentSchema] = useState<SchemaProperty>(() => _.cloneDeep(schema))
+    const [currentSchema] = useState<SchemaProperty>(() => _.cloneDeep(schema))
     const [obj, setObj] = useState<{ data: any; childPath: null | string }>(
         Object.assign({}, { data, childPath: null })
     )
@@ -69,43 +69,54 @@ export const SchemaForm = ({
         return {}
     })
 
-    const mergeDeep = (target: any, ...sources: any[]): any => {
-        const isObject = (item: any) => {
-            return item && typeof item === 'object' && !Array.isArray(item)
-        }
+    const isObject = (item: any) => {
+        return item && typeof item === 'object' && !Array.isArray(item)
+    }
 
-        if (!sources.length) return target
-        const source = sources.shift()
-
-        if (isObject(target) && isObject(source)) {
-            for (const key in source) {
-                if (isObject(source[key])) {
-                    if (!target[key]) Object.assign(target, { [key]: {} })
-                    mergeDeep(target[key], source[key])
+    const addProperties = (currentSchema: any, newProperties: any): any => {
+        if (isObject(currentSchema) && isObject(newProperties)) {
+            for (const key in newProperties) {
+                if (isObject(newProperties[key])) {
+                    if (!currentSchema[key]) {
+                        Object.assign(currentSchema, { [key]: {} })
+                    }
+                    addProperties(currentSchema[key], newProperties[key])
                 } else {
-                    Object.assign(target, { [key]: source[key] })
+                    Object.assign(currentSchema, { [key]: newProperties[key] })
                 }
             }
         }
+    }
 
-        return mergeDeep(target, ...sources)
+    const removeProperties = (currentSchema: any, baseSchema: any): any => {
+        if (isObject(currentSchema) && isObject(baseSchema)) {
+            for (const key in currentSchema) {
+                if (!baseSchema[key]) {
+                    delete currentSchema[key]
+                } else {
+                    removeProperties(currentSchema[key], baseSchema[key])
+                }
+            }
+        }
+    }
+
+    const updateSchema = (currentSchema: any, baseSchema: any, newProperties: any): any => {
+        removeProperties(currentSchema, baseSchema)
+        addProperties(currentSchema, newProperties)
     }
 
     const checkConditionals = (key: string, value: any) => {
         if (value === conditionals[key].const && conditionals[key].then) {
-            const newSchema = mergeDeep({}, schema, conditionals[key].then)
-            setCurrentSchema(newSchema)
-            setKeys(Object.keys(newSchema.properties || {}))
+            updateSchema(currentSchema, schema, conditionals[key].then)
+            setKeys(Object.keys(currentSchema.properties || {}))
         }
         if (value !== conditionals[key].const) {
             if (conditionals[key].else) {
-                const newSchema = mergeDeep({}, schema, conditionals[key].else)
-                setCurrentSchema(newSchema)
-                setKeys(Object.keys(newSchema.properties || {}))
+                updateSchema(currentSchema, schema, conditionals[key].else)
+                setKeys(Object.keys(currentSchema.properties || {}))
             } else {
-                const newSchema = _.cloneDeep(schema)
-                setCurrentSchema(newSchema)
-                setKeys(Object.keys(newSchema.properties || {}))
+                updateSchema(currentSchema, schema, {})
+                setKeys(Object.keys(currentSchema.properties || {}))
             }
         }
     }
