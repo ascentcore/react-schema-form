@@ -7,13 +7,20 @@ import ajv, { RequiredParams } from 'ajv'
 import formatErrors from './error-formatter'
 const _ = require('lodash')
 
+interface Conditional {
+    const?: any
+    then?: SchemaProperty
+    else?: SchemaProperty
+    lastCondition?: string
+}
+
 export const SchemaForm = ({
     schema,
     wrapper = ElementWrapper,
     parentChange = null,
     data = {},
     config = null,
-    onSubmit = () => { },
+    onSubmit = () => {},
     errorFormatter = null,
     path = '',
     errors: parentErrors = null
@@ -53,7 +60,7 @@ export const SchemaForm = ({
             )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
-    const [conditionals] = useState<{ [key: string]: SchemaProperty }>(() => {
+    const [conditionals] = useState<{ [key: string]: Conditional }>(() => {
         if (schema && schema.if && schema.if.properties) {
             const ifEntry = Object.entries(schema.if!.properties!)[0]
             if (ifEntry && ifEntry[1].const) {
@@ -61,7 +68,8 @@ export const SchemaForm = ({
                     [ifEntry[0]]: {
                         const: ifEntry[1].const,
                         ...(schema.then ? { then: schema.then } : {}),
-                        ...(schema.else ? { else: schema.else } : {})
+                        ...(schema.else ? { else: schema.else } : {}),
+                        lastCondition: ''
                     }
                 }
             }
@@ -93,7 +101,7 @@ export const SchemaForm = ({
             for (const key in currentSchema) {
                 if (!baseSchema[key]) {
                     delete currentSchema[key]
-                    handleParentChange(key)(undefined, obj.childPath);
+                    handleParentChange(key)(undefined, obj.childPath)
                 } else {
                     removeProperties(currentSchema[key], baseSchema[key])
                 }
@@ -102,16 +110,20 @@ export const SchemaForm = ({
     }
 
     const updateSchema = (currentSchema: any, baseSchema: any, newProperties: any): any => {
-        removeProperties(currentSchema, baseSchema)
-        addProperties(currentSchema, newProperties)
+        const newSchema = _.cloneDeep(currentSchema)
+        removeProperties(newSchema, baseSchema)
+        addProperties(newSchema, newProperties)
+        setCurrentSchema(newSchema)
     }
 
     const checkConditionals = (key: string, value: any) => {
-        if (value === conditionals[key].const && conditionals[key].then) {
+        if (value === conditionals[key].const && conditionals[key].then && conditionals[key].lastCondition !== 'if') {
+            conditionals[key].lastCondition = 'if'
             updateSchema(currentSchema, schema, conditionals[key].then)
             setKeys(Object.keys(currentSchema.properties || {}))
         }
-        if (value !== conditionals[key].const) {
+        if (value !== conditionals[key].const && conditionals[key].lastCondition !== 'else') {
+            conditionals[key].lastCondition = 'else'
             if (conditionals[key].else) {
                 updateSchema(currentSchema, schema, conditionals[key].else)
                 setKeys(Object.keys(currentSchema.properties || {}))
@@ -163,7 +175,6 @@ export const SchemaForm = ({
 
     useEffect(() => {
         setCurrentSchema(_.cloneDeep(schema))
-        setObj({ data, childPath: null })
         setKeys(Object.keys(schema.properties || {}))
     }, [schema])
 
