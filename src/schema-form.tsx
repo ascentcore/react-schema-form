@@ -13,7 +13,7 @@ export const SchemaForm = ({
     parentChange = null,
     data = {},
     config = null,
-    onSubmit = () => {},
+    onSubmit = () => { },
     errorFormatter = null,
     path = '',
     errors: parentErrors = null
@@ -93,6 +93,7 @@ export const SchemaForm = ({
             for (const key in currentSchema) {
                 if (!baseSchema[key]) {
                     delete currentSchema[key]
+                    handleParentChange(key)(undefined, obj.childPath);
                 } else {
                     removeProperties(currentSchema[key], baseSchema[key])
                 }
@@ -121,10 +122,10 @@ export const SchemaForm = ({
         }
     }
 
-    const handleParentChange = (key: string) => (value: any, childPath: string) => {
+    const handleParentChange = (key: string) => (value: any, childPath: string | null) => {
         setObj((prevObj: any) => {
             const newValue = Object.assign({ childPath }, { data: { ...prevObj.data, [key]: value } })
-            if (value === '' || (value && value.constructor === Array && value.length === 0)) {
+            if (!value || value === '' || (value && value.constructor === Array && value.length === 0)) {
                 delete newValue.data[key]
             }
             return newValue
