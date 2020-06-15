@@ -172,8 +172,10 @@ export const SchemaForm = ({
     }
 
     useEffect(() => {
-        setCurrentSchema(_.cloneDeep(schema))
-        setKeys(Object.keys(schema.properties || {}))
+        if (JSON.stringify(schema) !== JSON.stringify(currentSchema)) {
+            setCurrentSchema(_.cloneDeep(schema))
+            setKeys(Object.keys(schema.properties || {}))
+        }
     }, [schema])
 
     useEffect(() => {
