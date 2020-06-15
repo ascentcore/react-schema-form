@@ -114,22 +114,20 @@ export const SchemaForm = ({
         removeProperties(newSchema, baseSchema)
         addProperties(newSchema, newProperties)
         setCurrentSchema(newSchema)
+        setKeys(Object.keys(newSchema.properties || {}))
     }
 
     const checkConditionals = (key: string, value: any) => {
         if (value === conditionals[key].const && conditionals[key].then && conditionals[key].lastCondition !== 'if') {
             conditionals[key].lastCondition = 'if'
             updateSchema(currentSchema, schema, conditionals[key].then)
-            setKeys(Object.keys(currentSchema.properties || {}))
         }
         if (value !== conditionals[key].const && conditionals[key].lastCondition !== 'else') {
             conditionals[key].lastCondition = 'else'
             if (conditionals[key].else) {
                 updateSchema(currentSchema, schema, conditionals[key].else)
-                setKeys(Object.keys(currentSchema.properties || {}))
             } else {
                 updateSchema(currentSchema, schema, {})
-                setKeys(Object.keys(currentSchema.properties || {}))
             }
         }
     }
