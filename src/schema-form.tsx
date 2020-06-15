@@ -38,7 +38,7 @@ export const SchemaForm = ({
         throw new Error('schema must be provided to the SchemaForm component')
     }
 
-    const [currentSchema] = useState<SchemaProperty>(() => _.cloneDeep(schema))
+    const [currentSchema, setCurrentSchema] = useState<SchemaProperty>(() => _.cloneDeep(schema))
     const [obj, setObj] = useState<{ data: any; childPath: null | string }>(
         Object.assign({}, { data, childPath: null })
     )
@@ -159,6 +159,12 @@ export const SchemaForm = ({
 
         return result
     }
+
+    useEffect(() => {
+        setCurrentSchema(_.cloneDeep(schema))
+        setObj({ data, childPath: null })
+        setKeys(Object.keys(schema.properties || {}))
+    }, [schema])
 
     useEffect(() => {
         keys.forEach((key) => {
