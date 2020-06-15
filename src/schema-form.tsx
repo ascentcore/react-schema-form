@@ -125,7 +125,7 @@ export const SchemaForm = ({
     const handleParentChange = (key: string) => (value: any, childPath: string | null) => {
         setObj((prevObj: any) => {
             const newValue = Object.assign({ childPath }, { data: { ...prevObj.data, [key]: value } })
-            if (!value || value === '' || (value && value.constructor === Array && value.length === 0)) {
+            if (value === undefined || value === '' || (value && value.constructor === Array && value.length === 0)) {
                 delete newValue.data[key]
             }
             return newValue
