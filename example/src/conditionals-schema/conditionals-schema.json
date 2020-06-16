@@ -3,39 +3,69 @@
     "$id": "http://example.com/root.json",
     "type": "object",
     "properties": {
-        "account": {
-            "title": "Customer",
+      "account": {
+        "title": "Customer",
+        "type": "object",
+        "properties": {
+          "car": {
+            "type": "boolean",
+            "title": "Has car"
+          },
+          "model": {
             "type": "object",
+            "title": "model",
             "properties": {
-                "car": {
-                    "type": "boolean",
-                    "title": "Has car"
-                }
-            },
-            "if": {
-                "properties": {
-                    "car": {
-                        "const": true
-                    }
-                }
-            },
-            "then": {
-                "properties": {
-                    "carPlate": {
-                        "type": "string",
-                        "title": "Car Plate",
-                        "maxLength": 10
-                    }
-                }
-            },
-            "else": {
-                "properties": {
-                    "otherMeansOfTransportation": {
-                        "type": "string",
-                        "title": "Other means of transportation"
-                    }
-                }
+              "brand": {
+                "title": "brand",
+                "type": "string"
+              },
+              "year": {
+                "title": "year",
+                "type": "integer"
+              }
             }
+          }
+        },
+        "if": {
+          "properties": {
+            "car": {
+              "const": true
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "model": {
+              "type": "object",
+              "title": "model",
+              "properties": {
+                "capacity": {
+                  "title": "capacity",
+                  "type": "integer"
+                }
+              }
+            },
+            "carPlate": {
+              "type": "string",
+              "title": "Car Plate",
+              "maxLength": 10
+            },
+            "previousOwner": {
+              "type": "object",
+              "title": "Previous Owner",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "Name"
+                },
+                "purchaseYear": {
+                  "type": "number",
+                  "title": "Purchase Year"
+                }
+              }
+            }
+          }
         }
+      }
     }
-}
+  }

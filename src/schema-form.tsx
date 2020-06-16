@@ -20,7 +20,7 @@ export const SchemaForm = ({
     parentChange = null,
     data = {},
     config = null,
-    onSubmit = () => {},
+    onSubmit = () => { },
     errorFormatter = null,
     path = '',
     errors: parentErrors = null
@@ -77,6 +77,12 @@ export const SchemaForm = ({
         return {}
     })
 
+    const resolve = (path: string, obj: Object) => {
+        return (path.substr(1)).split('.').slice(1, -1).reduce(function (prev: any, curr: string) {
+            return prev ? prev[curr] : null
+        }, obj || self)
+    }
+
     const isObject = (item: any) => {
         return item && typeof item === 'object' && !Array.isArray(item)
     }
@@ -96,14 +102,14 @@ export const SchemaForm = ({
         }
     }
 
-    const removeProperties = (currentSchema: any, baseSchema: any): any => {
+    const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string): any => {
         if (isObject(currentSchema) && isObject(baseSchema)) {
             for (const key in currentSchema) {
                 if (!baseSchema[key]) {
                     delete currentSchema[key]
-                    handleParentChange(key)(undefined, obj.childPath)
+                    handleParentChange(key)(undefined, obj.childPath, `${nestedPath}.${key}`)
                 } else {
-                    removeProperties(currentSchema[key], baseSchema[key])
+                    removeProperties(currentSchema[key], baseSchema[key], key !== 'properties' ? `${nestedPath}.${key}` : nestedPath)
                 }
             }
         }
@@ -111,7 +117,7 @@ export const SchemaForm = ({
 
     const updateSchema = (currentSchema: any, baseSchema: any, newProperties: any): any => {
         const newSchema = _.cloneDeep(currentSchema)
-        removeProperties(newSchema, baseSchema)
+        removeProperties(newSchema, baseSchema, path)
         addProperties(newSchema, newProperties)
         setCurrentSchema(newSchema)
         setKeys(Object.keys(newSchema.properties || {}))
@@ -132,14 +138,26 @@ export const SchemaForm = ({
         }
     }
 
-    const handleParentChange = (key: string) => (value: any, childPath: string | null) => {
-        setObj((prevObj: any) => {
-            const newValue = Object.assign({ childPath }, { data: { ...prevObj.data, [key]: value } })
-            if (value === undefined || value === '' || (value && value.constructor === Array && value.length === 0)) {
-                delete newValue.data[key]
-            }
-            return newValue
-        })
+    const handleParentChange = (key: string) => (value: any, childPath: string | null, nestedPath?: string) => {
+
+        if (nestedPath) {
+            setObj((prevObj: any) => {
+                const newObj = Object.assign({}, { ...prevObj })
+                const ref = resolve(nestedPath, newObj.data);
+                if(ref) {
+                    delete ref[key]
+                }
+                return newObj
+            })
+        } else {
+            setObj((prevObj: any) => {
+                const newValue = Object.assign({ childPath }, { data: { ...prevObj.data, [key]: value } })
+                if (value === undefined || value === '' || (value && value.constructor === Array && value.length === 0)) {
+                    delete newValue.data[key]
+                }
+                return newValue
+            })
+        }
         if (conditionals[key]) {
             checkConditionals(key, value)
         }
