@@ -1,5 +1,5 @@
 import React from 'react'
-import schema from './test-conditional-schema.json'
+import schema from './conditionals-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 
 export default function ConditionalsSchemaExample() {
