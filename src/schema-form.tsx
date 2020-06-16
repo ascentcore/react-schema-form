@@ -20,7 +20,7 @@ export const SchemaForm = ({
     parentChange = null,
     data = {},
     config = null,
-    onSubmit = () => { },
+    onSubmit = () => {},
     errorFormatter = null,
     path = '',
     errors: parentErrors = null
@@ -77,10 +77,18 @@ export const SchemaForm = ({
         return {}
     })
 
-    const resolve = (path: string, obj: Object) => {
-        return (path.substr(1)).split('.').slice(1, -1).reduce(function (prev: any, curr: string) {
-            return prev ? prev[curr] : null
-        }, obj || self)
+    const removeObjPath = (path: string[], obj: any) => {
+        const prop = path[0]
+        if (path.length > 1) {
+            prop && removeObjPath(path.slice(1), obj ? obj[prop] : null)
+            if (prop && obj && obj[prop] && Object.keys(obj[prop]).length === 0) {
+                delete obj[prop]
+            }
+        } else {
+            if (obj && prop && obj[prop]) {
+                delete obj[prop]
+            }
+        }
     }
 
     const isObject = (item: any) => {
@@ -109,7 +117,11 @@ export const SchemaForm = ({
                     delete currentSchema[key]
                     handleParentChange(key)(undefined, obj.childPath, `${nestedPath}.${key}`)
                 } else {
-                    removeProperties(currentSchema[key], baseSchema[key], key !== 'properties' ? `${nestedPath}.${key}` : nestedPath)
+                    removeProperties(
+                        currentSchema[key],
+                        baseSchema[key],
+                        key !== 'properties' ? `${nestedPath}.${key}` : nestedPath
+                    )
                 }
             }
         }
@@ -139,27 +151,27 @@ export const SchemaForm = ({
     }
 
     const handleParentChange = (key: string) => (value: any, childPath: string | null, nestedPath?: string) => {
-
         if (nestedPath) {
             setObj((prevObj: any) => {
                 const newObj = Object.assign({}, { ...prevObj })
-                const ref = resolve(nestedPath, newObj.data);
-                if(ref) {
-                    delete ref[key]
-                }
+                removeObjPath(nestedPath.substr(1).split('.').slice(1), newObj.data)
                 return newObj
             })
         } else {
             setObj((prevObj: any) => {
                 const newValue = Object.assign({ childPath }, { data: { ...prevObj.data, [key]: value } })
-                if (value === undefined || value === '' || (value && value.constructor === Array && value.length === 0)) {
+                if (
+                    value === undefined ||
+                    value === '' ||
+                    (value && value.constructor === Array && value.length === 0)
+                ) {
                     delete newValue.data[key]
                 }
                 return newValue
             })
-        }
-        if (conditionals[key]) {
-            checkConditionals(key, value)
+            if (conditionals[key]) {
+                checkConditionals(key, value)
+            }
         }
     }
 
