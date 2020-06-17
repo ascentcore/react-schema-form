@@ -29,7 +29,7 @@
         "if": {
           "properties": {
             "car": {
-              "const": true
+              "const": false
             }
           }
         },

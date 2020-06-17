@@ -63,7 +63,7 @@ export const SchemaForm = ({
     const [conditionals] = useState<{ [key: string]: Conditional }>(() => {
         if (schema && schema.if && schema.if.properties) {
             const ifEntry = Object.entries(schema.if!.properties!)[0]
-            if (ifEntry && ifEntry[1].const) {
+            if (ifEntry && ifEntry[1].const !== undefined) {
                 return {
                     [ifEntry[0]]: {
                         const: ifEntry[1].const,
@@ -208,7 +208,7 @@ export const SchemaForm = ({
 
     useEffect(() => {
         keys.forEach((key) => {
-            if (conditionals[key] && obj.data[key]) {
+            if (conditionals[key] && obj.data[key] !== undefined) {
                 checkConditionals(currentSchema || schema, key, obj.data[key])
             }
         })

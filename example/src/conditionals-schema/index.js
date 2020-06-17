@@ -9,7 +9,7 @@ export default function ConditionalsSchemaExample() {
         }
     }
 
-    const data = { account: { car: true, model: { capacity: 15 } } }
+    const data = { account: { car: false, model: { year: 15 } } }
 
     return <SchemaForm schema={schema} onSubmit={onSubmit} data={data} />
 }
