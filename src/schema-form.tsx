@@ -45,7 +45,7 @@ export const SchemaForm = ({
         throw new Error('schema must be provided to the SchemaForm component')
     }
 
-    const [currentSchema, setCurrentSchema] = useState<SchemaProperty>(() => _.cloneDeep(schema))
+    const [currentSchema, setCurrentSchema] = useState<SchemaProperty | null>(null)
     const [obj, setObj] = useState<{ data: any; childPath: null | string }>(
         Object.assign({}, { data, childPath: null })
     )
@@ -202,10 +202,8 @@ export const SchemaForm = ({
     }
 
     useEffect(() => {
-        if (JSON.stringify(schema) !== JSON.stringify(currentSchema)) {
-            setCurrentSchema(_.cloneDeep(schema))
-            setKeys(Object.keys(schema.properties || {}))
-        }
+        setCurrentSchema(_.cloneDeep(schema))
+        setKeys(Object.keys(schema.properties || {}))
     }, [schema])
 
     useEffect(() => {
@@ -226,7 +224,7 @@ export const SchemaForm = ({
 
     return (
         <span className='ra-schema-form'>
-            {keys.map((key) => {
+            {currentSchema && keys.map((key) => {
                 const childPath = `${path}.${key}`
                 const prop = currentSchema.properties![key]
                 return (

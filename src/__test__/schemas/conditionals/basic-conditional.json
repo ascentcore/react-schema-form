@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "properties": {
+        "account": {
+            "title": "Customer",
+            "type": "object",
+            "properties": {
+                "car": {
+                    "type": "boolean",
+                    "title": "Has car"
+                }
+            },
+            "if": {
+                "properties": {
+                    "car": {
+                        "const": true
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "carPlate": {
+                        "type": "string",
+                        "title": "Car Plate",
+                        "maxLength": 10
+                    }
+                }
+            },
+            "else": {
+                "properties": {
+                    "otherMeansOfTransportation": {
+                        "type": "string",
+                        "title": "Other means of transportation"
+                    }
+                }
+            }
+        }
+    }
+}
