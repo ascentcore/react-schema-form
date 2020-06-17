@@ -135,17 +135,17 @@ export const SchemaForm = ({
         setKeys(Object.keys(newSchema.properties || {}))
     }
 
-    const checkConditionals = (key: string, value: any) => {
+    const checkConditionals = (actualSchema: SchemaProperty, key: string, value: any) => {
         if (value === conditionals[key].const && conditionals[key].then && conditionals[key].lastCondition !== 'if') {
             conditionals[key].lastCondition = 'if'
-            updateSchema(currentSchema, schema, conditionals[key].then)
+            updateSchema(actualSchema, schema, conditionals[key].then)
         }
         if (value !== conditionals[key].const && conditionals[key].lastCondition !== 'else') {
             conditionals[key].lastCondition = 'else'
             if (conditionals[key].else) {
-                updateSchema(currentSchema, schema, conditionals[key].else)
+                updateSchema(actualSchema, schema, conditionals[key].else)
             } else {
-                updateSchema(currentSchema, schema, {})
+                updateSchema(actualSchema, schema, {})
             }
         }
     }
@@ -170,7 +170,7 @@ export const SchemaForm = ({
                 return newValue
             })
             if (conditionals[key]) {
-                checkConditionals(key, value)
+                checkConditionals(currentSchema || schema, key, value)
             }
         }
     }
@@ -209,7 +209,7 @@ export const SchemaForm = ({
     useEffect(() => {
         keys.forEach((key) => {
             if (conditionals[key] && obj.data[key]) {
-                checkConditionals(key, obj.data[key])
+                checkConditionals(currentSchema || schema, key, obj.data[key])
             }
         })
     }, [])
@@ -224,23 +224,24 @@ export const SchemaForm = ({
 
     return (
         <span className='ra-schema-form'>
-            {currentSchema && keys.map((key) => {
-                const childPath = `${path}.${key}`
-                const prop = currentSchema.properties![key]
-                return (
-                    <FormElement
-                        key={key}
-                        error={getErrors(childPath)}
-                        errors={parentErrors || errors}
-                        value={obj.data ? obj.data[key] : undefined}
-                        schema={prop}
-                        path={childPath}
-                        root={currentSchema}
-                        handleParentChange={handleParentChange(key)}
-                        registry={registry}
-                    />
-                )
-            })}
+            {currentSchema &&
+                keys.map((key) => {
+                    const childPath = `${path}.${key}`
+                    const prop = currentSchema.properties![key]
+                    return (
+                        <FormElement
+                            key={key}
+                            error={getErrors(childPath)}
+                            errors={parentErrors || errors}
+                            value={obj.data ? obj.data[key] : undefined}
+                            schema={prop}
+                            path={childPath}
+                            root={currentSchema}
+                            handleParentChange={handleParentChange(key)}
+                            registry={registry}
+                        />
+                    )
+                })}
             {!parentChange &&
                 registry.getComponent({ registryKey: 'button', className: 'ra-submit-button' }, 'Submit', handleSubmit)}
         </span>
