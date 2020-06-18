@@ -99,6 +99,7 @@ export default function FormElement({
     function renderNestedSchema(pathKey: string, itemValue: any, index: null | number) {
         return (
             <SchemaForm
+                key={JSON.stringify(nestedSchema)}
                 path={pathKey}
                 schema={nestedSchema}
                 data={itemValue}

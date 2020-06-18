@@ -85,7 +85,7 @@ export const SchemaForm = ({
                 delete obj[prop]
             }
         } else {
-            if (obj && prop && obj[prop]) {
+            if (obj && prop && obj[prop] != undefined) {
                 delete obj[prop]
             }
         }
