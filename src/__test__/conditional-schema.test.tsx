@@ -2,6 +2,7 @@ import React from 'react'
 import BasicSchema from './schemas/conditionals/basic-conditional.json'
 import NestedSchema from './schemas/conditionals/nested-conditional.json'
 import LeafSchema from './schemas/conditionals/leaf-conditional.json'
+import AttributeSchema from './schemas/conditionals/attribute-conditional.json'
 import { SchemaForm } from '..'
 import { mount } from 'enzyme'
 import { getComponentTree, getByCSSSelector } from './test-utils'
@@ -182,5 +183,65 @@ describe('LeafSchemaTests', () => {
         submitButton.simulate('click')
 
         expect(valData).toEqual({ account: { prop1: false, prop2: { prop3: 'prop3' } } })
+    })
+})
+
+describe('AttributeSchemaTests', () => {
+    it('initializes correctly without data', () => {
+        const tree = getComponentTree(mount(<SchemaForm schema={AttributeSchema} />))
+        expect(tree.length).toEqual(2)
+        expect(['street_address', 'country']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('alters schema on enum selection', () => {
+        const form = mount(<SchemaForm schema={AttributeSchema} />)
+        const select = getByCSSSelector(form, 'select').first()
+        select.simulate('change', {
+            target: {
+                value: 'United States of America'
+            }
+        })
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['street_address', 'country', 'postal_code']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('applies property attributes depending on conditional', () => {
+        const data = { country: 'United States of America' }
+        const form = mount(<SchemaForm schema={AttributeSchema} data={data} />)
+        const postalCode = getByCSSSelector(form, 'input[type="text"]').last()
+        postalCode.simulate('change', {
+            target: {
+                value: 'text'
+            }
+        })
+        const submitButton = getByCSSSelector(form, 'button').last()
+        submitButton.simulate('click')
+
+        const tree = getComponentTree(form)
+
+        expect([0, 0, 'Field does not match pattern ([0-9]{5}(-[0-9]{4})?)']).toEqual(tree.map((i) => i.errorText))
+    })
+
+    it('changes property attributes depending on conditional', () => {
+        const form = mount(<SchemaForm schema={AttributeSchema} />)
+        const select = getByCSSSelector(form, 'select').first()
+        select.simulate('change', {
+            target: {
+                value: 'Canada'
+            }
+        })
+        const postalCode = getByCSSSelector(form, 'input[type="text"]').last()
+        postalCode.simulate('change', {
+            target: {
+                value: 'text'
+            }
+        })
+        const submitButton = getByCSSSelector(form, 'button').last()
+        submitButton.simulate('click')
+
+        const tree = getComponentTree(form)
+
+        expect([0, 0, 'Field does not match pattern ([A-Z][0-9][A-Z] [0-9][A-Z][0-9])']).toEqual(tree.map((i) => i.errorText))
     })
 })
