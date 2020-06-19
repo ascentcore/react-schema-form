@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "properties": {
+        "account": {
+            "title": "Customer",
+            "type": "object",
+            "properties": {
+                "prop1": {
+                    "type": "boolean",
+                    "title": "prop1"
+                }
+            },
+            "if": {
+                "properties": {
+                    "prop1": {
+                        "const": true
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "prop2": {
+                        "type": "object",
+                        "title": "prop2",
+                        "properties": {
+                            "prop3": {
+                                "title": "prop3",
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "else": {
+                "properties": {
+                    "prop2": {
+                        "type": "object",
+                        "title": "prop2",
+                        "properties": {
+                            "prop4": {
+                                "title": "prop4",
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
