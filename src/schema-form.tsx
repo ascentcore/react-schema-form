@@ -134,7 +134,6 @@ export const SchemaForm = ({
         removeProperties(newSchema, baseSchema, path)
         addProperties(newSchema, newProperties)
         setCurrentSchema(newSchema)
-        console.log(newSchema)
         setKeys(Object.keys(newSchema.properties || {}))
     }
 
