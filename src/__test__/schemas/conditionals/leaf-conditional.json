@@ -1,0 +1,51 @@
+{
+    "type": "object",
+    "properties": {
+        "account": {
+            "type": "object",
+            "properties": {
+                "prop1": {
+                    "type": "boolean",
+                    "title": "prop1"
+                },
+                "prop2": {
+                    "type": "object",
+                    "title": "prop2",
+                    "properties": {
+                        "prop3": {
+                            "title": "prop3",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "if": {
+                "properties": {
+                    "prop1": {
+                        "const": true
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "prop2": {
+                        "type": "object",
+                        "title": "prop2",
+                        "properties": {
+                            "prop1": {
+                                "title": "prop1",
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "prop4": {
+                        "type": "string",
+                        "title": "prop4",
+                        "maxLength": 10
+                    }
+                }
+            }
+        }
+    }
+}
+
