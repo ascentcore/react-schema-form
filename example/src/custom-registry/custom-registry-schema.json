@@ -44,6 +44,20 @@
             "title": "Gender",
             "type": "string",
             "enum": ["M", "F"]
+        },
+        "location": {
+            "title": "Location",
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "title": "Latitude",
+                    "type": "number"
+                },
+                "longitude": {
+                    "title": "longitude",
+                    "type": "number"
+                }
+            }
         }
     }
 }

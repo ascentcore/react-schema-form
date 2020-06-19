@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import schema from './custom-registry-schema.json'
 import { SchemaForm } from '@ascentcore/react-schema-form'
 import { TextField, Slider } from '@material-ui/core'
@@ -52,6 +52,24 @@ function CustomNumericField({ property, value, onChange }) {
     )
 }
 
+function CustomLocation({ value }) {
+    const [coordinates, setCoordinates] = useState({ latitude: 46.753731, longitude: 23.605707 })
+    useEffect(() => {
+        if (value && value.latitude && value.longitude) {
+            setCoordinates({ latitude: value.latitude, longitude: value.longitude })
+        }
+    }, [])
+
+    console.log(`https://maps.google.com/maps?q=${coordinates.latitude}, ${coordinates.longitude}&z=15&output=embed`)
+    return (
+        <iframe
+            src={`https://maps.google.com/maps?q=${coordinates.latitude}, ${coordinates.longitude}&z=15&output=embed`}
+            width='450'
+            height='450'
+        ></iframe>
+    )
+}
+
 export default function CustomRegistryExample() {
     function onSubmit(data, errors) {
         if (!errors || !errors.length) {
@@ -73,7 +91,8 @@ export default function CustomRegistryExample() {
 
     const exceptions = {
         keys: {
-            gender: { component: 'SelectElement' }
+            gender: { component: 'SelectElement' },
+            location: { component: CustomLocation, wrapper: CustomWrapper }
         }
     }
 
