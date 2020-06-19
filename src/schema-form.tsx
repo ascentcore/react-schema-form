@@ -16,6 +16,7 @@ interface Conditional {
 
 export const SchemaForm = ({
     schema,
+    root = schema,
     wrapper = ElementWrapper,
     parentChange = null,
     data = {},
@@ -25,6 +26,7 @@ export const SchemaForm = ({
     path = '',
     errors: parentErrors = null
 }: {
+    root?: SchemaProperty | null
     schema?: SchemaProperty | null
     wrapper?: ReactNode
     parentChange?: ((subVal: any, key: string) => void) | null
@@ -50,7 +52,7 @@ export const SchemaForm = ({
         Object.assign({}, { data, childPath: null })
     )
     const [keys, setKeys] = useState(Object.keys(schema.properties || {}))
-    const [instance] = useState(() => new UISchema(schema))
+    const [instance] = useState(() => parentChange ? null : new UISchema(schema))
     const [registry] = useState(
         () =>
             new ComponentRegistry(
@@ -132,6 +134,7 @@ export const SchemaForm = ({
         removeProperties(newSchema, baseSchema, path)
         addProperties(newSchema, newProperties)
         setCurrentSchema(newSchema)
+        console.log(newSchema)
         setKeys(Object.keys(newSchema.properties || {}))
     }
 
@@ -176,8 +179,8 @@ export const SchemaForm = ({
     }
 
     const handleSubmit = () => {
-        const result = instance.validate(obj.data)
-        const errors: ajv.ErrorObject[] = result || !instance.validator.errors ? [] : instance.validator.errors
+        const result = instance!.validate(obj.data)
+        const errors: ajv.ErrorObject[] = result || !instance!.validator.errors ? [] : instance!.validator.errors
         errors.forEach((err) => {
             if (err.params && (err.params as RequiredParams).missingProperty) {
                 err.dataPath += `.${(err.params as RequiredParams).missingProperty}`
@@ -230,13 +233,14 @@ export const SchemaForm = ({
                     const prop = currentSchema.properties![key]
                     return (
                         <FormElement
+                            root={root!}
                             key={key}
                             error={getErrors(childPath)}
                             errors={parentErrors || errors}
                             value={obj.data ? obj.data[key] : undefined}
                             schema={prop}
                             path={childPath}
-                            root={currentSchema}
+                            parentSchema={currentSchema}
                             handleParentChange={handleParentChange(key)}
                             registry={registry}
                         />

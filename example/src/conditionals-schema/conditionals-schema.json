@@ -1,71 +1,57 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "http://example.com/root.json",
+    "definitions": {
+        "owner": {
+            "type": "object",
+            "tile": "owner",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "gender": {
+                    "titile": "Gender",
+                    "type": "string",
+                    "enum": ["m", "f"]
+                }
+            },
+            "required": ["name"]
+        },
+        "car": {
+            "type": "object",
+            "title": "Car",
+            "properties": {
+                "year": {
+                    "title": "Purchasing Year",
+                    "type": "integer"
+                },
+                "second": {
+                    "type": "boolean",
+                    "title": "Had previous owner"
+                }
+            },
+            "if": {
+                "properties": {
+                    "second": {
+                        "const": true
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "previous": {
+                        "$ref": "#/definitions/owner"
+                    }
+                }
+            }
+        }
+    },
     "type": "object",
     "properties": {
-      "account": {
-        "title": "Customer",
-        "type": "object",
-        "properties": {
-          "car": {
-            "type": "boolean",
-            "title": "Has car"
-          },
-          "model": {
-            "type": "object",
-            "title": "model",
-            "properties": {
-              "brand": {
-                "title": "brand",
-                "type": "string"
-              },
-              "year": {
-                "title": "year",
-                "type": "integer"
-              }
-            }
-          }
+        "owner": {
+            "$ref": "#/definitions/owner"
         },
-        "if": {
-          "properties": {
-            "car": {
-              "const": false
-            }
-          }
-        },
-        "then": {
-          "properties": {
-            "model": {
-              "type": "object",
-              "title": "model",
-              "properties": {
-                "capacity": {
-                  "title": "capacity",
-                  "type": "integer"
-                }
-              }
-            },
-            "carPlate": {
-              "type": "string",
-              "title": "Car Plate",
-              "maxLength": 10
-            },
-            "previousOwner": {
-              "type": "object",
-              "title": "Previous Owner",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "title": "Name"
-                },
-                "purchaseYear": {
-                  "type": "number",
-                  "title": "Purchase Year"
-                }
-              }
-            }
-          }
+        "car": {
+            "$ref": "#/definitions/car"
         }
-      }
     }
-  }
+}
