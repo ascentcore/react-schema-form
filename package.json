@@ -63,9 +63,7 @@
   ],
   "dependencies": {
     "ajv": "^6.12.2",
-    "ajv-errors": "^1.0.1",
-    "leaflet": "^1.6.0",
-    "react-leaflet": "^2.7.0"
+    "ajv-errors": "^1.0.1"
   },
   "jest": {
     "coveragePathIgnorePatterns": [
