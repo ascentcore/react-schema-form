@@ -20,7 +20,12 @@ export interface SchemaProperty {
     default?: any
     contentEncoding?: string
     contentMediaType?: string
+    if?: SchemaProperty
+    then?: SchemaProperty
+    else?: SchemaProperty
+    const?: any
     instanceof?: string
+    definitions? : any
 
     path?: string
     registryKey?: string
@@ -30,7 +35,8 @@ export interface SchemaProperty {
 }
 
 interface FormElementProperties {
-    root: any
+    root: SchemaProperty
+    parentSchema: any
     schema: SchemaProperty
     path: string
     value: any
@@ -42,6 +48,7 @@ interface FormElementProperties {
 
 export default function FormElement({
     root,
+    parentSchema,
     schema,
     path,
     value,
@@ -59,8 +66,14 @@ export default function FormElement({
         }
 
         function initializeData() {
-            if (value === undefined && schema.default !== undefined) {
-                handleParentChange(schema.default, path)
+            if (value === undefined) {
+                if (schema.default !== undefined) {
+                    handleParentChange(schema.default, path)
+                } else {
+                    if (schema.type === 'boolean') {
+                        handleParentChange(false, path)
+                    }
+                }
             }
         }
 
@@ -89,6 +102,8 @@ export default function FormElement({
     function renderNestedSchema(pathKey: string, itemValue: any, index: null | number) {
         return (
             <SchemaForm
+                root={root}
+                key={JSON.stringify(nestedSchema)}
                 path={pathKey}
                 schema={nestedSchema}
                 data={itemValue}
@@ -140,7 +155,7 @@ export default function FormElement({
 
     function renderArrayOfEnums(itemValue: any, itemProperty: SchemaProperty) {
         const key = path.substr(path.lastIndexOf('.') + 1)
-        const isRequired = root.required && root.required.indexOf(key) > -1
+        const isRequired = parentSchema.required && parentSchema.required.indexOf(key) > -1
 
         return registry.getComponent(
             {
@@ -204,7 +219,7 @@ export default function FormElement({
                 ? 'file'
                 : schema.type
         const key = path.substr(path.lastIndexOf('.') + 1)
-        const isRequired = root.required && root.required.indexOf(key) > -1
+        const isRequired = parentSchema.required && parentSchema.required.indexOf(key) > -1
 
         return registry.getComponent(
             {

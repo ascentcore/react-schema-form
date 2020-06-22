@@ -120,7 +120,10 @@
         "contentMediaType": { "type": "string" },
         "contentEncoding": {
             "oneOf": [{ "$ref": "#/definitions/contentEncodings" }]
-        }
+        },
+        "if": { "$ref": "#" },
+        "then": { "$ref": "#" },
+        "else": { "$ref": "#" }
     },
     "default": true
 }

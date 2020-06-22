@@ -1,0 +1,57 @@
+{
+    "definitions": {
+        "owner": {
+            "type": "object",
+            "tile": "owner",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "gender": {
+                    "titile": "Gender",
+                    "type": "string",
+                    "enum": ["m", "f"]
+                }
+            },
+            "required": ["name"]
+        },
+        "car": {
+            "type": "object",
+            "title": "Car",
+            "properties": {
+                "year": {
+                    "title": "Purchasing Year",
+                    "type": "integer"
+                },
+                "second": {
+                    "type": "boolean",
+                    "title": "Had previous owner"
+                }
+            },
+            "if": {
+                "properties": {
+                    "second": {
+                        "const": true
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "previous": {
+                        "$ref": "#/definitions/owner"
+                    }
+                }
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "owner": {
+            "$ref": "#/definitions/owner"
+        },
+        "car": {
+            "$ref": "#/definitions/car"
+        }
+    }
+}

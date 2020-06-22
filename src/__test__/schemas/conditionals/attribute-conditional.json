@@ -1,0 +1,38 @@
+{
+    "type": "object",
+    "properties": {
+        "street_address": {
+            "type": "string",
+            "title": "street_address"
+        },
+        "country": {
+            "enum": ["United States of America", "Canada"],
+            "title": "country"
+        }
+    },
+    "if": {
+        "properties": {
+            "country": {
+                "const": "United States of America"
+            }
+        }
+    },
+    "then": {
+        "properties": {
+            "postal_code": {
+                "type": "string",
+                "title": "postal_code",
+                "pattern": "[0-9]{5}(-[0-9]{4})?"
+            }
+        }
+    },
+    "else": {
+        "properties": {
+            "postal_code": {
+                "type": "string",
+                "title": "postal_code",
+                "pattern": "[A-Z][0-9][A-Z] [0-9][A-Z][0-9]"
+            }
+        }
+    }
+}
