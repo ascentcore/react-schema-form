@@ -63,11 +63,13 @@
   ],
   "dependencies": {
     "ajv": "^6.12.2",
-    "ajv-errors": "^1.0.1"
+    "ajv-errors": "^1.0.1",
+    "leaflet": "^1.6.0",
+    "react-leaflet": "^2.7.0"
   },
   "jest": {
-    "coveragePathIgnorePatterns" : [
-      "src/__test__" 
+    "coveragePathIgnorePatterns": [
+      "src/__test__"
     ]
   }
 }
