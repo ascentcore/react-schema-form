@@ -203,6 +203,49 @@ The default form elements are:
 
 You can read more about the registry in the [Customization](#customization) section.
 
+## Conditionals
+
+The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. Currently the conditionals support only single conditions, not multiple ones. The structure of a conditional schema is the following. 
+
+``` {
+  "type": "object",
+  "properties": {
+    "street_address": {
+      "type": "string"
+    },
+    "country": {
+      "enum": ["United States of America", "Canada"]
+    }
+  },
+  "if": {
+    "properties": { 
+        "country": { 
+            "const": "United States of America" 
+        } 
+    }
+  },
+  "then": {
+    "properties": { 
+        "postal_code": { 
+            "type": "string",
+            "pattern": "[0-9]{5}(-[0-9]{4})?" 
+        } 
+    }
+  },
+  "else": {
+    "properties": { 
+        "postal_code": {
+            "type": "string",
+            "pattern": "[A-Z][0-9][A-Z] [0-9][A-Z][0-9]" 
+        } 
+    }
+  }
+}
+```
+Under the if statement a single property with a const attribute has to be defined. The then/else attributes can define subschemas with one or more levels of nesting that will be added to the base schema if the value of the data field is matching the if statement. The properties can be added or only altered. The else statement is not mandatory.
+
+When the data changes and is no longer matching the condition, the properties which will disappear, will be also stripped off from the data object.
+
 ## <a name="customization"></a>Customization
 
 * Registry customization - the registry of the library has the following form
@@ -303,7 +346,7 @@ You can read more about the registry in the [Customization](#customization) sect
 The library uses a custom meta-schema to validate the given schemas by the user. The meta-schema is derived from the json-schema draft-07 schema, with some restrictions and a couple of custom fields. 
 * Our meta-schema currently supports just base64 encodings used for file uploads
 * The items in an array can be of a single type, not multiple types
-* The following fields are currently ignored: readOnly, writeOnly, examples, contains, maxProperties, minProperties, patternProperties, dependencies, propertyNames, const, if, then, else, allOf, anyOf, oneOf, not.
+* The following fields are currently ignored: readOnly, writeOnly, examples, contains, maxProperties, minProperties, patternProperties, dependencies, propertyNames, allOf, anyOf, oneOf, not.
 * **instanceof** field is a custom one. At the moment the supported value is "file". In this case, the parent property has to be an object, and the schema must also contain the fields filename and content.
 * **options** is another custom field. If the field is present, the library will render a select, taking the options from the given list. If not specified the name of the key and the name of the value attributes, will be 'labelKey' and 'labelValue'. Otherwise, the names will be taken from the attributes. For more details see the [Form default elements](#form-default-elements), the SelectElement section.
 
