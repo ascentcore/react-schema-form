@@ -69,11 +69,19 @@ export const SchemaForm = ({
                 const compiled: string = `data => { return ${ifEntries
                     .reduce((memo: string[], item: { '0': string; '1': SchemaProperty }) => {
                         return memo.concat([
-                            'data' +
+                            '(' +
+                                'data' +
                                 '.' +
                                 item[0] +
                                 '==' +
-                                (typeof item[1].const === 'string' ? "'" + item[1].const + "'" : item[1].const)
+                                'undefined' +
+                                ' || ' +
+                                'data' +
+                                '.' +
+                                item[0] +
+                                '==' +
+                                (typeof item[1].const === 'string' ? "'" + item[1].const + "'" : item[1].const) +
+                                ')'
                         ])
                     }, [])
                     .join(' && ')} }`
