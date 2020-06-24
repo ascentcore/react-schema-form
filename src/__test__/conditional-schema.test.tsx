@@ -10,28 +10,45 @@ import { getComponentTree, getByCSSSelector } from './test-utils'
 describe('BasicSchemaTests', () => {
     it('initializes correctly without data', () => {
         const tree = getComponentTree(mount(<SchemaForm schema={BasicSchema} />))
-        expect(tree.length).toEqual(2)
-        expect(['Has car', 'Other means of transportation']).toEqual(tree.map((item) => item.labelText))
+        expect(tree.length).toEqual(3)
+        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('initializes correctly with data', () => {
-        const data = { account: { car: true } }
+        const data = { account: { car: true, registered: true } }
         const tree = getComponentTree(mount(<SchemaForm schema={BasicSchema} data={data} />))
-        expect(tree.length).toEqual(2)
-        expect(['Has car', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
+        expect(tree.length).toEqual(3)
+        expect(['Has car', 'Is registered', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('alters schema on checkbox check', () => {
         const form = mount(<SchemaForm schema={BasicSchema} />)
-        const checkbox = getByCSSSelector(form, 'input[type="checkbox"]').first()
-        checkbox.simulate('change', {
+        const checkboxCar = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        checkboxCar.simulate('change', {
             target: {
                 checked: true
             }
         })
-        const tree = getComponentTree(form)
-        expect(tree.length).toEqual(2)
-        expect(['Has car', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
+        let tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(tree.map((item) => item.labelText))
+
+        const checkboxRegistered = getByCSSSelector(form, 'input[type="checkbox"]').at(1)
+        checkboxRegistered.simulate('change', {
+            target: {
+                checked: true
+            }
+        })
+        tree = getComponentTree(form)
+        expect(['Has car', 'Is registered', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
+
+        checkboxCar.simulate('change', {
+            target: {
+                checked: false
+            }
+        })
+        tree = getComponentTree(form)
+        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('deletes data which no longer matches schema', () => {
@@ -47,10 +64,17 @@ describe('BasicSchemaTests', () => {
         const submitButton = getByCSSSelector(form, 'button').last()
         submitButton.simulate('click')
 
-        expect(valData).toEqual({ account: { car: false, otherMeansOfTransportation: 'bike' } })
+        expect(valData).toEqual({ account: { car: false, registered: false, otherMeansOfTransportation: 'bike' } })
 
-        const checkbox = getByCSSSelector(form, 'input[type="checkbox"]').first()
-        checkbox.simulate('change', {
+        const checkboxCar = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        checkboxCar.simulate('change', {
+            target: {
+                checked: true
+            }
+        })
+
+        const checkboxRegistered = getByCSSSelector(form, 'input[type="checkbox"]').at(1)
+        checkboxRegistered.simulate('change', {
             target: {
                 checked: true
             }
@@ -58,7 +82,7 @@ describe('BasicSchemaTests', () => {
 
         submitButton.simulate('click')
 
-        expect(valData).toEqual({ account: { car: true } })
+        expect(valData).toEqual({ account: { car: true, registered: true } })
     })
 })
 
