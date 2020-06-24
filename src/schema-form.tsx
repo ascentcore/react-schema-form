@@ -8,10 +8,10 @@ import formatErrors from './error-formatter'
 const _ = require('lodash')
 
 interface Conditional {
-    const?: any
+    compiled: string
     then?: SchemaProperty
     else?: SchemaProperty
-    lastCondition?: string
+    lastState: boolean | null
 }
 
 export const SchemaForm = ({
@@ -52,7 +52,7 @@ export const SchemaForm = ({
         Object.assign({}, { data, childPath: null })
     )
     const [keys, setKeys] = useState(Object.keys(schema.properties || {}))
-    const [instance] = useState(() => parentChange ? null : new UISchema(schema))
+    const [instance] = useState(() => (parentChange ? null : new UISchema(schema)))
     const [registry] = useState(
         () =>
             new ComponentRegistry(
@@ -62,21 +62,32 @@ export const SchemaForm = ({
             )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
-    const [conditionals] = useState<{ [key: string]: Conditional }>(() => {
+    const [conditionals] = useState<Conditional[]>((): Conditional[] => {
         if (schema && schema.if && schema.if.properties) {
-            const ifEntry = Object.entries(schema.if!.properties!)[0]
-            if (ifEntry && ifEntry[1].const !== undefined) {
-                return {
-                    [ifEntry[0]]: {
-                        const: ifEntry[1].const,
+            const ifEntries = Object.entries(schema.if!.properties!) as { '0': string; '1': SchemaProperty }[]
+            if (ifEntries) {
+                const compiled: string = `data => { return ${ifEntries
+                    .reduce((memo: string[], item: { '0': string; '1': SchemaProperty }) => {
+                        return memo.concat([
+                            'data' +
+                                '.' +
+                                item[0] +
+                                '==' +
+                                (typeof item[1].const === 'string' ? "'" + item[1].const + "'" : item[1].const)
+                        ])
+                    }, [])
+                    .join(' && ')} }`
+                return [
+                    {
+                        compiled: compiled,
                         ...(schema.then ? { then: schema.then } : {}),
                         ...(schema.else ? { else: schema.else } : {}),
-                        lastCondition: ''
+                        lastState: null
                     }
-                }
+                ]
             }
         }
-        return {}
+        return []
     })
 
     const removeObjPath = (path: string[], obj: any) => {
@@ -137,19 +148,27 @@ export const SchemaForm = ({
         setKeys(Object.keys(newSchema.properties || {}))
     }
 
-    const checkConditionals = (actualSchema: SchemaProperty, key: string, value: any) => {
-        if (value === conditionals[key].const && conditionals[key].then && conditionals[key].lastCondition !== 'if') {
-            conditionals[key].lastCondition = 'if'
-            updateSchema(actualSchema, schema, conditionals[key].then)
-        }
-        if (value !== conditionals[key].const && conditionals[key].lastCondition !== 'else') {
-            conditionals[key].lastCondition = 'else'
-            if (conditionals[key].else) {
-                updateSchema(actualSchema, schema, conditionals[key].else)
-            } else {
-                updateSchema(actualSchema, schema, {})
+    const checkConditionals = (actualSchema: SchemaProperty) => {
+        conditionals.forEach((conditional: Conditional) => {
+            try {
+                const evalCondition = eval(conditional.compiled)(obj.data)
+                if (evalCondition !== conditional.lastState) {
+                    if (evalCondition) {
+                        conditional.lastState = true
+                        updateSchema(actualSchema, schema, conditional.then)
+                    } else {
+                        conditional.lastState = false
+                        updateSchema(actualSchema, schema, conditional.else || {})
+                    }
+                }
+            } catch (err) {
+                // property does not exist on data; enetring else branch
+                if (!conditional.lastState || conditional.lastState === null) {
+                    conditional.lastState = true
+                    updateSchema(actualSchema, schema, conditional.then || {})
+                }
             }
-        }
+        })
     }
 
     const handleParentChange = (key: string) => (value: any, childPath: string | null, nestedPath?: string) => {
@@ -171,9 +190,6 @@ export const SchemaForm = ({
                 }
                 return newValue
             })
-            if (conditionals[key]) {
-                checkConditionals(currentSchema || schema, key, value)
-            }
         }
     }
 
@@ -209,14 +225,7 @@ export const SchemaForm = ({
     }, [schema])
 
     useEffect(() => {
-        keys.forEach((key) => {
-            if (conditionals[key] && obj.data[key] !== undefined) {
-                checkConditionals(currentSchema || schema, key, obj.data[key])
-            }
-        })
-    }, [])
-
-    useEffect(() => {
+        checkConditionals(currentSchema || schema)
         if (parentChange && obj.childPath) {
             parentChange(obj.data, obj.childPath)
         } else {

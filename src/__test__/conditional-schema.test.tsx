@@ -188,9 +188,24 @@ describe('LeafSchemaTests', () => {
 
 describe('AttributeSchemaTests', () => {
     it('initializes correctly without data', () => {
-        const tree = getComponentTree(mount(<SchemaForm schema={AttributeSchema} />))
-        expect(tree.length).toEqual(2)
-        expect(['street_address', 'country']).toEqual(tree.map((item) => item.labelText))
+        const form = mount(<SchemaForm schema={AttributeSchema} />)
+        let tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['street_address', 'country', 'postal_code']).toEqual(tree.map((item) => item.labelText))
+
+        const postalCode = getByCSSSelector(form, 'input[type="text"]').last()
+        postalCode.simulate('change', {
+            target: {
+                value: 'text'
+            }
+        })
+
+        const submitButton = getByCSSSelector(form, 'button').last()
+        submitButton.simulate('click')
+
+        tree = getComponentTree(form)
+
+        expect([0, 0, 'Field does not match pattern ([0-9]{5}(-[0-9]{4})?)']).toEqual(tree.map((i) => i.errorText))
     })
 
     it('alters schema on enum selection', () => {
