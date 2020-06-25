@@ -205,7 +205,7 @@ You can read more about the registry in the [Customization](#customization) sect
 
 ## Conditionals
 
-The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. Currently the conditionals support only single conditions, not multiple ones. The structure of a conditional schema is the following. 
+The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. Currently the conditionals support only multiple properties under a single if condition, not multiple ones (declared with allOf oneOf or anyOf). Also, the if condition currently supports a single level of nesting. The structure of a conditional schema is the following: 
 
 ``` {
   "type": "object",
@@ -242,7 +242,7 @@ The structure of the schema can be dynamically altered by specifying **if** cond
   }
 }
 ```
-Under the if statement a single property with a const attribute has to be defined. The then/else attributes can define subschemas with one or more levels of nesting that will be added to the base schema if the value of the data field is matching the if statement. The properties can be added or only altered. The else statement is not mandatory.
+Under the if statement a set of properties with a const attribute have to be defined. The then/else attributes can define subschemas with one or more levels of nesting that will be added to the base schema if the value of the data field is matching the if statement. The properties can be added or only altered. The else statement is not mandatory.
 
 When the data changes and is no longer matching the condition, the properties which will disappear, will be also stripped off from the data object.
 
