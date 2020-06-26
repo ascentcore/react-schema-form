@@ -11,7 +11,95 @@ interface Conditional {
     compiled: string
     then?: SchemaProperty
     else?: SchemaProperty
-    lastState: boolean | null
+}
+
+const getConditionals = (schema: SchemaProperty) => {
+    let ifEntries = []
+    const simpleConditional = getSimpleConditional(schema)
+    if (simpleConditional) {
+        ifEntries.push(simpleConditional)
+    }
+    ifEntries = ifEntries.concat(getMultipleConditionals(schema))
+    return ifEntries.map((ifEntry) => getCompiledConditional(ifEntry))
+}
+
+const getSimpleConditional = (schema: SchemaProperty) => {
+    if (schema.if && schema.if.properties) {
+        return {
+            if: Object.entries(schema.if!.properties!) as { '0': string; '1': SchemaProperty }[],
+            then: schema.then,
+            else: schema.else
+        }
+    } else {
+        return null
+    }
+}
+
+const extractConditional = (
+    conditionalSet: SchemaProperty[]
+): {
+    if: { '0': string; '1': SchemaProperty }[]
+    then: SchemaProperty | undefined
+    else: SchemaProperty | undefined
+}[] => {
+    return conditionalSet
+        .filter((entry) => entry.if !== undefined)
+        .map((conditional) => {
+            return {
+                if: Object.entries(conditional.if!.properties!) as { '0': string; '1': SchemaProperty }[],
+                then: conditional.then,
+                else: conditional.else
+            }
+        })
+}
+
+const getMultipleConditionals = (schema: SchemaProperty) => {
+    let multipleConditionals: {
+        if: { '0': string; '1': SchemaProperty }[]
+        then: SchemaProperty | undefined
+        else: SchemaProperty | undefined
+    }[] = []
+    if (schema.allOf) {
+        multipleConditionals = multipleConditionals.concat(extractConditional(schema.allOf))
+    }
+    if (schema.anyOf) {
+        multipleConditionals = multipleConditionals.concat(extractConditional(schema.anyOf))
+    }
+    if (schema.oneOf) {
+        multipleConditionals = multipleConditionals.concat(extractConditional(schema.oneOf))
+    }
+    return multipleConditionals
+}
+
+const getCompiledConditional = (ifEntry: {
+    if: { '0': string; '1': SchemaProperty }[]
+    then: SchemaProperty | undefined
+    else: SchemaProperty | undefined
+}) => {
+    const compiled: string = `data => { return ${ifEntry.if
+        .reduce((memo: string[], item: { '0': string; '1': SchemaProperty }) => {
+            return memo.concat([
+                '(' +
+                    'data' +
+                    '.' +
+                    item[0] +
+                    '==' +
+                    'undefined' +
+                    ' || ' +
+                    'data' +
+                    '.' +
+                    item[0] +
+                    '==' +
+                    (typeof item[1].const === 'string' ? "'" + item[1].const + "'" : item[1].const) +
+                    ')'
+            ])
+        }, [])
+        .join(' && ')} }`
+    return {
+        compiled: compiled,
+        ...(ifEntry.then ? { then: ifEntry.then } : {}),
+        ...(ifEntry.else ? { else: ifEntry.else } : {})
+    }
 }
 
 export const SchemaForm = ({
@@ -63,39 +151,7 @@ export const SchemaForm = ({
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
     const [conditionals] = useState<Conditional[]>((): Conditional[] => {
-        if (schema && schema.if && schema.if.properties) {
-            const ifEntries = Object.entries(schema.if!.properties!) as { '0': string; '1': SchemaProperty }[]
-            if (ifEntries) {
-                const compiled: string = `data => { return ${ifEntries
-                    .reduce((memo: string[], item: { '0': string; '1': SchemaProperty }) => {
-                        return memo.concat([
-                            '(' +
-                                'data' +
-                                '.' +
-                                item[0] +
-                                '==' +
-                                'undefined' +
-                                ' || ' +
-                                'data' +
-                                '.' +
-                                item[0] +
-                                '==' +
-                                (typeof item[1].const === 'string' ? "'" + item[1].const + "'" : item[1].const) +
-                                ')'
-                        ])
-                    }, [])
-                    .join(' && ')} }`
-                return [
-                    {
-                        compiled: compiled,
-                        ...(schema.then ? { then: schema.then } : {}),
-                        ...(schema.else ? { else: schema.else } : {}),
-                        lastState: null
-                    }
-                ]
-            }
-        }
-        return []
+        return getConditionals(schema)
     })
 
     const removeObjPath = (path: string[], obj: any) => {
@@ -133,8 +189,8 @@ export const SchemaForm = ({
 
     const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string): any => {
         if (isObject(currentSchema) && isObject(baseSchema)) {
-            for (const key in currentSchema) {
-                if (!baseSchema[key]) {
+            for (const key in baseSchema) {
+                if (!currentSchema[key]) {
                     delete currentSchema[key]
                     handleParentChange(key)(undefined, obj.childPath, `${nestedPath}.${key}`)
                 } else {
@@ -148,35 +204,26 @@ export const SchemaForm = ({
         }
     }
 
-    const updateSchema = (currentSchema: any, baseSchema: any, newProperties: any): any => {
-        const newSchema = _.cloneDeep(currentSchema)
-        removeProperties(newSchema, baseSchema, path)
-        addProperties(newSchema, newProperties)
-        setCurrentSchema(newSchema)
-        setKeys(Object.keys(newSchema.properties || {}))
-    }
-
     const checkConditionals = (actualSchema: SchemaProperty) => {
+        const newSchema = _.cloneDeep(schema)
+
         conditionals.forEach((conditional: Conditional) => {
             try {
                 const evalCondition = eval(conditional.compiled)(obj.data)
-                if (evalCondition !== conditional.lastState) {
-                    if (evalCondition) {
-                        conditional.lastState = true
-                        updateSchema(actualSchema, schema, conditional.then)
-                    } else {
-                        conditional.lastState = false
-                        updateSchema(actualSchema, schema, conditional.else || {})
-                    }
+                if (evalCondition) {
+                    addProperties(newSchema, conditional.then)
+                } else {
+                    addProperties(newSchema, conditional.else || {})
                 }
             } catch (err) {
                 // property does not exist on data; enetring else branch
-                if (!conditional.lastState || conditional.lastState === null) {
-                    conditional.lastState = true
-                    updateSchema(actualSchema, schema, conditional.then || {})
-                }
+                addProperties(newSchema, conditional.then)
             }
         })
+        removeProperties(newSchema, actualSchema, path)
+
+        setCurrentSchema(newSchema)
+        setKeys(Object.keys(newSchema.properties || {}))
     }
 
     const handleParentChange = (key: string) => (value: any, childPath: string | null, nestedPath?: string) => {
@@ -204,8 +251,11 @@ export const SchemaForm = ({
     const handleSubmit = () => {
         const result = instance!.validate(obj.data)
         const errors: ajv.ErrorObject[] = result || !instance!.validator.errors ? [] : instance!.validator.errors
-        errors.forEach((err) => {
-            if (err.params && (err.params as RequiredParams).missingProperty) {
+
+        errors.forEach((err, index, object) => {
+            if (err.keyword === 'if') {
+                object.splice(index, 1)
+            } else if (err.params && (err.params as RequiredParams).missingProperty) {
                 err.dataPath += `.${(err.params as RequiredParams).missingProperty}`
             }
         })

@@ -26,6 +26,9 @@ export interface SchemaProperty {
     const?: any
     instanceof?: string
     definitions? : any
+    allOf?: SchemaProperty[]
+    anyOf?: SchemaProperty[]
+    oneOf?: SchemaProperty[]
 
     path?: string
     registryKey?: string

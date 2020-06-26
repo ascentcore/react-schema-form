@@ -22,30 +22,50 @@
             "properties": {
                 "year": {
                     "title": "Purchasing Year",
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 2020
                 },
                 "second": {
                     "type": "boolean",
                     "title": "Had previous owner"
                 }
             },
-            "if": {
-                "properties": {
-                    "second": {
-                        "const": true
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "second": {
+                                "const": true
+                            }
+                        }
                     },
-                    "year": {
-                        "const": 2000
+                    "then": {
+                        "properties": {
+                            "previous": {
+                                "title": "Previous owner",
+                                "$ref": "#/definitions/owner"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "year": {
+                                "const": 2000
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "previous": {
+                                "title": "Previous owner",
+                                "$ref": "#/definitions/owner"
+                            }
+                        }
                     }
                 }
-            },
-            "then": {
-                "properties": {
-                    "previous": {
-                        "$ref": "#/definitions/owner"
-                    }
-                }
-            }
+            ]
         }
     },
     "type": "object",
