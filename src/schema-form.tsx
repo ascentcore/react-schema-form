@@ -205,25 +205,27 @@ export const SchemaForm = ({
     }
 
     const checkConditionals = (actualSchema: SchemaProperty) => {
-        const newSchema = _.cloneDeep(schema)
+        if (conditionals.length) {
+            const newSchema = _.cloneDeep(schema)
 
-        conditionals.forEach((conditional: Conditional) => {
-            try {
-                const evalCondition = eval(conditional.compiled)(obj.data)
-                if (evalCondition) {
+            conditionals.forEach((conditional: Conditional) => {
+                try {
+                    const evalCondition = eval(conditional.compiled)(obj.data)
+                    if (evalCondition) {
+                        addProperties(newSchema, conditional.then)
+                    } else {
+                        addProperties(newSchema, conditional.else || {})
+                    }
+                } catch (err) {
+                    // property does not exist on data; enetring else branch
                     addProperties(newSchema, conditional.then)
-                } else {
-                    addProperties(newSchema, conditional.else || {})
                 }
-            } catch (err) {
-                // property does not exist on data; enetring else branch
-                addProperties(newSchema, conditional.then)
-            }
-        })
-        removeProperties(newSchema, actualSchema, path)
+            })
+            removeProperties(newSchema, actualSchema, path)
 
-        setCurrentSchema(newSchema)
-        setKeys(Object.keys(newSchema.properties || {}))
+            setCurrentSchema(newSchema)
+            setKeys(Object.keys(newSchema.properties || {}))
+        }
     }
 
     const handleParentChange = (key: string) => (value: any, childPath: string | null, nestedPath?: string) => {
