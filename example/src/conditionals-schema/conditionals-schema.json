@@ -64,6 +64,32 @@
                             }
                         }
                     }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "previous": {
+                                "properties": {
+                                    "gender": {
+                                        "const": "f"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "previous": {
+                                "required": ["kids"],
+                                "properties": {
+                                    "kids": {
+                                        "type": "integer",
+                                        "title": "Kids"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             ]
         }

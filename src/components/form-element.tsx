@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, ReactNode } from 'react'
-import { SchemaForm } from '../schema-form'
+import { SchemaForm, addProperties } from '../schema-form'
 import ComponentRegistry from '../component-registry'
 import ajv from 'ajv'
 
@@ -25,7 +25,7 @@ export interface SchemaProperty {
     else?: SchemaProperty
     const?: any
     instanceof?: string
-    definitions? : any
+    definitions?: any
     allOf?: SchemaProperty[]
     anyOf?: SchemaProperty[]
     oneOf?: SchemaProperty[]
@@ -81,18 +81,27 @@ export default function FormElement({
         }
 
         const { $ref, items, properties } = schema
+        let newNestedSchema = null
 
-        if ($ref) {
-            setNestedSchema(processRef($ref))
-        } else if (items) {
+        if (items) {
             if (items.$ref) {
-                setNestedSchema(processRef(items.$ref))
-            } else if (items.properties) {
-                setNestedSchema(items)
+                newNestedSchema = processRef(items.$ref)
+            } else if (items.properties){
+                newNestedSchema = items
             }
-        } else if (properties) {
-            setNestedSchema(schema)
+        } else {
+            if ($ref) {
+                newNestedSchema = processRef($ref)
+            }
+            if (properties) {
+                if (!$ref) {
+                    newNestedSchema = schema
+                }
+                addProperties(newNestedSchema, { properties: schema.properties })
+            }
         }
+        setNestedSchema(newNestedSchema)
+    
         initializeData()
     }, [schema])
 
@@ -243,11 +252,11 @@ export default function FormElement({
     }
 
     function renderFormElement(itemValue: any, index: number | null = null) {
-        const typeObjectArrayItem = nestedSchema && schema.type === 'array' && index !== null
-        const typeObjectOrObjectArrayItem = (nestedSchema && schema.type !== 'array') || typeObjectArrayItem
+        const typeObjectArrayItem = !!nestedSchema && schema.type === 'array' && index !== null
+        const typeObjectOrObjectArrayItem = (!!nestedSchema && schema.type !== 'array') || typeObjectArrayItem
 
         const typePrimitiveArrayItem =
-            !nestedSchema && schema.type === 'array' && index !== null && schema.items && schema.items.type
+            !nestedSchema && schema.type === 'array' && index !== null && !!schema.items && !!schema.items.type
 
         const typeArray = schema.type === 'array' && index === null
         const typeArrayOfEnums =

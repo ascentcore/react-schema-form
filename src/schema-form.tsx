@@ -23,10 +23,27 @@ const getConditionals = (schema: SchemaProperty) => {
     return ifEntries.map((ifEntry) => getCompiledConditional(ifEntry))
 }
 
+const isObject = (item: any) => {
+    return item && typeof item === 'object' && !Array.isArray(item)
+}
+
+const getPropertyPaths = (schema: any, path = ''): { '0': string; '1': any }[] => {
+    if (isObject(schema)) {
+        return Array.prototype.concat.apply(
+            [],
+            Object.keys(schema).map((key) =>
+                getPropertyPaths(schema[key], key === 'properties' || key === 'const' ? path : path + '.' + key)
+            )
+        )
+    } else {
+        return [{ '0': path, '1': schema }]
+    }
+}
+
 const getSimpleConditional = (schema: SchemaProperty) => {
     if (schema.if && schema.if.properties) {
         return {
-            if: Object.entries(schema.if!.properties!) as { '0': string; '1': SchemaProperty }[],
+            if: getPropertyPaths(schema.if!) as { '0': string; '1': any }[],
             then: schema.then,
             else: schema.else
         }
@@ -38,7 +55,7 @@ const getSimpleConditional = (schema: SchemaProperty) => {
 const extractConditional = (
     conditionalSet: SchemaProperty[]
 ): {
-    if: { '0': string; '1': SchemaProperty }[]
+    if: { '0': string; '1': any }[]
     then: SchemaProperty | undefined
     else: SchemaProperty | undefined
 }[] => {
@@ -46,7 +63,7 @@ const extractConditional = (
         .filter((entry) => entry.if !== undefined)
         .map((conditional) => {
             return {
-                if: Object.entries(conditional.if!.properties!) as { '0': string; '1': SchemaProperty }[],
+                if: getPropertyPaths(conditional.if!) as { '0': string; '1': any }[],
                 then: conditional.then,
                 else: conditional.else
             }
@@ -55,7 +72,7 @@ const extractConditional = (
 
 const getMultipleConditionals = (schema: SchemaProperty) => {
     let multipleConditionals: {
-        if: { '0': string; '1': SchemaProperty }[]
+        if: { '0': string; '1': any }[]
         then: SchemaProperty | undefined
         else: SchemaProperty | undefined
     }[] = []
@@ -77,20 +94,18 @@ const getCompiledConditional = (ifEntry: {
     else: SchemaProperty | undefined
 }) => {
     const compiled: string = `data => { return ${ifEntry.if
-        .reduce((memo: string[], item: { '0': string; '1': SchemaProperty }) => {
+        .reduce((memo: string[], item: { '0': string; '1': any }) => {
             return memo.concat([
                 '(' +
                     'data' +
-                    '.' +
                     item[0] +
                     '==' +
                     'undefined' +
                     ' || ' +
                     'data' +
-                    '.' +
                     item[0] +
                     '==' +
-                    (typeof item[1].const === 'string' ? "'" + item[1].const + "'" : item[1].const) +
+                    (typeof item[1] === 'string' ? "'" + item[1] + "'" : item[1]) +
                     ')'
             ])
         }, [])
@@ -99,6 +114,21 @@ const getCompiledConditional = (ifEntry: {
         compiled: compiled,
         ...(ifEntry.then ? { then: ifEntry.then } : {}),
         ...(ifEntry.else ? { else: ifEntry.else } : {})
+    }
+}
+
+export const addProperties = (currentSchema: any, newProperties: any): any => {
+    if (isObject(currentSchema) && isObject(newProperties)) {
+        for (const key in newProperties) {
+            if (isObject(newProperties[key])) {
+                if (!currentSchema[key]) {
+                    Object.assign(currentSchema, { [key]: {} })
+                }
+                addProperties(currentSchema[key], newProperties[key])
+            } else {
+                Object.assign(currentSchema, { [key]: newProperties[key] })
+            }
+        }
     }
 }
 
@@ -168,25 +198,6 @@ export const SchemaForm = ({
         }
     }
 
-    const isObject = (item: any) => {
-        return item && typeof item === 'object' && !Array.isArray(item)
-    }
-
-    const addProperties = (currentSchema: any, newProperties: any): any => {
-        if (isObject(currentSchema) && isObject(newProperties)) {
-            for (const key in newProperties) {
-                if (isObject(newProperties[key])) {
-                    if (!currentSchema[key]) {
-                        Object.assign(currentSchema, { [key]: {} })
-                    }
-                    addProperties(currentSchema[key], newProperties[key])
-                } else {
-                    Object.assign(currentSchema, { [key]: newProperties[key] })
-                }
-            }
-        }
-    }
-
     const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string): any => {
         if (isObject(currentSchema) && isObject(baseSchema)) {
             for (const key in baseSchema) {
@@ -217,12 +228,10 @@ export const SchemaForm = ({
                         addProperties(newSchema, conditional.else || {})
                     }
                 } catch (err) {
-                    // property does not exist on data; enetring else branch
-                    addProperties(newSchema, conditional.then)
+                    // property does not exist on data; 
                 }
             })
             removeProperties(newSchema, actualSchema, path)
-
             setCurrentSchema(newSchema)
             setKeys(Object.keys(newSchema.properties || {}))
         }
