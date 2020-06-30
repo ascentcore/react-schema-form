@@ -203,7 +203,7 @@ The default form elements are:
 
 You can read more about the registry in the [Customization](#customization) section.
 
-## Conditionals
+## <a name="conditionals"></a>Conditionals
 
 The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. Currently the conditionals support multiple properties with a single nesting level under an if condition, or under multiple if conditions (declared with allOf oneOf or anyOf). The structure of a conditional schema is the following: 
 
@@ -367,7 +367,8 @@ If the effects of two conditions are overlapping, the last one will overwrite th
 The library uses a custom meta-schema to validate the given schemas by the user. The meta-schema is derived from the json-schema draft-07 schema, with some restrictions and a couple of custom fields. 
 * Our meta-schema currently supports just base64 encodings used for file uploads
 * The items in an array can be of a single type, not multiple types
-* The following fields are currently ignored: readOnly, writeOnly, examples, contains, maxProperties, minProperties, patternProperties, dependencies, propertyNames, allOf, anyOf, oneOf, not.
+* The following fields are currently ignored: readOnly, writeOnly, examples, contains, maxProperties, minProperties, patternProperties, dependencies, propertyNames, not.
+* The keywords allOf, anyOf, oneOf are currently taken into consideration only if they include if statements. See [Conditionals](#conditionals) section.
 * **instanceof** field is a custom one. At the moment the supported value is "file". In this case, the parent property has to be an object, and the schema must also contain the fields filename and content.
 * **options** is another custom field. If the field is present, the library will render a select, taking the options from the given list. If not specified the name of the key and the name of the value attributes, will be 'labelKey' and 'labelValue'. Otherwise, the names will be taken from the attributes. For more details see the [Form default elements](#form-default-elements), the SelectElement section.
 
