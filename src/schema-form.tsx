@@ -200,10 +200,15 @@ export const SchemaForm = ({
 
     const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string): any => {
         if (isObject(currentSchema) && isObject(baseSchema)) {
+            if (currentSchema['$ref'] !== undefined) {
+                const def = currentSchema['$ref'].substr(currentSchema['$ref'].lastIndexOf('/') + 1)
+                addProperties(currentSchema, root!.definitions[def])
+                nestedPath += `.${def}`
+            }
+            
             for (const key in baseSchema) {
                 if (!currentSchema[key]) {
-                    delete currentSchema[key]
-                    handleParentChange(key)(undefined, obj.childPath, `${nestedPath}.${key}`)
+                    handleParentChange(key)(undefined, `${nestedPath}.${key}`, `${nestedPath}.${key}`)
                 } else {
                     removeProperties(
                         currentSchema[key],
@@ -228,7 +233,7 @@ export const SchemaForm = ({
                         addProperties(newSchema, conditional.else || {})
                     }
                 } catch (err) {
-                    // property does not exist on data; 
+                    // property does not exist on data;
                 }
             })
             removeProperties(newSchema, actualSchema, path)

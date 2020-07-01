@@ -1,6 +1,7 @@
 import React from 'react'
 import BasicSchema from './schemas/conditionals/basic-conditional.json'
-import NestedSchema from './schemas/conditionals/nested-conditional.json'
+import NestedIfSchema from './schemas/conditionals/nested-if.json'
+import NestedThenElseSchema from './schemas/conditionals/nested-then-else.json'
 import LeafSchema from './schemas/conditionals/leaf-conditional.json'
 import AttributeSchema from './schemas/conditionals/attribute-conditional.json'
 import { SchemaForm } from '..'
@@ -86,22 +87,22 @@ describe('BasicSchemaTests', () => {
     })
 })
 
-describe('NestedSchemaTests', () => {
+describe('NestedThenElseSchemaTests', () => {
     it('initializes correctly without data', () => {
-        const tree = getComponentTree(mount(<SchemaForm schema={NestedSchema} />))
+        const tree = getComponentTree(mount(<SchemaForm schema={NestedThenElseSchema} />))
         expect(tree.length).toEqual(2)
         expect(['prop1', 'prop4']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('initializes correctly with data', () => {
         const data = { account: { prop1: true } }
-        const tree = getComponentTree(mount(<SchemaForm schema={NestedSchema} data={data} />))
+        const tree = getComponentTree(mount(<SchemaForm schema={NestedThenElseSchema} data={data} />))
         expect(tree.length).toEqual(2)
         expect(['prop1', 'prop3']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('alters schema on checkbox check', () => {
-        const form = mount(<SchemaForm schema={NestedSchema} />)
+        const form = mount(<SchemaForm schema={NestedThenElseSchema} />)
         const checkbox = getByCSSSelector(form, 'input[type="checkbox"]').first()
         checkbox.simulate('change', {
             target: {
@@ -116,7 +117,7 @@ describe('NestedSchemaTests', () => {
     it('deletes data which no longer matches schema', () => {
         let valData
         const onSubmit = (data: any) => (valData = data)
-        const form = mount(<SchemaForm schema={NestedSchema} onSubmit={onSubmit} />)
+        const form = mount(<SchemaForm schema={NestedThenElseSchema} onSubmit={onSubmit} />)
         const prop4 = getByCSSSelector(form, 'input[type="text"]').first()
         prop4.simulate('change', {
             target: {
@@ -282,5 +283,67 @@ describe('AttributeSchemaTests', () => {
         const tree = getComponentTree(form)
 
         expect([0, 0, 'Field does not match pattern ([A-Z][0-9][A-Z] [0-9][A-Z][0-9])']).toEqual(tree.map((i) => i.errorText))
+    })
+})
+
+
+describe('NestedIfSchemaTests', () => {
+    it('initializes correctly without data', () => {
+        const tree = getComponentTree(mount(<SchemaForm schema={NestedIfSchema} />))
+        expect(tree.length).toEqual(2)
+        expect(['Name', 'Gender']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('initializes correctly with data', () => {
+        const data = { owner: { gender: "f" } }
+        const tree = getComponentTree(mount(<SchemaForm schema={NestedIfSchema} data={data} />))
+        expect(tree.length).toEqual(3)
+        expect(['Name', 'Gender', 'Kids']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('alters schema on checkbox check', () => {
+        const form = mount(<SchemaForm schema={NestedIfSchema} />)
+        const gender = getByCSSSelector(form, 'select').first()
+        gender.simulate('change', {
+            target: {
+                value: 'f'
+            }
+        })
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['Name', 'Gender', 'Kids']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('deletes data which no longer matches schema', () => {
+        let valData
+        const onSubmit = (data: any) => (valData = data)
+        const form = mount(<SchemaForm schema={NestedIfSchema} onSubmit={onSubmit} />)
+        let gender = getByCSSSelector(form, 'select').first()
+        gender.simulate('change', {
+            target: {
+                value: 'f'
+            }
+        })
+        const kids = getByCSSSelector(form, 'input[type="number"]').last()
+        kids.simulate('change', {
+            target: {
+                value: 2
+            }
+        })
+        const submitButton = getByCSSSelector(form, 'button').last()
+        submitButton.simulate('click')
+
+        expect(valData).toEqual({ owner: { gender: 'f', kids: 2 } })
+
+        gender = getByCSSSelector(form, 'select').first()
+        gender.simulate('change', {
+            target: {
+                value: 'm'
+            }
+        })
+
+        submitButton.simulate('click')
+
+        expect(valData).toEqual({ owner: { gender: 'm' } })
     })
 })

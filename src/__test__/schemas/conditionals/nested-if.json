@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "properties": {
+        "owner": {
+            "type": "object",
+            "$ref": "#/definitions/owner"
+        }
+    },
+    "if": {
+        "properties": {
+            "owner": {
+                "properties": {
+                    "gender": {
+                        "const": "f"
+                    }
+                }
+            }
+        }
+    },
+    "then": {
+        "properties": {
+            "owner": {
+                "properties": {
+                    "kids": {
+                        "type": "integer",
+                        "title": "Kids"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "owner": {
+            "type": "object",
+            "tile": "owner",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "gender": {
+                    "title": "Gender",
+                    "type": "string",
+                    "enum": ["m", "f"]
+                }
+            }
+        }
+    }
+}
