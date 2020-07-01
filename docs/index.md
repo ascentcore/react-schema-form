@@ -205,7 +205,7 @@ You can read more about the registry in the [Customization](#customization) sect
 
 ## <a name="conditionals"></a>Conditionals
 
-The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. Currently the conditionals support multiple properties with a single nesting level under an if condition, or under multiple if conditions (declared with allOf oneOf or anyOf). The structure of a conditional schema is the following: 
+The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. The conditionals support multiple properties with a any number of nesting levels under an if condition, or under multiple if conditions (declared with allOf oneOf or anyOf). The structure of a conditional schema is the following: 
 
 ``` {
   "type": "object",
@@ -242,7 +242,7 @@ The structure of the schema can be dynamically altered by specifying **if** cond
   }
 }
 ```
-Under the if statement a set of properties with a const attribute have to be defined. The then/else attributes can define subschemas with one or more levels of nesting that will be added to the base schema if the value of the data field is matching the if statement. The properties can be added or only altered. The else statement is not mandatory.
+Under the if statement a set of properties have to be defined containing at the highest nesting level a const attribute. The then/else attributes can define subschemas with one or more levels of nesting that will be added to the base schema if the value of the data field is matching the if statement. The properties can be added or only altered. The else statement is not mandatory.
 
 To define multiple if statements, the following structure will be followed.
 
@@ -266,6 +266,8 @@ When defining multiple properties under the same if statement, the resulted cond
 When the data changes and is no longer matching the condition, the properties which will disappear, will be also stripped off from the data object.
 
 If the effects of two conditions are overlapping, the last one will overwrite the others.
+
+Because of Ajv's default behaviour, our library decided to behave the same way. When the properties specified as part of a conditional if statement are not present at all on the data object, the condition will be evaluated as being true, meaning that the "then" statement will be applied. To avoid this behavior, the user can define default values for the properties.
 
 ## <a name="customization"></a>Customization
 

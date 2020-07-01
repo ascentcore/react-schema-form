@@ -4,6 +4,7 @@ import NestedIfSchema from './schemas/conditionals/nested-if.json'
 import NestedThenElseSchema from './schemas/conditionals/nested-then-else.json'
 import LeafSchema from './schemas/conditionals/leaf-conditional.json'
 import AttributeSchema from './schemas/conditionals/attribute-conditional.json'
+import MultipleSchema from './schemas/conditionals/multiple-conditional.json'
 import { SchemaForm } from '..'
 import { mount } from 'enzyme'
 import { getComponentTree, getByCSSSelector } from './test-utils'
@@ -12,7 +13,9 @@ describe('BasicSchemaTests', () => {
     it('initializes correctly without data', () => {
         const tree = getComponentTree(mount(<SchemaForm schema={BasicSchema} />))
         expect(tree.length).toEqual(3)
-        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(tree.map((item) => item.labelText))
+        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(
+            tree.map((item) => item.labelText)
+        )
     })
 
     it('initializes correctly with data', () => {
@@ -32,7 +35,9 @@ describe('BasicSchemaTests', () => {
         })
         let tree = getComponentTree(form)
         expect(tree.length).toEqual(3)
-        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(tree.map((item) => item.labelText))
+        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(
+            tree.map((item) => item.labelText)
+        )
 
         const checkboxRegistered = getByCSSSelector(form, 'input[type="checkbox"]').at(1)
         checkboxRegistered.simulate('change', {
@@ -49,7 +54,9 @@ describe('BasicSchemaTests', () => {
             }
         })
         tree = getComponentTree(form)
-        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(tree.map((item) => item.labelText))
+        expect(['Has car', 'Is registered', 'Other means of transportation']).toEqual(
+            tree.map((item) => item.labelText)
+        )
     })
 
     it('deletes data which no longer matches schema', () => {
@@ -282,10 +289,11 @@ describe('AttributeSchemaTests', () => {
 
         const tree = getComponentTree(form)
 
-        expect([0, 0, 'Field does not match pattern ([A-Z][0-9][A-Z] [0-9][A-Z][0-9])']).toEqual(tree.map((i) => i.errorText))
+        expect([0, 0, 'Field does not match pattern ([A-Z][0-9][A-Z] [0-9][A-Z][0-9])']).toEqual(
+            tree.map((i) => i.errorText)
+        )
     })
 })
-
 
 describe('NestedIfSchemaTests', () => {
     it('initializes correctly without data', () => {
@@ -295,7 +303,7 @@ describe('NestedIfSchemaTests', () => {
     })
 
     it('initializes correctly with data', () => {
-        const data = { owner: { gender: "f" } }
+        const data = { owner: { gender: 'f' } }
         const tree = getComponentTree(mount(<SchemaForm schema={NestedIfSchema} data={data} />))
         expect(tree.length).toEqual(3)
         expect(['Name', 'Gender', 'Kids']).toEqual(tree.map((item) => item.labelText))
@@ -345,5 +353,70 @@ describe('NestedIfSchemaTests', () => {
         submitButton.simulate('click')
 
         expect(valData).toEqual({ owner: { gender: 'm' } })
+    })
+})
+
+describe('MultipleConditionalTests', () => {
+    it('initializes correctly without data', () => {
+        const tree = getComponentTree(mount(<SchemaForm schema={MultipleSchema} />))
+        expect(tree.length).toEqual(4)
+        expect(['Name*', 'Gender', 'Purchasing Year', 'Had previous owner']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('initializes correctly with data', () => {
+        const data = { car: { second: true } }
+        const tree = getComponentTree(mount(<SchemaForm schema={MultipleSchema} data={data} />))
+        expect(tree.length).toEqual(6)
+        expect(['Name*', 'Gender', 'Purchasing Year', 'Had previous owner', 'Name*', 'Gender']).toEqual(
+            tree.map((item) => item.labelText)
+        )
+    })
+
+    it('alters schema on checkbox check', () => {
+        const form = mount(<SchemaForm schema={MultipleSchema} />)
+        const gender = getByCSSSelector(form, 'input[type="number"]').first()
+        gender.simulate('change', {
+            target: {
+                value: 2000
+            }
+        })
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(6)
+        expect(['Name*', 'Gender', 'Purchasing Year', 'Had previous owner', 'Name*', 'Gender']).toEqual(
+            tree.map((item) => item.labelText)
+        )
+    })
+
+    it('deletes data which no longer matches schema', () => {
+        let valData
+        const onSubmit = (data: any) => (valData = data)
+        const form = mount(<SchemaForm schema={MultipleSchema} onSubmit={onSubmit} />)
+        let second = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        second.simulate('change', {
+            target: {
+                checked: true
+            }
+        })
+        const gender = getByCSSSelector(form, 'select').last()
+        gender.simulate('change', {
+            target: {
+                value: 'f'
+            }
+        })
+        const submitButton = getByCSSSelector(form, 'button').last()
+        submitButton.simulate('click')
+
+        expect(valData).toEqual({ car: { second: true, year: 2020, previous: { gender: 'f' } } })
+
+        second = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        second.simulate('change', {
+            target: {
+                checked: false
+            }
+        })
+
+        submitButton.simulate('click')
+
+        expect(valData).toEqual({ car: { second: false, year: 2020 } })
     })
 })
