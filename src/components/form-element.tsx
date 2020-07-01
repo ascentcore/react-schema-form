@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect, ReactNode } from 'react'
 import { SchemaForm, addProperties } from '../schema-form'
 import ComponentRegistry from '../component-registry'
 import ajv from 'ajv'
+const _ = require('lodash')
 
 export interface SchemaProperty {
     $ref?: string
@@ -85,23 +86,23 @@ export default function FormElement({
 
         if (items) {
             if (items.$ref) {
-                newNestedSchema = processRef(items.$ref)
-            } else if (items.properties){
-                newNestedSchema = items
+                newNestedSchema = _.cloneDeep(processRef(items.$ref))
+            } else if (items.properties) {
+                newNestedSchema = _.cloneDeep(items)
             }
         } else {
             if ($ref) {
-                newNestedSchema = processRef($ref)
+                newNestedSchema = _.cloneDeep(processRef($ref))
             }
             if (properties) {
                 if (!$ref) {
-                    newNestedSchema = schema
+                    newNestedSchema = _.cloneDeep(schema)
                 }
                 addProperties(newNestedSchema, { properties: schema.properties })
             }
         }
         setNestedSchema(newNestedSchema)
-    
+
         initializeData()
     }, [schema])
 
