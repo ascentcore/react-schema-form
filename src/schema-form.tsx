@@ -203,7 +203,6 @@ export const SchemaForm = ({
             if (currentSchema['$ref'] !== undefined) {
                 const def = currentSchema['$ref'].substr(currentSchema['$ref'].lastIndexOf('/') + 1)
                 addProperties(currentSchema, root!.definitions[def])
-                nestedPath += `.${def}`
             }
             
             for (const key in baseSchema) {
@@ -236,7 +235,7 @@ export const SchemaForm = ({
                     // property does not exist on data;
                 }
             })
-            removeProperties(newSchema, actualSchema, path)
+            removeProperties(newSchema, actualSchema, '')
             setCurrentSchema(newSchema)
             setKeys(Object.keys(newSchema.properties || {}))
         }
@@ -246,7 +245,7 @@ export const SchemaForm = ({
         if (nestedPath) {
             setObj((prevObj: any) => {
                 const newObj = Object.assign({}, { ...prevObj })
-                removeObjPath(nestedPath.substr(1).split('.').slice(1), newObj.data)
+                removeObjPath(nestedPath.substr(1).split('.'), newObj.data)
                 return newObj
             })
         } else {

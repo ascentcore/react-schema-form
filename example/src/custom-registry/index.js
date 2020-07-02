@@ -118,7 +118,7 @@ export default function CustomRegistryExample() {
 
     const exceptions = {
         keys: {
-            gender: { component: 'SelectElement' },
+            writing: { component: 'SelectElement' },
             location: { component: CustomLocation, wrapper: CustomWrapper }
         }
     }

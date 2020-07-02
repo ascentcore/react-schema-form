@@ -149,10 +149,10 @@ The default form elements are:
     ```
 * RadioElement - a group of inputs of type radio; not used in standard registry, but by using a custom registry or a list of exceptions, the SelectElement can be overwritten with a RadioElement
     ```jsx
-    "gender": {
+    "location": {
         "title": "Type",
         "type": "string",
-        "enum": ["male", "female"]
+        "enum": ["N", "E", "S", "W"]
     }
     ```
 * MultipleSelectElement - a multiple seleciton element; it will be rendered if the json schema contains a property of type array with items of type string with the enum field present on them
@@ -267,7 +267,7 @@ When the data changes and is no longer matching the condition, the properties wh
 
 If the effects of two conditions are overlapping, the last one will overwrite the others.
 
-Because of Ajv's default behaviour, our library decided to behave the same way. When the properties specified as part of a conditional if statement are not present at all on the data object, the condition will be evaluated as being true, meaning that the "then" statement will be applied. To avoid this behavior, the user can define default values for the properties.
+The library is implemented according to ajv’s default behavior. When the properties specified as part of a conditional if statement are not present at all on the data object, the condition will be evaluated as being true, meaning that the "then" statement will be applied. To avoid this behavior, the user can define default values for the properties.
 
 ## <a name="customization"></a>Customization
 

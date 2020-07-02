@@ -10,8 +10,8 @@
         "properties": {
             "owner": {
                 "properties": {
-                    "gender": {
-                        "const": "f"
+                    "location": {
+                        "const": "N"
                     }
                 }
             }
@@ -21,9 +21,9 @@
         "properties": {
             "owner": {
                 "properties": {
-                    "kids": {
-                        "type": "integer",
-                        "title": "Kids"
+                    "boat": {
+                        "type": "boolean",
+                        "title": "Has boat"
                     }
                 }
             }
@@ -38,10 +38,10 @@
                     "title": "Name",
                     "type": "string"
                 },
-                "gender": {
-                    "title": "Gender",
+                "location": {
+                    "title": "Location",
                     "type": "string",
-                    "enum": ["m", "f"]
+                    "enum": ["N", "E", "S", "W"]
                 }
             }
         }

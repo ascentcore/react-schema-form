@@ -299,60 +299,60 @@ describe('NestedIfSchemaTests', () => {
     it('initializes correctly without data', () => {
         const tree = getComponentTree(mount(<SchemaForm schema={NestedIfSchema} />))
         expect(tree.length).toEqual(2)
-        expect(['Name', 'Gender']).toEqual(tree.map((item) => item.labelText))
+        expect(['Name', 'Location']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('initializes correctly with data', () => {
-        const data = { owner: { gender: 'f' } }
+        const data = { owner: { location: 'N' } }
         const tree = getComponentTree(mount(<SchemaForm schema={NestedIfSchema} data={data} />))
         expect(tree.length).toEqual(3)
-        expect(['Name', 'Gender', 'Kids']).toEqual(tree.map((item) => item.labelText))
+        expect(['Name', 'Location', 'Has boat']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('alters schema on checkbox check', () => {
         const form = mount(<SchemaForm schema={NestedIfSchema} />)
-        const gender = getByCSSSelector(form, 'select').first()
-        gender.simulate('change', {
+        const location = getByCSSSelector(form, 'select').first()
+        location.simulate('change', {
             target: {
-                value: 'f'
+                value: 'N'
             }
         })
         const tree = getComponentTree(form)
         expect(tree.length).toEqual(3)
-        expect(['Name', 'Gender', 'Kids']).toEqual(tree.map((item) => item.labelText))
+        expect(['Name', 'Location', 'Has boat']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('deletes data which no longer matches schema', () => {
         let valData
         const onSubmit = (data: any) => (valData = data)
         const form = mount(<SchemaForm schema={NestedIfSchema} onSubmit={onSubmit} />)
-        let gender = getByCSSSelector(form, 'select').first()
-        gender.simulate('change', {
+        let location = getByCSSSelector(form, 'select').first()
+        location.simulate('change', {
             target: {
-                value: 'f'
+                value: 'N'
             }
         })
-        const kids = getByCSSSelector(form, 'input[type="number"]').last()
-        kids.simulate('change', {
+        const boat = getByCSSSelector(form, 'input[type="checkbox"]').last()
+        boat.simulate('change', {
             target: {
-                value: 2
+                checked: true
             }
         })
         const submitButton = getByCSSSelector(form, 'button').last()
         submitButton.simulate('click')
 
-        expect(valData).toEqual({ owner: { gender: 'f', kids: 2 } })
+        expect(valData).toEqual({ owner: { location: 'N', boat: true } })
 
-        gender = getByCSSSelector(form, 'select').first()
-        gender.simulate('change', {
+        location = getByCSSSelector(form, 'select').first()
+        location.simulate('change', {
             target: {
-                value: 'm'
+                value: 'E'
             }
         })
 
         submitButton.simulate('click')
 
-        expect(valData).toEqual({ owner: { gender: 'm' } })
+        expect(valData).toEqual({ owner: { location: 'E' } })
     })
 })
 
@@ -360,29 +360,29 @@ describe('MultipleConditionalTests', () => {
     it('initializes correctly without data', () => {
         const tree = getComponentTree(mount(<SchemaForm schema={MultipleSchema} />))
         expect(tree.length).toEqual(4)
-        expect(['Name*', 'Gender', 'Purchasing Year', 'Had previous owner']).toEqual(tree.map((item) => item.labelText))
+        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('initializes correctly with data', () => {
         const data = { car: { second: true } }
         const tree = getComponentTree(mount(<SchemaForm schema={MultipleSchema} data={data} />))
         expect(tree.length).toEqual(6)
-        expect(['Name*', 'Gender', 'Purchasing Year', 'Had previous owner', 'Name*', 'Gender']).toEqual(
+        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner', 'Name*', 'Location']).toEqual(
             tree.map((item) => item.labelText)
         )
     })
 
     it('alters schema on checkbox check', () => {
         const form = mount(<SchemaForm schema={MultipleSchema} />)
-        const gender = getByCSSSelector(form, 'input[type="number"]').first()
-        gender.simulate('change', {
+        const year = getByCSSSelector(form, 'input[type="number"]').first()
+        year.simulate('change', {
             target: {
                 value: 2000
             }
         })
         const tree = getComponentTree(form)
         expect(tree.length).toEqual(6)
-        expect(['Name*', 'Gender', 'Purchasing Year', 'Had previous owner', 'Name*', 'Gender']).toEqual(
+        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner', 'Name*', 'Location']).toEqual(
             tree.map((item) => item.labelText)
         )
     })
@@ -397,16 +397,16 @@ describe('MultipleConditionalTests', () => {
                 checked: true
             }
         })
-        const gender = getByCSSSelector(form, 'select').last()
-        gender.simulate('change', {
+        const location = getByCSSSelector(form, 'select').last()
+        location.simulate('change', {
             target: {
-                value: 'f'
+                value: 'N'
             }
         })
         const submitButton = getByCSSSelector(form, 'button').last()
         submitButton.simulate('click')
 
-        expect(valData).toEqual({ car: { second: true, year: 2020, previous: { gender: 'f' } } })
+        expect(valData).toEqual({ car: { second: true, year: 2020, previous: { location: 'N' } } })
 
         second = getByCSSSelector(form, 'input[type="checkbox"]').first()
         second.simulate('change', {

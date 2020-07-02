@@ -40,10 +40,10 @@
                 "pattern": "^[0-9]+$"
             }
         },
-        "gender": {
-            "title": "Gender",
+        "writing": {
+            "title": "Writing hand",
             "type": "string",
-            "enum": ["M", "F"]
+            "enum": ["Left hand", "Right hand"]
         },
         "location": {
             "title": "Location",
