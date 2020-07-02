@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect, ReactNode } from 'react'
-import { SchemaForm, addProperties } from '../schema-form'
+import { SchemaForm } from '../schema-form'
+import { addProperties } from '../utils'
 import ComponentRegistry from '../component-registry'
 import ajv from 'ajv'
 const _ = require('lodash')

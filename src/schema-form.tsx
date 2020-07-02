@@ -1,5 +1,6 @@
 import React, { useState, ReactNode, useEffect } from 'react'
 import FormElement, { SchemaProperty } from './components/form-element'
+import { addProperties, getConditionals, isObject } from './utils'
 import UISchema from './ui-schema'
 import ComponentRegistry, { RegistryKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
@@ -11,125 +12,6 @@ interface Conditional {
     compiled: string
     then?: SchemaProperty
     else?: SchemaProperty
-}
-
-const getConditionals = (schema: SchemaProperty) => {
-    let ifEntries = []
-    const simpleConditional = getSimpleConditional(schema)
-    if (simpleConditional) {
-        ifEntries.push(simpleConditional)
-    }
-    ifEntries = ifEntries.concat(getMultipleConditionals(schema))
-    return ifEntries.map((ifEntry) => getCompiledConditional(ifEntry))
-}
-
-const isObject = (item: any) => {
-    return item && typeof item === 'object' && !Array.isArray(item)
-}
-
-const getPropertyPaths = (schema: any, path = ''): { '0': string; '1': any }[] => {
-    if (isObject(schema)) {
-        return Array.prototype.concat.apply(
-            [],
-            Object.keys(schema).map((key) =>
-                getPropertyPaths(schema[key], key === 'properties' || key === 'const' ? path : path + '.' + key)
-            )
-        )
-    } else {
-        return [{ '0': path, '1': schema }]
-    }
-}
-
-const getSimpleConditional = (schema: SchemaProperty) => {
-    if (schema.if && schema.if.properties) {
-        return {
-            if: getPropertyPaths(schema.if!) as { '0': string; '1': any }[],
-            then: schema.then,
-            else: schema.else
-        }
-    } else {
-        return null
-    }
-}
-
-const extractConditional = (
-    conditionalSet: SchemaProperty[]
-): {
-    if: { '0': string; '1': any }[]
-    then: SchemaProperty | undefined
-    else: SchemaProperty | undefined
-}[] => {
-    return conditionalSet
-        .filter((entry) => entry.if !== undefined)
-        .map((conditional) => {
-            return {
-                if: getPropertyPaths(conditional.if!) as { '0': string; '1': any }[],
-                then: conditional.then,
-                else: conditional.else
-            }
-        })
-}
-
-const getMultipleConditionals = (schema: SchemaProperty) => {
-    let multipleConditionals: {
-        if: { '0': string; '1': any }[]
-        then: SchemaProperty | undefined
-        else: SchemaProperty | undefined
-    }[] = []
-    if (schema.allOf) {
-        multipleConditionals = multipleConditionals.concat(extractConditional(schema.allOf))
-    }
-    if (schema.anyOf) {
-        multipleConditionals = multipleConditionals.concat(extractConditional(schema.anyOf))
-    }
-    if (schema.oneOf) {
-        multipleConditionals = multipleConditionals.concat(extractConditional(schema.oneOf))
-    }
-    return multipleConditionals
-}
-
-const getCompiledConditional = (ifEntry: {
-    if: { '0': string; '1': SchemaProperty }[]
-    then: SchemaProperty | undefined
-    else: SchemaProperty | undefined
-}) => {
-    const compiled: string = `data => { return ${ifEntry.if
-        .reduce((memo: string[], item: { '0': string; '1': any }) => {
-            return memo.concat([
-                '(' +
-                    'data' +
-                    item[0] +
-                    '==' +
-                    'undefined' +
-                    ' || ' +
-                    'data' +
-                    item[0] +
-                    '==' +
-                    (typeof item[1] === 'string' ? "'" + item[1] + "'" : item[1]) +
-                    ')'
-            ])
-        }, [])
-        .join(' && ')} }`
-    return {
-        compiled: compiled,
-        ...(ifEntry.then ? { then: ifEntry.then } : {}),
-        ...(ifEntry.else ? { else: ifEntry.else } : {})
-    }
-}
-
-export const addProperties = (currentSchema: any, newProperties: any): any => {
-    if (isObject(currentSchema) && isObject(newProperties)) {
-        for (const key in newProperties) {
-            if (isObject(newProperties[key])) {
-                if (!currentSchema[key]) {
-                    Object.assign(currentSchema, { [key]: {} })
-                }
-                addProperties(currentSchema[key], newProperties[key])
-            } else {
-                Object.assign(currentSchema, { [key]: newProperties[key] })
-            }
-        }
-    }
 }
 
 export const SchemaForm = ({
@@ -204,7 +86,7 @@ export const SchemaForm = ({
                 const def = currentSchema['$ref'].substr(currentSchema['$ref'].lastIndexOf('/') + 1)
                 addProperties(currentSchema, root!.definitions[def])
             }
-            
+
             for (const key in baseSchema) {
                 if (!currentSchema[key]) {
                     handleParentChange(key)(undefined, `${nestedPath}.${key}`, `${nestedPath}.${key}`)
