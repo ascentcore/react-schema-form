@@ -1,18 +1,12 @@
 import React, { useState, ReactNode, useEffect } from 'react'
 import FormElement, { SchemaProperty } from './components/form-element'
-import { addProperties, getConditionals, isObject } from './utils'
+import { addProperties, getConditionals, isObject, Conditional } from './utils'
 import UISchema from './ui-schema'
 import ComponentRegistry, { RegistryKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
 import ajv, { RequiredParams } from 'ajv'
 import formatErrors from './error-formatter'
 const _ = require('lodash')
-
-interface Conditional {
-    compiled: string
-    then?: SchemaProperty
-    else?: SchemaProperty
-}
 
 export const SchemaForm = ({
     schema,
@@ -62,8 +56,9 @@ export const SchemaForm = ({
             )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
-    const [conditionals] = useState<Conditional[]>((): Conditional[] => {
-        return getConditionals(schema)
+    const [conditionals] = useState<{ data: Conditional[]; lastEvaluation: string }>(() => {
+        const data = getConditionals(schema)
+        return { data, lastEvaluation: '' }
     })
 
     const removeObjPath = (path: string[], obj: any) => {
@@ -102,24 +97,32 @@ export const SchemaForm = ({
     }
 
     const checkConditionals = (actualSchema: SchemaProperty) => {
-        if (conditionals.length) {
+        if (conditionals.data.length) {
             const newSchema = _.cloneDeep(schema)
 
-            conditionals.forEach((conditional: Conditional) => {
+            let lastEvaluation = ''
+            conditionals.data.forEach((conditional: Conditional) => {
                 try {
                     const evalCondition = eval(conditional.compiled)(obj.data)
                     if (evalCondition) {
                         addProperties(newSchema, conditional.then)
+                        lastEvaluation += '1'
                     } else {
                         addProperties(newSchema, conditional.else || {})
+                        lastEvaluation += '2'
                     }
                 } catch (err) {
                     // property does not exist on data;
+                    lastEvaluation += '0'
                 }
             })
-            removeProperties(newSchema, actualSchema, '')
-            setCurrentSchema(newSchema)
-            setKeys(Object.keys(newSchema.properties || {}))
+
+            if(conditionals.lastEvaluation !== lastEvaluation){
+                removeProperties(newSchema, actualSchema, '')
+                setCurrentSchema(newSchema)
+                setKeys(Object.keys(newSchema.properties || {}))
+                conditionals.lastEvaluation = lastEvaluation
+            } 
         }
     }
 
