@@ -30,7 +30,7 @@ export const addProperties = (currentObject: any, newProperties: any): any => {
 
 //gets all conditionals specified at root level of a schema;
 //conditionals that are both specified with simple ifs, or as a list with allOf, anyOf, oneOf
-export const getConditionals = (schema: SchemaProperty) : Conditional[] => {
+export const getConditionals = (schema: SchemaProperty): Conditional[] => {
     let ifEntries = []
     const simpleConditional = getSimpleConditional(schema)
     if (simpleConditional) {
@@ -114,23 +114,17 @@ const getCompiledConditional = (ifEntry: {
     then: SchemaProperty | undefined
     else: SchemaProperty | undefined
 }): Conditional => {
-    const compiled: string = `data => { return ${ifEntry.if
+    const compiled: string = `data => { return (${ifEntry.if
         .reduce((memo: string[], item: { '0': string; '1': any }) => {
             return memo.concat([
-                '(' +
-                    'data' +
-                    item[0] +
-                    '==' +
-                    'undefined' +
-                    ' || ' +
-                    'data' +
-                    item[0] +
-                    '==' +
-                    (typeof item[1] === 'string' ? "'" + item[1] + "'" : item[1]) +
-                    ')'
+                'data' + item[0] + '==' + (typeof item[1] === 'string' ? "'" + item[1] + "'" : item[1])
             ])
         }, [])
-        .join(' && ')} }`
+        .join(' && ')}) || (${ifEntry.if
+        .reduce((memo: string[], item: { '0': string; '1': any }) => {
+            return memo.concat(['data' + item[0] + '==' + 'undefined'])
+        }, [])
+        .join(' && ')}) }`
     return {
         compiled: compiled,
         ...(ifEntry.then ? { then: ifEntry.then } : {}),
