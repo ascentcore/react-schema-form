@@ -99,7 +99,10 @@ export default function FormElement({
                 if (!$ref) {
                     newNestedSchema = _.cloneDeep(schema)
                 }
-                addProperties(newNestedSchema, { properties: schema.properties })
+                addProperties(newNestedSchema, {
+                    properties: schema.properties,
+                    required: schema.required ? schema.required : []
+                })
             }
         }
         setNestedSchema(newNestedSchema)
