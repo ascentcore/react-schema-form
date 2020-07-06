@@ -6,6 +6,7 @@ import LeafSchema from './schemas/conditionals/leaf-conditional.json'
 import AttributeSchema from './schemas/conditionals/attribute-conditional.json'
 import MultipleSchema from './schemas/conditionals/multiple-conditional.json'
 import DependentConditional from './schemas/conditionals/dependent-conditional.json'
+import UndefinedConditional from './schemas/conditionals/undefined-conditional.json'
 import { SchemaForm } from '..'
 import { mount } from 'enzyme'
 import { getComponentTree, getByCSSSelector } from './test-utils'
@@ -511,5 +512,50 @@ describe('DependentConditional', () => {
         submitButton.simulate('click')
 
         expect(valData).toEqual({ car: { second: false, year: 2020 }, owner: { location: 'E' } })
+    })
+})
+
+describe('UndefinedConditional', () => {
+    it('enters then when all props are undefined', () => {
+        const tree = getComponentTree(mount(<SchemaForm schema={UndefinedConditional} />))
+        expect(tree.length).toEqual(4)
+        expect(['Prop1', 'Prop2', 'Prop3', 'Prop4']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('enters else when one prop is not matching the condition', () => {
+        const data = { prop2: 2000 }
+        const tree = getComponentTree(mount(<SchemaForm schema={UndefinedConditional} data={data} />))
+        expect(tree.length).toEqual(4)
+        expect(['Prop1', 'Prop2', 'Prop3', 'Prop5']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('enters if when all props match the condition', () => {
+        const form = mount(<SchemaForm schema={UndefinedConditional} />)
+        const prop1 = getByCSSSelector(form, 'input').first()
+        prop1.simulate('change', {
+            target: {
+                value: 'prop1'
+            }
+        })
+
+        const prop2 = getByCSSSelector(form, 'input').at(1)
+        prop2.simulate('change', {
+            target: {
+                value: 2000
+            }
+        })
+
+        const prop3 = getByCSSSelector(form, 'select').first()
+        prop3.simulate('change', {
+            target: {
+                value: 'val4'
+            }
+        })
+
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(4)
+        expect(['Prop1', 'Prop2', 'Prop3', 'Prop4']).toEqual(
+            tree.map((item) => item.labelText)
+        )
     })
 })
