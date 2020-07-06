@@ -5,6 +5,7 @@ import NestedThenElseSchema from './schemas/conditionals/nested-then-else.json'
 import LeafSchema from './schemas/conditionals/leaf-conditional.json'
 import AttributeSchema from './schemas/conditionals/attribute-conditional.json'
 import MultipleSchema from './schemas/conditionals/multiple-conditional.json'
+import DependentConditional from './schemas/conditionals/dependent-conditional.json'
 import { SchemaForm } from '..'
 import { mount } from 'enzyme'
 import { getComponentTree, getByCSSSelector } from './test-utils'
@@ -360,7 +361,9 @@ describe('MultipleConditionalTests', () => {
     it('initializes correctly without data', () => {
         const tree = getComponentTree(mount(<SchemaForm schema={MultipleSchema} />))
         expect(tree.length).toEqual(4)
-        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner']).toEqual(tree.map((item) => item.labelText))
+        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner']).toEqual(
+            tree.map((item) => item.labelText)
+        )
     })
 
     it('initializes correctly with data', () => {
@@ -418,5 +421,95 @@ describe('MultipleConditionalTests', () => {
         submitButton.simulate('click')
 
         expect(valData).toEqual({ car: { second: false, year: 2020 } })
+    })
+})
+
+describe('DependentConditional', () => {
+    it('initializes correctly without data', () => {
+        const tree = getComponentTree(mount(<SchemaForm schema={DependentConditional} />))
+        expect(tree.length).toEqual(4)
+        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner']).toEqual(
+            tree.map((item) => item.labelText)
+        )
+    })
+
+    it('initializes correctly with data', () => {
+        const data = { car: { second: true } }
+        const tree = getComponentTree(mount(<SchemaForm schema={DependentConditional} data={data} />))
+        expect(tree.length).toEqual(6)
+        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner', 'Name*', 'Location']).toEqual(
+            tree.map((item) => item.labelText)
+        )
+    })
+
+    it('alters schema on checkbox check', () => {
+        const form = mount(<SchemaForm schema={DependentConditional} />)
+        const second = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        second.simulate('change', {
+            target: {
+                checked: true
+            }
+        })
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(6)
+        expect(['Name*', 'Location', 'Purchasing Year', 'Had previous owner', 'Name*', 'Location']).toEqual(
+            tree.map((item) => item.labelText)
+        )
+    })
+
+    it('deletes data which no longer matches schema', () => {
+        let valData
+        const onSubmit = (data: any) => (valData = data)
+        const form = mount(<SchemaForm schema={DependentConditional} onSubmit={onSubmit} />)
+        let second = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        second.simulate('change', {
+            target: {
+                checked: true
+            }
+        })
+        const location = getByCSSSelector(form, 'select').last()
+        location.simulate('change', {
+            target: {
+                value: 'N'
+            }
+        })
+
+        const boat = getByCSSSelector(form, 'input[type="checkbox"]').last()
+        boat.simulate('change', {
+            target: {
+                checked: true
+            }
+        })
+
+        const submitButton = getByCSSSelector(form, 'button').last()
+        submitButton.simulate('click')
+
+        let tree = getComponentTree(form)
+        expect(tree.length).toEqual(7)
+        expect([
+            'Name*',
+            'Location',
+            'Purchasing Year',
+            'Had previous owner',
+            'Name*',
+            'Location',
+            'Has boat*'
+        ]).toEqual(tree.map((item) => item.labelText))
+
+        expect(valData).toEqual({
+            car: { second: true, year: 2020, previous: { location: 'N', boat: true } },
+            owner: { location: 'E' }
+        })
+
+        second = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        second.simulate('change', {
+            target: {
+                checked: false
+            }
+        })
+
+        submitButton.simulate('click')
+
+        expect(valData).toEqual({ car: { second: false, year: 2020 }, owner: { location: 'E' } })
     })
 })

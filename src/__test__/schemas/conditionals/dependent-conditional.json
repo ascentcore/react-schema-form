@@ -1,0 +1,95 @@
+{
+    "definitions": {
+        "owner": {
+            "type": "object",
+            "tile": "owner",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "default": ""
+                },
+                "location": {
+                    "title": "Location",
+                    "type": "string",
+                    "enum": ["N", "E", "S", "W"],
+                    "default": "E"
+                }
+            },
+            "required": ["name"]
+        },
+        "car": {
+            "type": "object",
+            "title": "Car",
+            "properties": {
+                "year": {
+                    "title": "Purchasing Year",
+                    "type": "integer",
+                    "default": 2020
+                },
+                "second": {
+                    "type": "boolean",
+                    "title": "Had previous owner"
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "second": {
+                                "const": true
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "previous": {
+                                "title": "Previous owner",
+                                "type": "object",
+                                "$ref": "#/definitions/owner"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "previous": {
+                                "properties": {
+                                    "location": {
+                                        "const": "N"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "previous": {
+                                "required": ["boat"],
+                                "properties": {
+                                    "boat": {
+                                        "type": "boolean",
+                                        "title": "Has boat"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "owner": {
+            "type": "object",
+            "$ref": "#/definitions/owner"
+        },
+        "car": {
+            "type": "object",
+            "$ref": "#/definitions/car"
+        }
+    }
+}
+
