@@ -23,7 +23,7 @@ export const addProperties = (currentObject: any, newProperties: any): any => {
                 addProperties(currentObject[key], newProperties[key])
             } else {
                 if(key === 'required' && Array.isArray(newProperties[key]) && Array.isArray(currentObject[key])){
-                    currentObject[key].push(...newProperties[key])
+                    currentObject[key] = currentObject[key].concat(...newProperties[key])
                 } else {
                     Object.assign(currentObject, { [key]: newProperties[key] })
                 }

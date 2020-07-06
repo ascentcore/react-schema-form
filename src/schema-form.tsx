@@ -75,7 +75,7 @@ export const SchemaForm = ({
         }
     }
 
-    const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string): any => {
+    const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string) => {
         if (isObject(currentSchema) && isObject(baseSchema)) {
             if (currentSchema['$ref'] !== undefined) {
                 const def = currentSchema['$ref'].substr(currentSchema['$ref'].lastIndexOf('/') + 1)
@@ -96,19 +96,45 @@ export const SchemaForm = ({
         }
     }
 
+    const removeData = (schema: any, currentData: any) => {
+        if (isObject(schema) && isObject(currentData)) {
+            if (schema['$ref'] !== undefined) {
+                const def = schema['$ref'].substr(schema['$ref'].lastIndexOf('/') + 1)
+                addProperties(schema, root!.definitions[def])
+            }
+
+            for (const key in currentData) {
+                if (schema['properties'] && schema['properties'][key] === undefined) {
+                    delete currentData[key]
+                } else {
+                    removeData(schema['properties'] && schema['properties'][key], currentData[key])
+                    if (isObject(currentData[key]) && Object.keys(currentData[key]).length === 0) {
+                        delete currentData[key]
+                    }
+                }
+            }
+        }
+    }
+
     const checkConditionals = (actualSchema: SchemaProperty) => {
         if (conditionals.data.length) {
             const newSchema = _.cloneDeep(schema)
+            let newData = _.cloneDeep(obj.data)
+            removeData(newSchema, newData)
 
             let lastEvaluation = ''
             conditionals.data.forEach((conditional: Conditional) => {
                 try {
-                    const evalCondition = eval(conditional.compiled)(obj.data)
+                    const evalCondition = eval(conditional.compiled)(newData)
                     if (evalCondition) {
                         addProperties(newSchema, conditional.then)
+                        newData = _.cloneDeep(obj.data)
+                        removeData(newSchema, newData)
                         lastEvaluation += '1'
                     } else {
                         addProperties(newSchema, conditional.else || {})
+                        newData = _.cloneDeep(obj.data)
+                        removeData(newSchema, newData)
                         lastEvaluation += '2'
                     }
                 } catch (err) {
@@ -117,12 +143,12 @@ export const SchemaForm = ({
                 }
             })
 
-            if(conditionals.lastEvaluation !== lastEvaluation){
+            if (conditionals.lastEvaluation !== lastEvaluation) {
                 removeProperties(newSchema, actualSchema, '')
                 setCurrentSchema(newSchema)
                 setKeys(Object.keys(newSchema.properties || {}))
                 conditionals.lastEvaluation = lastEvaluation
-            } 
+            }
         }
     }
 
