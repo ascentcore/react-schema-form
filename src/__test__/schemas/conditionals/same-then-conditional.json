@@ -1,0 +1,51 @@
+{
+    "type": "object",
+    "title": "Car",
+    "properties": {
+        "year": {
+            "title": "Purchasing Year",
+            "type": "integer"
+        },
+        "registered": {
+            "type": "boolean",
+            "title": "Is registered"
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "registered": {
+                        "const": true
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "carPlate": {
+                        "title": "Car Plate",
+                        "type": "string",
+                        "default": 2020
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "year": {
+                        "const": 2000
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "carPlate": {
+                        "title": "Car Plate",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ]
+}

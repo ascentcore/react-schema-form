@@ -7,6 +7,8 @@ import AttributeSchema from './schemas/conditionals/attribute-conditional.json'
 import MultipleSchema from './schemas/conditionals/multiple-conditional.json'
 import DependentConditional from './schemas/conditionals/dependent-conditional.json'
 import UndefinedConditional from './schemas/conditionals/undefined-conditional.json'
+import SameThenConditional from './schemas/conditionals/same-then-conditional.json'
+
 import { SchemaForm } from '..'
 import { mount } from 'enzyme'
 import { getComponentTree, getByCSSSelector } from './test-utils'
@@ -557,5 +559,29 @@ describe('UndefinedConditional', () => {
         expect(['Prop1', 'Prop2', 'Prop3', 'Prop4']).toEqual(
             tree.map((item) => item.labelText)
         )
+    })
+})
+
+describe('SameThenConditional', () => {
+    it('enters then when first conditional is true', () => {
+        const form = mount(<SchemaForm schema={SameThenConditional} />)
+
+        const registered = getByCSSSelector(form, 'input[type="checkbox"]').first()
+        registered.simulate('change', {
+            target: {
+                checked: true
+            }
+        })
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['Purchasing Year', 'Is registered', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
+    })
+
+    it('enters then when first conditional is true', () => {
+        //
+    })
+
+    it('then remains when one of conditionals is false', () => {
+        //
     })
 })
