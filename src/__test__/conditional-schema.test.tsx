@@ -556,9 +556,7 @@ describe('UndefinedConditional', () => {
 
         const tree = getComponentTree(form)
         expect(tree.length).toEqual(4)
-        expect(['Prop1', 'Prop2', 'Prop3', 'Prop4']).toEqual(
-            tree.map((item) => item.labelText)
-        )
+        expect(['Prop1', 'Prop2', 'Prop3', 'Prop4']).toEqual(tree.map((item) => item.labelText))
     })
 })
 
@@ -578,10 +576,36 @@ describe('SameThenConditional', () => {
     })
 
     it('enters then when first conditional is true', () => {
-        //
+        const form = mount(<SchemaForm schema={SameThenConditional} />)
+
+        const registered = getByCSSSelector(form, 'input[type="number"]').first()
+        registered.simulate('change', {
+            target: {
+                value: 2000
+            }
+        })
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['Purchasing Year', 'Is registered', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
     })
 
     it('then remains when one of conditionals is false', () => {
-        //
+        const data = { year: 2000, registered: true }
+        const form = mount(<SchemaForm schema={SameThenConditional} data={data} />)
+
+        let tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['Purchasing Year', 'Is registered', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
+
+        const registered = getByCSSSelector(form, 'input[type="number"]').first()
+        registered.simulate('change', {
+            target: {
+                value: 2020
+            }
+        })
+
+        tree = getComponentTree(form)
+        expect(tree.length).toEqual(3)
+        expect(['Purchasing Year', 'Is registered', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
     })
 })
