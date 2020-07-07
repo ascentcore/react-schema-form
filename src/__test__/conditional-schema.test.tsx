@@ -8,6 +8,7 @@ import MultipleSchema from './schemas/conditionals/multiple-conditional.json'
 import DependentConditional from './schemas/conditionals/dependent-conditional.json'
 import UndefinedConditional from './schemas/conditionals/undefined-conditional.json'
 import SameThenConditional from './schemas/conditionals/same-then-conditional.json'
+import DefaultValuesConditional from './schemas/conditionals/default-values-conditional.json'
 
 import { SchemaForm } from '..'
 import { mount } from 'enzyme'
@@ -607,5 +608,14 @@ describe('SameThenConditional', () => {
         tree = getComponentTree(form)
         expect(tree.length).toEqual(3)
         expect(['Purchasing Year', 'Is registered', 'Car Plate']).toEqual(tree.map((item) => item.labelText))
+    })
+})
+
+describe('DefaultValuesConditional', () => {
+    it('when having default values, default conditional does not enter then statement', () => {
+        const form = mount(<SchemaForm schema={DefaultValuesConditional} />)
+        const tree = getComponentTree(form)
+        expect(tree.length).toEqual(4)
+        expect(['Prop1', 'Prop2', 'Prop3', 'Prop5']).toEqual(tree.map((item) => item.labelText))
     })
 })
