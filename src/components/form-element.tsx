@@ -22,9 +22,9 @@ export interface SchemaProperty {
     default?: any
     contentEncoding?: string
     contentMediaType?: string
-    if?: SchemaProperty
-    then?: SchemaProperty
-    else?: SchemaProperty
+    if?: any
+    then?: any
+    else?: any
     const?: any
     instanceof?: string
     definitions?: any

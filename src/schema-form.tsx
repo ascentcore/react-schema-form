@@ -152,7 +152,6 @@ export const SchemaForm = ({
             }
 
             if (lastEvaluations !== conditionals.lastEvaluations) {
-                console.log(newSchema)
                 removeProperties(newSchema, actualSchema, '')
                 setCurrentSchema(newSchema)
                 setKeys(Object.keys(newSchema.properties || {}))
