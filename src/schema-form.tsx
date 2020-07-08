@@ -137,23 +137,22 @@ export const SchemaForm = ({
                             newData = _.cloneDeep(obj.data)
                             removeData(newSchema, newData)
                             lastEvaluation += '1'
-                            lastEvaluations += '1'
                         } else {
                             addProperties(newSchema, conditional.else || {})
                             newData = _.cloneDeep(obj.data)
                             removeData(newSchema, newData)
                             lastEvaluation += '2'
-                            lastEvaluations += '2'
                         }
                     } catch (err) {
                         // property does not exist on data;
                         lastEvaluation += '0'
-                        lastEvaluations += '0'
                     }
                 })
+                lastEvaluations += lastEvaluation
             }
 
             if (lastEvaluations !== conditionals.lastEvaluations) {
+                console.log(newSchema)
                 removeProperties(newSchema, actualSchema, '')
                 setCurrentSchema(newSchema)
                 setKeys(Object.keys(newSchema.properties || {}))
