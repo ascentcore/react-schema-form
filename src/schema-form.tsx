@@ -56,9 +56,9 @@ export const SchemaForm = ({
             )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
-    const [conditionals] = useState<{ data: Conditional[]; lastEvaluation: string }>(() => {
+    const [conditionals] = useState<{ data: Conditional[]; lastEvaluations: string }>(() => {
         const data = getConditionals(schema)
-        return { data, lastEvaluation: '' }
+        return { data, lastEvaluations: '' }
     })
 
     const removeObjPath = (path: string[], obj: any) => {
@@ -118,36 +118,46 @@ export const SchemaForm = ({
 
     const checkConditionals = (actualSchema: SchemaProperty) => {
         if (conditionals.data.length) {
+            let lastEvaluation = '',
+                currentEvaluation
+
             const newSchema = _.cloneDeep(schema)
             let newData = _.cloneDeep(obj.data)
-            removeData(newSchema, newData)
 
-            let lastEvaluation = ''
-            conditionals.data.forEach((conditional: Conditional) => {
-                try {
-                    const evalCondition = eval(conditional.compiled)(newData)
-                    if (evalCondition) {
-                        addProperties(newSchema, conditional.then)
-                        newData = _.cloneDeep(obj.data)
-                        removeData(newSchema, newData)
-                        lastEvaluation += '1'
-                    } else {
-                        addProperties(newSchema, conditional.else || {})
-                        newData = _.cloneDeep(obj.data)
-                        removeData(newSchema, newData)
-                        lastEvaluation += '2'
+            let lastEvaluations = ''
+
+            while (lastEvaluation !== currentEvaluation) {
+                currentEvaluation = lastEvaluation
+                lastEvaluation = ''
+                conditionals.data.forEach((conditional: Conditional) => {
+                    try {
+                        const evalCondition = eval(conditional.compiled)(newData)
+                        if (evalCondition) {
+                            addProperties(newSchema, conditional.then)
+                            newData = _.cloneDeep(obj.data)
+                            removeData(newSchema, newData)
+                            lastEvaluation += '1'
+                            lastEvaluations += '1'
+                        } else {
+                            addProperties(newSchema, conditional.else || {})
+                            newData = _.cloneDeep(obj.data)
+                            removeData(newSchema, newData)
+                            lastEvaluation += '2'
+                            lastEvaluations += '2'
+                        }
+                    } catch (err) {
+                        // property does not exist on data;
+                        lastEvaluation += '0'
+                        lastEvaluations += '0'
                     }
-                } catch (err) {
-                    // property does not exist on data;
-                    lastEvaluation += '0'
-                }
-            })
+                })
+            }
 
-            if (conditionals.lastEvaluation !== lastEvaluation) {
+            if (lastEvaluations !== conditionals.lastEvaluations) {
                 removeProperties(newSchema, actualSchema, '')
                 setCurrentSchema(newSchema)
                 setKeys(Object.keys(newSchema.properties || {}))
-                conditionals.lastEvaluation = lastEvaluation
+                conditionals.lastEvaluations = lastEvaluations
             }
         }
     }

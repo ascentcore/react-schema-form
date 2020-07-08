@@ -36,24 +36,6 @@
                 {
                     "if": {
                         "properties": {
-                            "second": {
-                                "const": true
-                            }
-                        }
-                    },
-                    "then": {
-                        "properties": {
-                            "previous": {
-                                "title": "Previous owner",
-                                "type": "object",
-                                "$ref": "#/definitions/owner"
-                            }
-                        }
-                    }
-                },
-                {
-                    "if": {
-                        "properties": {
                             "previous": {
                                 "properties": {
                                     "location": {
@@ -73,6 +55,24 @@
                                         "title": "Has boat"
                                     }
                                 }
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "second": {
+                                "const": true
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "previous": {
+                                "title": "Previous owner",
+                                "type": "object",
+                                "$ref": "#/definitions/owner"
                             }
                         }
                     }
