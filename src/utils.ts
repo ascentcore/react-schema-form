@@ -1,4 +1,5 @@
 import { SchemaProperty } from './components/form-element'
+import { SCHEMA_KEYWORDS } from './constants'
 
 export interface Conditional {
     compiled: string
@@ -8,7 +9,7 @@ export interface Conditional {
 
 //checks if item is object
 export const isObject = (item: any) => {
-    return item && typeof item === 'object' && !Array.isArray(item)
+    return item && typeof item === SCHEMA_KEYWORDS.OBJECT && !Array.isArray(item)
 }
 
 //merges the current object at all nesting levels with a new one
@@ -22,9 +23,13 @@ export const addProperties = (currentObject: any, newProperties: any): any => {
                 }
                 addProperties(currentObject[key], newProperties[key])
             } else {
-                if(key === 'required' && Array.isArray(newProperties[key]) && Array.isArray(currentObject[key])){
+                if (
+                    key === SCHEMA_KEYWORDS.REQUIRED &&
+                    Array.isArray(newProperties[key]) &&
+                    Array.isArray(currentObject[key])
+                ) {
                     //@ts-ignore
-                    currentObject[key] = [... new Set(currentObject[key].concat(...newProperties[key]))]
+                    currentObject[key] = [...new Set(currentObject[key].concat(...newProperties[key]))]
                 } else {
                     Object.assign(currentObject, { [key]: newProperties[key] })
                 }
@@ -48,12 +53,15 @@ export const getConditionals = (schema: SchemaProperty): Conditional[] => {
 //given a schema, the function will return a list with all the paths of the schema and the value of the leaf node
 //keywords such as properties and const are not included
 //usage: extract all the conditions specified inside an if statement
-const getPropertyPaths = (schema: any, path = ''): { '0': string; '1': any }[] => {
+const getPropertyPathsIfStatement = (schema: any, path = ''): { '0': string; '1': any }[] => {
     if (isObject(schema)) {
         return Array.prototype.concat.apply(
             [],
             Object.keys(schema).map((key) =>
-                getPropertyPaths(schema[key], key === 'properties' || key === 'const' ? path : path + '.' + key)
+                getPropertyPathsIfStatement(
+                    schema[key],
+                    key === SCHEMA_KEYWORDS.PROPERTIES || key === SCHEMA_KEYWORDS.CONST ? path : path + '.' + key
+                )
             )
         )
     } else {
@@ -65,7 +73,7 @@ const getPropertyPaths = (schema: any, path = ''): { '0': string; '1': any }[] =
 const getSimpleConditional = (schema: SchemaProperty) => {
     if (schema.if && schema.if.properties) {
         return {
-            if: getPropertyPaths(schema.if!) as { '0': string; '1': any }[],
+            if: getPropertyPathsIfStatement(schema.if!) as { '0': string; '1': any }[],
             then: schema.then,
             else: schema.else
         }
@@ -86,7 +94,7 @@ const extractConditionalFromArray = (
         .filter((entry) => entry.if !== undefined)
         .map((conditional) => {
             return {
-                if: getPropertyPaths(conditional.if!) as { '0': string; '1': any }[],
+                if: getPropertyPathsIfStatement(conditional.if!) as { '0': string; '1': any }[],
                 then: conditional.then,
                 else: conditional.else
             }
@@ -122,7 +130,7 @@ const getCompiledConditional = (ifEntry: {
     const compiled: string = `data => { return (${ifEntry.if
         .reduce((memo: string[], item: { '0': string; '1': any }) => {
             return memo.concat([
-                'data' + item[0] + '==' + (typeof item[1] === 'string' ? "'" + item[1] + "'" : item[1])
+                'data' + item[0] + '==' + (typeof item[1] === SCHEMA_KEYWORDS.STRING ? "'" + item[1] + "'" : item[1])
             ])
         }, [])
         .join(' && ')}) || (${ifEntry.if

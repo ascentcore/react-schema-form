@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect, ReactNode } from 'react'
 import { SchemaForm } from '../schema-form'
 import { addProperties } from '../utils'
 import ComponentRegistry from '../component-registry'
+import { SCHEMA_KEYWORDS } from '../constants'
 import ajv from 'ajv'
 const _ = require('lodash')
 
@@ -75,7 +76,7 @@ export default function FormElement({
                 if (schema.default !== undefined) {
                     handleParentChange(schema.default, path)
                 } else {
-                    if (schema.type === 'boolean') {
+                    if (schema.type === SCHEMA_KEYWORDS.BOOLEAN) {
                         handleParentChange(false, path)
                     }
                 }
@@ -141,9 +142,9 @@ export default function FormElement({
     function renderPrimitiveArrayItem(itemValue: any, itemProperty: SchemaProperty, index: number) {
         const registryKey =
             itemProperty.enum || itemProperty.options
-                ? 'enum'
+                ? SCHEMA_KEYWORDS.ENUM
                 : itemProperty.contentEncoding || itemProperty.contentMediaType
-                ? 'file'
+                ? SCHEMA_KEYWORDS.FILE
                 : itemProperty.type
         const pathKey = `${path}[${index}]`
 
@@ -178,11 +179,11 @@ export default function FormElement({
             {
                 enum: itemProperty.enum,
                 path,
-                registryKey: 'multipleEnum',
+                registryKey: SCHEMA_KEYWORDS.MULTIPLE_ENUM,
                 error,
                 isRequired,
                 title: schema.title,
-                type: 'enum'
+                type: SCHEMA_KEYWORDS.ENUM
             },
             itemValue,
             (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
@@ -199,7 +200,7 @@ export default function FormElement({
                             {renderFormElement(item, index)}
                             {registry.getComponent(
                                 {
-                                    registryKey: 'removeButton',
+                                    registryKey: SCHEMA_KEYWORDS.REMOVE_BUTTON,
                                     className: 'ra-remove-button'
                                 },
                                 'Remove item',
@@ -207,23 +208,27 @@ export default function FormElement({
                             )}
                         </Fragment>
                     ))}
-                {registry.getComponent({ registryKey: 'addButton', className: 'ra-add-button' }, 'Add item', () => {
-                    let emptyChild = {}
-                    if (!nestedSchema && schema.items && schema.items.type) {
-                        switch (schema.items.type) {
-                            case 'integer':
-                            case 'number':
-                                emptyChild = typeof schema.items.minimum === 'number' ? schema.items.minimum : 0
-                                break
-                            case 'boolean':
-                                emptyChild = false
-                                break
-                            default:
-                                emptyChild = ''
+                {registry.getComponent(
+                    { registryKey: SCHEMA_KEYWORDS.ADD_BUTTON, className: 'ra-add-button' },
+                    'Add item',
+                    () => {
+                        let emptyChild = {}
+                        if (!nestedSchema && schema.items && schema.items.type) {
+                            switch (schema.items.type) {
+                                case SCHEMA_KEYWORDS.INTEGER:
+                                case SCHEMA_KEYWORDS.NUMBER:
+                                    emptyChild = typeof schema.items.minimum === 'number' ? schema.items.minimum : 0
+                                    break
+                                case SCHEMA_KEYWORDS.BOOLEAN:
+                                    emptyChild = false
+                                    break
+                                default:
+                                    emptyChild = ''
+                            }
                         }
+                        handleParentChange([...(itemValue || []), emptyChild], path)
                     }
-                    handleParentChange([...(itemValue || []), emptyChild], path)
-                })}
+                )}
             </Fragment>
         )
     }
@@ -231,9 +236,9 @@ export default function FormElement({
     function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string, type?: string) {
         const registryKey =
             schema.enum || schema.options
-                ? 'enum'
-                : schema.contentEncoding || schema.contentMediaType || schema.instanceof === 'file'
-                ? 'file'
+                ? SCHEMA_KEYWORDS.ENUM
+                : schema.contentEncoding || schema.contentMediaType || schema.instanceof === SCHEMA_KEYWORDS.FILE
+                ? SCHEMA_KEYWORDS.FILE
                 : schema.type
         const key = path.substr(path.lastIndexOf('.') + 1)
         const isRequired = parentSchema.required && parentSchema.required.indexOf(key) > -1
@@ -248,7 +253,9 @@ export default function FormElement({
                 title: title || schema.title,
                 type: type || schema.type,
                 contentMediaType:
-                    schema.instanceof === 'file' ? schema.properties!.content.contentMediaType : schema.contentMediaType
+                    schema.instanceof === SCHEMA_KEYWORDS.FILE
+                        ? schema.properties!.content.contentMediaType
+                        : schema.contentMediaType
             },
             itemValue,
             (changedItemValue: string | number | boolean) => handleParentChange(changedItemValue, path),
@@ -257,18 +264,23 @@ export default function FormElement({
     }
 
     function renderFormElement(itemValue: any, index: number | null = null) {
-        const typeObjectArrayItem = !!nestedSchema && schema.type === 'array' && index !== null
-        const typeObjectOrObjectArrayItem = (!!nestedSchema && schema.type !== 'array') || typeObjectArrayItem
+        const typeObjectArrayItem = !!nestedSchema && schema.type === SCHEMA_KEYWORDS.ARRAY && index !== null
+        const typeObjectOrObjectArrayItem =
+            (!!nestedSchema && schema.type !== SCHEMA_KEYWORDS.ARRAY) || typeObjectArrayItem
 
         const typePrimitiveArrayItem =
-            !nestedSchema && schema.type === 'array' && index !== null && !!schema.items && !!schema.items.type
+            !nestedSchema &&
+            schema.type === SCHEMA_KEYWORDS.ARRAY &&
+            index !== null &&
+            !!schema.items &&
+            !!schema.items.type
 
-        const typeArray = schema.type === 'array' && index === null
+        const typeArray = schema.type === SCHEMA_KEYWORDS.ARRAY && index === null
         const typeArrayOfEnums =
-            schema.type === 'array' &&
+            schema.type === SCHEMA_KEYWORDS.ARRAY &&
             index === null &&
             schema.items &&
-            schema.items.type === 'string' &&
+            schema.items.type === SCHEMA_KEYWORDS.STRING &&
             schema.items.enum !== undefined
 
         if (typeObjectOrObjectArrayItem) {

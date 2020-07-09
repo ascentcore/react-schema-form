@@ -6,7 +6,13 @@ import ComponentRegistry, { RegistryKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
 import ajv, { RequiredParams } from 'ajv'
 import formatErrors from './error-formatter'
+import { SCHEMA_KEYWORDS } from './constants'
 const _ = require('lodash')
+
+interface ConditionalsState {
+    data: Conditional[]
+    lastEvaluations: string
+}
 
 export const SchemaForm = ({
     schema,
@@ -56,7 +62,7 @@ export const SchemaForm = ({
             )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
-    const [conditionals] = useState<{ data: Conditional[]; lastEvaluations: string }>(() => {
+    const [conditionals] = useState<ConditionalsState>(() => {
         const data = getConditionals(schema)
         return { data, lastEvaluations: '' }
     })
@@ -77,9 +83,9 @@ export const SchemaForm = ({
 
     const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string) => {
         if (isObject(currentSchema) && isObject(baseSchema)) {
-            if (currentSchema['$ref'] !== undefined) {
-                const def = currentSchema['$ref'].substr(currentSchema['$ref'].lastIndexOf('/') + 1)
-                addProperties(currentSchema, root!.definitions[def])
+            if (currentSchema.$ref !== undefined) {
+                const def = currentSchema.$ref.substr(currentSchema.$ref.lastIndexOf('/') + 1)
+                root && root.definitions[def] && addProperties(currentSchema, root!.definitions[def])
             }
 
             for (const key in baseSchema) {
@@ -89,7 +95,7 @@ export const SchemaForm = ({
                     removeProperties(
                         currentSchema[key],
                         baseSchema[key],
-                        key !== 'properties' ? `${nestedPath}.${key}` : nestedPath
+                        key !== SCHEMA_KEYWORDS.PROPERTIES ? `${nestedPath}.${key}` : nestedPath
                     )
                 }
             }
@@ -98,16 +104,16 @@ export const SchemaForm = ({
 
     const removeData = (schema: any, currentData: any) => {
         if (isObject(schema) && isObject(currentData)) {
-            if (schema['$ref'] !== undefined) {
-                const def = schema['$ref'].substr(schema['$ref'].lastIndexOf('/') + 1)
-                addProperties(schema, root!.definitions[def])
+            if (schema.$ref !== undefined) {
+                const def = schema.$ref.substr(schema.$ref.lastIndexOf('/') + 1)
+                root && root.definitions[def] && addProperties(schema, root!.definitions[def])
             }
 
             for (const key in currentData) {
-                if (schema['properties'] && schema['properties'][key] === undefined) {
+                if (schema.properties && schema.properties[key] === undefined) {
                     delete currentData[key]
                 } else {
-                    removeData(schema['properties'] && schema['properties'][key], currentData[key])
+                    removeData(schema.properties && schema.properties[key], currentData[key])
                     if (isObject(currentData[key]) && Object.keys(currentData[key]).length === 0) {
                         delete currentData[key]
                     }
@@ -187,7 +193,7 @@ export const SchemaForm = ({
         const errors: ajv.ErrorObject[] = result || !instance!.validator.errors ? [] : instance!.validator.errors
 
         errors.forEach((err, index, object) => {
-            if (err.keyword === 'if') {
+            if (err.keyword === SCHEMA_KEYWORDS.IF) {
                 object.splice(index, 1)
             } else if (err.params && (err.params as RequiredParams).missingProperty) {
                 err.dataPath += `.${(err.params as RequiredParams).missingProperty}`
@@ -247,7 +253,11 @@ export const SchemaForm = ({
                     )
                 })}
             {!parentChange &&
-                registry.getComponent({ registryKey: 'button', className: 'ra-submit-button' }, 'Submit', handleSubmit)}
+                registry.getComponent(
+                    { registryKey: SCHEMA_KEYWORDS.BUTTON, className: 'ra-submit-button' },
+                    'Submit',
+                    handleSubmit
+                )}
         </span>
     )
 }
