@@ -7,16 +7,9 @@ interface SelectElementProperties {
     onChange: (event: string) => void
 }
 
-export default function SelectElement({
-    property,
-    value,
-    onChange
-}: SelectElementProperties) {
+export default function SelectElement({ property, value, onChange }: SelectElementProperties) {
     const [options, setOptions] = useState<{ [key: string]: string }[]>([])
-    let [labelKey, valueKey] = [
-        property.labelKey || 'labelKey',
-        property.valueKey || 'valueKey'
-    ]
+    let [labelKey, valueKey] = [property.labelKey || 'labelKey', property.valueKey || 'valueKey']
     useEffect(() => {
         let opts = property.options
         if (property.enum) {
@@ -36,7 +29,7 @@ export default function SelectElement({
     }
 
     return (
-        <select onChange={handleChange} value={value} defaultValue=''>
+        <select onChange={handleChange} value={value !== undefined ? value : ''}>
             {!value && (
                 <option value='' disabled>
                     Select your option

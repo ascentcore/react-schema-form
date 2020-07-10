@@ -1,17 +1,17 @@
 import React, { useState, ReactNode, useEffect } from 'react'
 import FormElement, { SchemaProperty } from './components/form-element'
+import { addProperties, getConditionals, isObject, Conditional } from './utils'
 import UISchema from './ui-schema'
 import ComponentRegistry, { RegistryKeys } from './component-registry'
 import ElementWrapper from './element-wrapper'
 import ajv, { RequiredParams } from 'ajv'
 import formatErrors from './error-formatter'
+import { SCHEMA_KEYWORDS } from './constants'
 const _ = require('lodash')
 
-interface Conditional {
-    const?: any
-    then?: SchemaProperty
-    else?: SchemaProperty
-    lastCondition?: string
+interface ConditionalsState {
+    data: Conditional[]
+    lastEvaluations: string
 }
 
 export const SchemaForm = ({
@@ -52,7 +52,7 @@ export const SchemaForm = ({
         Object.assign({}, { data, childPath: null })
     )
     const [keys, setKeys] = useState(Object.keys(schema.properties || {}))
-    const [instance] = useState(() => parentChange ? null : new UISchema(schema))
+    const [instance] = useState(() => (parentChange ? null : new UISchema(schema)))
     const [registry] = useState(
         () =>
             new ComponentRegistry(
@@ -62,21 +62,9 @@ export const SchemaForm = ({
             )
     )
     const [errors, setErrors] = useState<ajv.ErrorObject[]>([])
-    const [conditionals] = useState<{ [key: string]: Conditional }>(() => {
-        if (schema && schema.if && schema.if.properties) {
-            const ifEntry = Object.entries(schema.if!.properties!)[0]
-            if (ifEntry && ifEntry[1].const !== undefined) {
-                return {
-                    [ifEntry[0]]: {
-                        const: ifEntry[1].const,
-                        ...(schema.then ? { then: schema.then } : {}),
-                        ...(schema.else ? { else: schema.else } : {}),
-                        lastCondition: ''
-                    }
-                }
-            }
-        }
-        return {}
+    const [conditionals] = useState<ConditionalsState>(() => {
+        const data = getConditionals(schema)
+        return { data, lastEvaluations: '' }
     })
 
     const removeObjPath = (path: string[], obj: any) => {
@@ -93,61 +81,87 @@ export const SchemaForm = ({
         }
     }
 
-    const isObject = (item: any) => {
-        return item && typeof item === 'object' && !Array.isArray(item)
-    }
-
-    const addProperties = (currentSchema: any, newProperties: any): any => {
-        if (isObject(currentSchema) && isObject(newProperties)) {
-            for (const key in newProperties) {
-                if (isObject(newProperties[key])) {
-                    if (!currentSchema[key]) {
-                        Object.assign(currentSchema, { [key]: {} })
-                    }
-                    addProperties(currentSchema[key], newProperties[key])
-                } else {
-                    Object.assign(currentSchema, { [key]: newProperties[key] })
-                }
-            }
-        }
-    }
-
-    const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string): any => {
+    const removeProperties = (currentSchema: any, baseSchema: any, nestedPath: string) => {
         if (isObject(currentSchema) && isObject(baseSchema)) {
-            for (const key in currentSchema) {
-                if (!baseSchema[key]) {
-                    delete currentSchema[key]
-                    handleParentChange(key)(undefined, obj.childPath, `${nestedPath}.${key}`)
+            if (currentSchema.$ref !== undefined) {
+                const def = currentSchema.$ref.substr(currentSchema.$ref.lastIndexOf('/') + 1)
+                root && root.definitions[def] && addProperties(currentSchema, root!.definitions[def])
+            }
+
+            for (const key in baseSchema) {
+                if (!currentSchema[key]) {
+                    handleParentChange(key)(undefined, `${nestedPath}.${key}`, `${nestedPath}.${key}`)
                 } else {
                     removeProperties(
                         currentSchema[key],
                         baseSchema[key],
-                        key !== 'properties' ? `${nestedPath}.${key}` : nestedPath
+                        key !== SCHEMA_KEYWORDS.PROPERTIES ? `${nestedPath}.${key}` : nestedPath
                     )
                 }
             }
         }
     }
 
-    const updateSchema = (currentSchema: any, baseSchema: any, newProperties: any): any => {
-        const newSchema = _.cloneDeep(currentSchema)
-        removeProperties(newSchema, baseSchema, path)
-        addProperties(newSchema, newProperties)
-        setCurrentSchema(newSchema)
-        setKeys(Object.keys(newSchema.properties || {}))
+    const removeData = (schema: any, currentData: any) => {
+        if (isObject(schema) && isObject(currentData)) {
+            if (schema.$ref !== undefined) {
+                const def = schema.$ref.substr(schema.$ref.lastIndexOf('/') + 1)
+                root && root.definitions[def] && addProperties(schema, root!.definitions[def])
+            }
+
+            for (const key in currentData) {
+                if (schema.properties && schema.properties[key] === undefined) {
+                    delete currentData[key]
+                } else {
+                    removeData(schema.properties && schema.properties[key], currentData[key])
+                    if (isObject(currentData[key]) && Object.keys(currentData[key]).length === 0) {
+                        delete currentData[key]
+                    }
+                }
+            }
+        }
     }
 
-    const checkConditionals = (actualSchema: SchemaProperty, key: string, value: any) => {
-        if (value === conditionals[key].const && conditionals[key].then && conditionals[key].lastCondition !== 'if') {
-            conditionals[key].lastCondition = 'if'
-            updateSchema(actualSchema, schema, conditionals[key].then)
-        }
-        if (value !== conditionals[key].const && conditionals[key].lastCondition !== 'else') {
-            conditionals[key].lastCondition = 'else'
-            if (conditionals[key].else) {
-                updateSchema(actualSchema, schema, conditionals[key].else)
-            } else {
-                updateSchema(actualSchema, schema, {})
+    const checkConditionals = (actualSchema: SchemaProperty) => {
+        if (conditionals.data.length) {
+            let lastEvaluation = '',
+                currentEvaluation
+
+            const newSchema = _.cloneDeep(schema)
+            let newData = _.cloneDeep(obj.data)
+
+            let lastEvaluations = ''
+
+            while (lastEvaluation !== currentEvaluation) {
+                currentEvaluation = lastEvaluation
+                lastEvaluation = ''
+                conditionals.data.forEach((conditional: Conditional) => {
+                    try {
+                        const evalCondition = eval(conditional.compiled)(newData)
+                        if (evalCondition) {
+                            addProperties(newSchema, conditional.then)
+                            newData = _.cloneDeep(obj.data)
+                            removeData(newSchema, newData)
+                            lastEvaluation += '1'
+                        } else {
+                            addProperties(newSchema, conditional.else || {})
+                            newData = _.cloneDeep(obj.data)
+                            removeData(newSchema, newData)
+                            lastEvaluation += '2'
+                        }
+                    } catch (err) {
+                        // property does not exist on data;
+                        lastEvaluation += '0'
+                    }
+                })
+                lastEvaluations += lastEvaluation
+            }
+
+            if (lastEvaluations !== conditionals.lastEvaluations) {
+                removeProperties(newSchema, actualSchema, '')
+                setCurrentSchema(newSchema)
+                setKeys(Object.keys(newSchema.properties || {}))
+                conditionals.lastEvaluations = lastEvaluations
             }
         }
     }
@@ -156,7 +170,7 @@ export const SchemaForm = ({
         if (nestedPath) {
             setObj((prevObj: any) => {
                 const newObj = Object.assign({}, { ...prevObj })
-                removeObjPath(nestedPath.substr(1).split('.').slice(1), newObj.data)
+                removeObjPath(nestedPath.substr(1).split('.'), newObj.data)
                 return newObj
             })
         } else {
@@ -171,17 +185,17 @@ export const SchemaForm = ({
                 }
                 return newValue
             })
-            if (conditionals[key]) {
-                checkConditionals(currentSchema || schema, key, value)
-            }
         }
     }
 
     const handleSubmit = () => {
         const result = instance!.validate(obj.data)
         const errors: ajv.ErrorObject[] = result || !instance!.validator.errors ? [] : instance!.validator.errors
-        errors.forEach((err) => {
-            if (err.params && (err.params as RequiredParams).missingProperty) {
+
+        errors.forEach((err, index, object) => {
+            if (err.keyword === SCHEMA_KEYWORDS.IF) {
+                object.splice(index, 1)
+            } else if (err.params && (err.params as RequiredParams).missingProperty) {
                 err.dataPath += `.${(err.params as RequiredParams).missingProperty}`
             }
         })
@@ -209,14 +223,7 @@ export const SchemaForm = ({
     }, [schema])
 
     useEffect(() => {
-        keys.forEach((key) => {
-            if (conditionals[key] && obj.data[key] !== undefined) {
-                checkConditionals(currentSchema || schema, key, obj.data[key])
-            }
-        })
-    }, [])
-
-    useEffect(() => {
+        checkConditionals(currentSchema || schema)
         if (parentChange && obj.childPath) {
             parentChange(obj.data, obj.childPath)
         } else {
@@ -246,7 +253,11 @@ export const SchemaForm = ({
                     )
                 })}
             {!parentChange &&
-                registry.getComponent({ registryKey: 'button', className: 'ra-submit-button' }, 'Submit', handleSubmit)}
+                registry.getComponent(
+                    { registryKey: SCHEMA_KEYWORDS.BUTTON, className: 'ra-submit-button' },
+                    'Submit',
+                    handleSubmit
+                )}
         </span>
     )
 }

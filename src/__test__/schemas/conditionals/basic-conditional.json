@@ -10,11 +10,18 @@
                 "car": {
                     "type": "boolean",
                     "title": "Has car"
+                },
+                "registered": {
+                    "type": "boolean",
+                    "title": "Is registered"
                 }
             },
             "if": {
                 "properties": {
                     "car": {
+                        "const": true
+                    },
+                    "registered": {
                         "const": true
                     }
                 }

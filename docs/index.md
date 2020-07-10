@@ -149,10 +149,10 @@ The default form elements are:
     ```
 * RadioElement - a group of inputs of type radio; not used in standard registry, but by using a custom registry or a list of exceptions, the SelectElement can be overwritten with a RadioElement
     ```jsx
-    "gender": {
+    "location": {
         "title": "Type",
         "type": "string",
-        "enum": ["male", "female"]
+        "enum": ["N", "E", "S", "W"]
     }
     ```
 * MultipleSelectElement - a multiple seleciton element; it will be rendered if the json schema contains a property of type array with items of type string with the enum field present on them
@@ -203,9 +203,9 @@ The default form elements are:
 
 You can read more about the registry in the [Customization](#customization) section.
 
-## Conditionals
+## <a name="conditionals"></a>Conditionals
 
-The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. Currently the conditionals support only single conditions, not multiple ones. The structure of a conditional schema is the following. 
+The structure of the schema can be dynamically altered by specifying **if** conditions at the same level with the properties keyword. The conditionals support multiple properties with a any number of nesting levels under an if condition, or under multiple if conditions (declared with allOf oneOf or anyOf). The structure of a conditional schema is the following: 
 
 ``` {
   "type": "object",
@@ -242,9 +242,32 @@ The structure of the schema can be dynamically altered by specifying **if** cond
   }
 }
 ```
-Under the if statement a single property with a const attribute has to be defined. The then/else attributes can define subschemas with one or more levels of nesting that will be added to the base schema if the value of the data field is matching the if statement. The properties can be added or only altered. The else statement is not mandatory.
+Under the if statement a set of properties have to be defined containing at the highest nesting level a const attribute. The then/else attributes can define subschemas with one or more levels of nesting that will be added to the base schema if the value of the data field is matching the if statement. The properties can be added or only altered. The else statement is not mandatory.
+
+To define multiple if statements, the following structure will be followed.
+
+```
+{
+  "allOf": [
+    {
+      "if": { ... },
+      "then": { ... }
+    },
+    {
+      "if": { ... },
+      "then": { ... }
+    }
+  ]
+}
+```
+
+When defining multiple properties under the same if statement, the resulted condition will be formed by inserting the logical AND ( && )between them. If the user wants a condition which uses the logical OR ( || ), they have to be declared sepparately inside an allOf attribute.
 
 When the data changes and is no longer matching the condition, the properties which will disappear, will be also stripped off from the data object.
+
+If the effects of two conditions are overlapping, the last one will overwrite the others.
+
+The library is implemented according to ajv’s default behavior. When the properties specified as part of a conditional if statement are not present at all on the data object, the condition will be evaluated as being true, meaning that the "then" statement will be applied. To avoid this behavior, the user can define default values for the properties.
 
 ## <a name="customization"></a>Customization
 
@@ -346,7 +369,8 @@ When the data changes and is no longer matching the condition, the properties wh
 The library uses a custom meta-schema to validate the given schemas by the user. The meta-schema is derived from the json-schema draft-07 schema, with some restrictions and a couple of custom fields. 
 * Our meta-schema currently supports just base64 encodings used for file uploads
 * The items in an array can be of a single type, not multiple types
-* The following fields are currently ignored: readOnly, writeOnly, examples, contains, maxProperties, minProperties, patternProperties, dependencies, propertyNames, allOf, anyOf, oneOf, not.
+* The following fields are currently ignored: readOnly, writeOnly, examples, contains, maxProperties, minProperties, patternProperties, dependencies, propertyNames, not.
+* The keywords allOf, anyOf, oneOf are currently taken into consideration only if they include if statements. See [Conditionals](#conditionals) section.
 * **instanceof** field is a custom one. At the moment the supported value is "file". In this case, the parent property has to be an object, and the schema must also contain the fields filename and content.
 * **options** is another custom field. If the field is present, the library will render a select, taking the options from the given list. If not specified the name of the key and the name of the value attributes, will be 'labelKey' and 'labelValue'. Otherwise, the names will be taken from the attributes. For more details see the [Form default elements](#form-default-elements), the SelectElement section.
 

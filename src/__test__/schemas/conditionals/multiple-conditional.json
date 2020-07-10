@@ -6,14 +6,12 @@
             "properties": {
                 "name": {
                     "title": "Name",
-                    "type": "string",
-                    "default": ""
+                    "type": "string"
                 },
                 "location": {
                     "title": "Location",
                     "type": "string",
-                    "enum": ["N", "E", "S", "W"],
-                    "default": "E"
+                    "enum": ["N", "E", "S", "W"]
                 }
             },
             "required": ["name"]
@@ -45,7 +43,6 @@
                         "properties": {
                             "previous": {
                                 "title": "Previous owner",
-                                "type": "object",
                                 "$ref": "#/definitions/owner"
                             }
                         }
@@ -68,32 +65,6 @@
                             }
                         }
                     }
-                },
-                {
-                    "if": {
-                        "properties": {
-                            "previous": {
-                                "properties": {
-                                    "location": {
-                                        "const": "N"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "then": {
-                        "properties": {
-                            "previous": {
-                                "required": ["boat"],
-                                "properties": {
-                                    "boat": {
-                                        "type": "boolean",
-                                        "title": "Has boat"
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             ]
         }
@@ -110,4 +81,3 @@
         }
     }
 }
-

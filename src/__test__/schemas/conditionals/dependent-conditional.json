@@ -54,24 +54,6 @@
                 {
                     "if": {
                         "properties": {
-                            "year": {
-                                "const": 2000
-                            }
-                        }
-                    },
-                    "then": {
-                        "properties": {
-                            "previous": {
-                                "title": "Previous owner",
-                                "type": "object",
-                                "$ref": "#/definitions/owner"
-                            }
-                        }
-                    }
-                },
-                {
-                    "if": {
-                        "properties": {
                             "previous": {
                                 "properties": {
                                     "location": {

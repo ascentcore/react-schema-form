@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "properties": {
+        "owner": {
+            "type": "object",
+            "$ref": "#/definitions/owner"
+        }
+    },
+    "if": {
+        "properties": {
+            "owner": {
+                "properties": {
+                    "location": {
+                        "const": "N"
+                    }
+                }
+            }
+        }
+    },
+    "then": {
+        "properties": {
+            "owner": {
+                "properties": {
+                    "boat": {
+                        "type": "boolean",
+                        "title": "Has boat"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "owner": {
+            "type": "object",
+            "tile": "owner",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "location": {
+                    "title": "Location",
+                    "type": "string",
+                    "enum": ["N", "E", "S", "W"]
+                }
+            }
+        }
+    }
+}
