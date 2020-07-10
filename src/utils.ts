@@ -47,7 +47,12 @@ export const getConditionals = (schema: SchemaProperty): Conditional[] => {
         ifEntries.push(simpleConditional)
     }
     ifEntries = ifEntries.concat(getMultipleConditionals(schema))
-    return ifEntries.map((ifEntry) => getCompiledConditional(ifEntry))
+    const compiledIfEntries = ifEntries.map((ifEntry) => getCompiledConditional(ifEntry))
+    let compiledDependencies: Conditional[] = []
+    if (schema.dependencies) {
+        compiledDependencies = getCompiledDependencies(schema.dependencies)
+    }
+    return compiledIfEntries.concat(compiledDependencies)
 }
 
 //given a schema, the function will return a list with all the paths of the schema and the value of the leaf node
@@ -143,4 +148,16 @@ const getCompiledConditional = (ifEntry: {
         ...(ifEntry.then ? { then: ifEntry.then } : {}),
         ...(ifEntry.else ? { else: ifEntry.else } : {})
     }
+}
+
+const getCompiledDependencies = (dependencies: { [key: string]: string[] }): Conditional[] => {
+    return Object.entries(dependencies).map((dependency) => {
+        const compiled: string = `data => { return (data.${dependency[0]} !== undefined) }`
+        return {
+            compiled: compiled,
+            then: {
+                required: dependency[1]
+            }
+        }
+    })
 }

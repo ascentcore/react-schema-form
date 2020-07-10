@@ -46,6 +46,11 @@ import ConditionalsSchemaExample from './conditionals-schema'
 import ConditionalsSchemaExampleJSON from './conditionals-schema/conditionals-schema.json'
 import ConditionalsSchemaExampleCode from '!!raw-loader!./conditionals-schema/index.js';
 
+
+import DependenciesSchemaExample from './dependencies-schema'
+import DependenciesSchemaExampleJSON from './dependencies-schema/dependencies-schema.json'
+import DependenciesSchemaExampleCode from '!!raw-loader!./dependencies-schema/index.js';
+
 const App = () => {
 
   const [selected, setSelected] = useState(parseInt(window.location.hash.substr(1)) || 0)
@@ -109,6 +114,12 @@ const App = () => {
       component: <ConditionalsSchemaExample />,
       code: ConditionalsSchemaExampleCode,
       schema: ConditionalsSchemaExampleJSON
+    },
+    {
+      title: 'Dependencies Schema',
+      component: <DependenciesSchemaExample />,
+      code: DependenciesSchemaExampleCode,
+      schema: DependenciesSchemaExampleJSON
     }
   ]
 
