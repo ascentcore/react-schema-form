@@ -3,14 +3,18 @@
 
     "properties": {
         "name": { "title": "Name", "type": "string" },
-        "credit_card": { "title": "Credit Card", "type": "number" },
-        "billing_address": { "title": "Billing Address", "type": "string" }
+        "age": { "title": "Age", "type": "number" },
+        "creditCard": { "title": "Credit Card", "type": "number" }
     },
 
-    "required": ["name"],
-
     "dependencies": {
-        "credit_card": ["billing_address"],
-        "billing_address": ["credit_card"]
+        "name": ["age"],
+        "age": ["name"],
+        "creditCard": {
+            "properties": {
+                "billingAddress": { "title": "Billing Address", "type": "string" }
+            },
+            "required": ["billingAddress"]
+        }
     }
 }

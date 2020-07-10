@@ -150,14 +150,12 @@ const getCompiledConditional = (ifEntry: {
     }
 }
 
-const getCompiledDependencies = (dependencies: { [key: string]: string[] }): Conditional[] => {
+const getCompiledDependencies = (dependencies: { [key: string]: string[] | SchemaProperty }): Conditional[] => {
     return Object.entries(dependencies).map((dependency) => {
         const compiled: string = `data => { return (data.${dependency[0]} !== undefined) }`
         return {
             compiled: compiled,
-            then: {
-                required: dependency[1]
-            }
+            ...(Array.isArray(dependency[1]) ? { then: { required: dependency[1] } } : { then: dependency[1] })
         }
     })
 }

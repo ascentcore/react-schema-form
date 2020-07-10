@@ -33,7 +33,7 @@ export interface SchemaProperty {
     anyOf?: SchemaProperty[]
     oneOf?: SchemaProperty[]
     dependencies?: {
-        [key: string]: string[]
+        [key: string]: string[] | SchemaProperty
     }
 
     path?: string

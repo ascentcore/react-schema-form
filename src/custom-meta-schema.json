@@ -88,6 +88,7 @@
             "default": false
         },
         "required": { "$ref": "#/definitions/stringArray" },
+        "additionalProperties": { "$ref": "#" },
         "definitions": {
             "type": "object",
             "additionalProperties": { "$ref": "#" },
@@ -98,6 +99,16 @@
             "additionalProperties": { "$ref": "#" },
             "default": {}
         },
+        "dependencies": {
+            "type": "object",
+            "additionalProperties": {
+                "anyOf": [
+                    { "$ref": "#" },
+                    { "$ref": "#/definitions/stringArray" }
+                ]
+            }
+        },
+        "const": true,
         "enum": {
             "type": "array",
             "items": true,
