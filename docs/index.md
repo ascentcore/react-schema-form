@@ -269,6 +269,33 @@ If the effects of two conditions are overlapping, the last one will overwrite th
 
 The library is implemented according to ajv’s default behavior. When the properties specified as part of a conditional if statement are not present at all on the data object, the condition will be evaluated as being true, meaning that the "then" statement will be applied. To avoid this behavior, the user can define default values for the properties.
 
+## <a name="dependencies"></a>Dependencies
+
+Dependencies are similar to conditionals, but focus on the simple existency of some fields, not on a certain value. You can choose to make other fields required if a specific field is present, or you can choose to alter the schema and add new properties. An example of usage is the following:
+
+```
+{
+    "type": "object",
+
+    "properties": {
+        "name": { "title": "Name", "type": "string" },
+        "age": { "title": "Age", "type": "number" },
+        "creditCard": { "title": "Credit Card", "type": "number" }
+    },
+
+    "dependencies": {
+        "name": ["age"],
+        "age": ["name"],
+        "creditCard": {
+            "properties": {
+                "billingAddress": { "title": "Billing Address", "type": "string" }
+            },
+            "required": ["billingAddress"]
+        }
+    }
+}
+```
+
 ## <a name="customization"></a>Customization
 
 * Registry customization - the registry of the library has the following form

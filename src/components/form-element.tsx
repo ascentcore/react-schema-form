@@ -32,6 +32,9 @@ export interface SchemaProperty {
     allOf?: SchemaProperty[]
     anyOf?: SchemaProperty[]
     oneOf?: SchemaProperty[]
+    dependencies?: {
+        [key: string]: string[] | SchemaProperty
+    }
 
     path?: string
     registryKey?: string

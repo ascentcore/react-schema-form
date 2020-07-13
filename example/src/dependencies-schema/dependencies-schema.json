@@ -1,0 +1,20 @@
+{
+    "type": "object",
+
+    "properties": {
+        "name": { "title": "Name", "type": "string" },
+        "age": { "title": "Age", "type": "number" },
+        "creditCard": { "title": "Credit Card", "type": "number" }
+    },
+
+    "dependencies": {
+        "name": ["age"],
+        "age": ["name"],
+        "creditCard": {
+            "properties": {
+                "billingAddress": { "title": "Billing Address", "type": "string" }
+            },
+            "required": ["billingAddress"]
+        }
+    }
+}
