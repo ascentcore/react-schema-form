@@ -4,17 +4,24 @@
     "type": "object",
     "title": "Person",
     "description": "Person Information",
-    "required": ["firstName", "lastName", "type", "age"],
+    "required": ["name", "type", "age"],
     "properties": {
-        "firstName": {
-            "type": "string",
-            "title": "First Name",
-            "description": "The person's first name."
-        },
-        "lastName": {
-            "type": "string",
-            "title": "Last Name",
-            "description": "The person's last name."
+        "name": {
+            "type": "object",
+            "title": "The person's full name.",
+            "required": ["firstName", "lastName"],
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "title": "First Name",
+                    "description": "The person's first name."
+                },
+                "lastName": {
+                    "type": "string",
+                    "title": "Last Name",
+                    "description": "The person's last name."
+                }
+            }
         },
         "age": {
             "title": "Age",
