@@ -26,6 +26,10 @@ import CustomRegistryExample from './custom-registry'
 import CustomRegistryExampleJSON from './custom-registry/custom-registry-schema.json'
 import CustomRegistryExampleCode from '!!raw-loader!./custom-registry/index.js';
 
+import PathsExceptionExample from './paths-exception';
+import PathsExceptionExampleJSON from './paths-exception/path-exception-schema.json';
+import PathsExceptionExampleCode from '!!raw-loader!./paths-exception/index.js';
+
 import FileSchemaExample from './file-schema'
 import FileSchemaExampleJSON from './file-schema/file-schema.json'
 import FileSchemaExampleCode from '!!raw-loader!./file-schema/index.js';
@@ -84,6 +88,12 @@ const App = () => {
       component: <CustomRegistryExample />,
       code: CustomRegistryExampleCode,
       schema: CustomRegistryExampleJSON
+    },
+    {
+      title: 'Path Exception',
+      component: <PathsExceptionExample />,
+      code: PathsExceptionExampleCode,
+      schema: PathsExceptionExampleJSON
     },
     {
       title: 'File Schema',
