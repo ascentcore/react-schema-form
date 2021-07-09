@@ -126,6 +126,7 @@ export default function FormElement({
                 root={root}
                 key={JSON.stringify(nestedSchema)}
                 path={pathKey}
+                config={{ registry: registry._registry, exceptions: registry._exceptions }}
                 schema={nestedSchema}
                 data={itemValue}
                 errors={errors}
