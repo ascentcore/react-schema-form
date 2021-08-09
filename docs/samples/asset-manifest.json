@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/@ascentcore/react-schema-form/static/css/main.894a1f24.chunk.css",
+    "main.js": "/@ascentcore/react-schema-form/static/js/main.484af1d0.chunk.js",
+    "main.js.map": "/@ascentcore/react-schema-form/static/js/main.484af1d0.chunk.js.map",
+    "runtime-main.js": "/@ascentcore/react-schema-form/static/js/runtime-main.238d6e86.js",
+    "runtime-main.js.map": "/@ascentcore/react-schema-form/static/js/runtime-main.238d6e86.js.map",
+    "static/css/2.90c11924.chunk.css": "/@ascentcore/react-schema-form/static/css/2.90c11924.chunk.css",
+    "static/js/2.a8893180.chunk.js": "/@ascentcore/react-schema-form/static/js/2.a8893180.chunk.js",
+    "static/js/2.a8893180.chunk.js.map": "/@ascentcore/react-schema-form/static/js/2.a8893180.chunk.js.map",
+    "index.html": "/@ascentcore/react-schema-form/index.html",
+    "precache-manifest.14d0a5f6b129b79b6c32de8fadacbdca.js": "/@ascentcore/react-schema-form/precache-manifest.14d0a5f6b129b79b6c32de8fadacbdca.js",
+    "service-worker.js": "/@ascentcore/react-schema-form/service-worker.js",
+    "static/css/2.90c11924.chunk.css.map": "/@ascentcore/react-schema-form/static/css/2.90c11924.chunk.css.map",
+    "static/css/main.894a1f24.chunk.css.map": "/@ascentcore/react-schema-form/static/css/main.894a1f24.chunk.css.map",
+    "static/js/2.a8893180.chunk.js.LICENSE.txt": "/@ascentcore/react-schema-form/static/js/2.a8893180.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.238d6e86.js",
+    "static/css/2.90c11924.chunk.css",
+    "static/js/2.a8893180.chunk.js",
+    "static/css/main.894a1f24.chunk.css",
+    "static/js/main.484af1d0.chunk.js"
+  ]
+}
