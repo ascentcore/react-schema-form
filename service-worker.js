@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/@ascentcore/react-schema-form/precache-manifest.72e6e45cab9410bfdfca1a919e7b8069.js"
+  "/@ascentcore/react-schema-form/precache-manifest.250ac9f3e53846ad28fdc866e3b7f97c.js"
 );
 
 self.addEventListener('message', (event) => {

@@ -1,22 +1,25 @@
 {
   "files": {
-    "main.css": "/@ascentcore/react-schema-form/static/css/main.828c13a1.chunk.css",
-    "main.js": "/@ascentcore/react-schema-form/static/js/main.ee2eaec4.chunk.js",
-    "main.js.map": "/@ascentcore/react-schema-form/static/js/main.ee2eaec4.chunk.js.map",
-    "runtime-main.js": "/@ascentcore/react-schema-form/static/js/runtime-main.520cc5d8.js",
-    "runtime-main.js.map": "/@ascentcore/react-schema-form/static/js/runtime-main.520cc5d8.js.map",
-    "static/js/2.301c2169.chunk.js": "/@ascentcore/react-schema-form/static/js/2.301c2169.chunk.js",
-    "static/js/2.301c2169.chunk.js.map": "/@ascentcore/react-schema-form/static/js/2.301c2169.chunk.js.map",
+    "main.css": "/@ascentcore/react-schema-form/static/css/main.2931e89b.chunk.css",
+    "main.js": "/@ascentcore/react-schema-form/static/js/main.08952119.chunk.js",
+    "main.js.map": "/@ascentcore/react-schema-form/static/js/main.08952119.chunk.js.map",
+    "runtime-main.js": "/@ascentcore/react-schema-form/static/js/runtime-main.238d6e86.js",
+    "runtime-main.js.map": "/@ascentcore/react-schema-form/static/js/runtime-main.238d6e86.js.map",
+    "static/css/2.bcddf60d.chunk.css": "/@ascentcore/react-schema-form/static/css/2.bcddf60d.chunk.css",
+    "static/js/2.1040fcfb.chunk.js": "/@ascentcore/react-schema-form/static/js/2.1040fcfb.chunk.js",
+    "static/js/2.1040fcfb.chunk.js.map": "/@ascentcore/react-schema-form/static/js/2.1040fcfb.chunk.js.map",
     "index.html": "/@ascentcore/react-schema-form/index.html",
-    "precache-manifest.72e6e45cab9410bfdfca1a919e7b8069.js": "/@ascentcore/react-schema-form/precache-manifest.72e6e45cab9410bfdfca1a919e7b8069.js",
+    "precache-manifest.250ac9f3e53846ad28fdc866e3b7f97c.js": "/@ascentcore/react-schema-form/precache-manifest.250ac9f3e53846ad28fdc866e3b7f97c.js",
     "service-worker.js": "/@ascentcore/react-schema-form/service-worker.js",
-    "static/css/main.828c13a1.chunk.css.map": "/@ascentcore/react-schema-form/static/css/main.828c13a1.chunk.css.map",
-    "static/js/2.301c2169.chunk.js.LICENSE.txt": "/@ascentcore/react-schema-form/static/js/2.301c2169.chunk.js.LICENSE.txt"
+    "static/css/2.bcddf60d.chunk.css.map": "/@ascentcore/react-schema-form/static/css/2.bcddf60d.chunk.css.map",
+    "static/css/main.2931e89b.chunk.css.map": "/@ascentcore/react-schema-form/static/css/main.2931e89b.chunk.css.map",
+    "static/js/2.1040fcfb.chunk.js.LICENSE.txt": "/@ascentcore/react-schema-form/static/js/2.1040fcfb.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.520cc5d8.js",
-    "static/js/2.301c2169.chunk.js",
-    "static/css/main.828c13a1.chunk.css",
-    "static/js/main.ee2eaec4.chunk.js"
+    "static/js/runtime-main.238d6e86.js",
+    "static/css/2.bcddf60d.chunk.css",
+    "static/js/2.1040fcfb.chunk.js",
+    "static/css/main.2931e89b.chunk.css",
+    "static/js/main.08952119.chunk.js"
   ]
 }
