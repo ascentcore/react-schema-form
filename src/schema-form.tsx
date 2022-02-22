@@ -19,9 +19,10 @@ export const SchemaForm = ({
     root = schema,
     wrapper = ElementWrapper,
     parentChange = null,
+    className,
     data = {},
     config = null,
-    onSubmit = () => {},
+    onSubmit = () => { },
     errorFormatter = null,
     path = '',
     errors: parentErrors = null
@@ -29,6 +30,7 @@ export const SchemaForm = ({
     root?: SchemaProperty | null
     schema?: SchemaProperty | null
     wrapper?: ReactNode
+    className?: string
     parentChange?: ((subVal: any, key: string) => void) | null
     data?: any
     config?: {
@@ -232,7 +234,7 @@ export const SchemaForm = ({
     }, [obj])
 
     return (
-        <span className='ra-schema-form'>
+        <span className={`${className} ra-schema-form`}>
             {currentSchema &&
                 keys.map((key) => {
                     const childPath = `${path}.${key}`
