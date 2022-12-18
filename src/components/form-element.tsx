@@ -144,11 +144,12 @@ export default function FormElement({
 
     function renderPrimitiveArrayItem(itemValue: any, itemProperty: SchemaProperty, index: number) {
         const registryKey =
-            itemProperty.enum || itemProperty.options
+            itemProperty.registryKey ||
+            (itemProperty.enum || itemProperty.options
                 ? SCHEMA_KEYWORDS.ENUM
                 : itemProperty.contentEncoding || itemProperty.contentMediaType
                 ? SCHEMA_KEYWORDS.FILE
-                : itemProperty.type
+                : itemProperty.type)
         const pathKey = `${path}[${index}]`
 
         let arrayElementErrors: ajv.ErrorObject[] | boolean = errors.filter((err) => err.dataPath === pathKey)
@@ -238,11 +239,12 @@ export default function FormElement({
 
     function getElementFromRegistry(itemValue: any, children: ReactNode | null = null, title?: string, type?: string) {
         const registryKey =
-            schema.enum || schema.options
+            schema.registryKey ||
+            (schema.enum || schema.options
                 ? SCHEMA_KEYWORDS.ENUM
                 : schema.contentEncoding || schema.contentMediaType || schema.instanceof === SCHEMA_KEYWORDS.FILE
                 ? SCHEMA_KEYWORDS.FILE
-                : schema.type
+                : schema.type)
         const key = path.substr(path.lastIndexOf('.') + 1)
         const isRequired = parentSchema.required && parentSchema.required.indexOf(key) > -1
 
