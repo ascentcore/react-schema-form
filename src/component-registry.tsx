@@ -32,7 +32,7 @@ export default class ComponentRegistry {
     }
 
     constructor(
-        customRegistry = {},
+        customRegistry: any = {},
         wrapper: ReactNode = ElementWrapper,
         exceptions: {
             paths?: RegistryKeys
@@ -52,8 +52,8 @@ export default class ComponentRegistry {
             removeButton: { component: InputElements['ButtonElement'], wrapper: ElementContainer }
         }
 
-        Object.entries(customRegistry).forEach((customRegistryRecord) => {
-            Object.assign(this._registry[customRegistryRecord[0]], customRegistryRecord[1])
+        Object.keys(customRegistry).forEach((key: string) => {
+            this._registry[`${key}`] = customRegistry[key]
         })
 
         this._wrapper = wrapper

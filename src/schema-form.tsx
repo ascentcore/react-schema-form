@@ -242,7 +242,9 @@ export const SchemaForm = ({
                     return (
                         <FormElement
                             root={root!}
-                            key={key}
+                            key={key}                            
+                            config={config}
+                            wrapper={wrapper}
                             error={getErrors(childPath)}
                             errors={parentErrors || errors}
                             value={obj.data ? obj.data[key] : undefined}

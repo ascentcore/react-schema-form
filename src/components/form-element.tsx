@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, ReactNode } from 'react'
 import { SchemaForm } from '../schema-form'
 import { addProperties } from '../utils'
-import ComponentRegistry from '../component-registry'
+import ComponentRegistry, { RegistryKeys } from '../component-registry'
 import { SCHEMA_KEYWORDS } from '../constants'
 import ajv from 'ajv'
 const _ = require('lodash')
@@ -50,6 +50,14 @@ interface FormElementProperties {
     path: string
     value: any
     errors: ajv.ErrorObject[]
+    wrapper?: ReactNode,
+    config?: {
+        registry?: RegistryKeys
+        exceptions?: {
+            paths?: RegistryKeys
+            keys?: RegistryKeys
+        }
+    } | null,
     error: ajv.ErrorObject[] | boolean
     handleParentChange: (value: any, childPath: string) => void
     registry: ComponentRegistry
@@ -64,7 +72,9 @@ export default function FormElement({
     errors,
     error,
     handleParentChange,
-    registry
+    registry,
+    wrapper,
+    config
 }: FormElementProperties) {
     const [nestedSchema, setNestedSchema] = useState<SchemaProperty | null>(null)
 
@@ -129,6 +139,8 @@ export default function FormElement({
                 schema={nestedSchema}
                 data={itemValue}
                 errors={errors}
+                wrapper={wrapper}
+                config={config}
                 parentChange={(subVal: any, key: string) => {
                     if (index !== null) {
                         const copy = [...value]
